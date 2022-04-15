@@ -211,16 +211,7 @@ static int cfg_get(struct task_struct *target,
 		   const struct user_regset *regset,
 		   struct membuf to)
 {
-	int i, r;
-	u32 cfg_val;
-
-	i = 0;
-	while (to.left > 0) {
-		cfg_val = read_cpucfg(i++);
-		r = membuf_write(&to, &cfg_val, sizeof(u32));
-	}
-
-	return r;
+	return 0;
 }
 
 /*

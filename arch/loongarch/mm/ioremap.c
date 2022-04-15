@@ -5,9 +5,9 @@
 
 #include <asm/io.h>
 
-void __init __iomem *early_ioremap(u64 phys_addr, unsigned long size)
+void __init __iomem *early_ioremap(u32 phys_addr, unsigned long size)
 {
-	return ((void __iomem *)TO_CAC(phys_addr));
+        return ((void __iomem *)(unsigned long)TO_CAC(phys_addr));
 }
 
 void __init early_iounmap(void __iomem *addr, unsigned long size)

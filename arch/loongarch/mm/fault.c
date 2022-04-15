@@ -58,11 +58,14 @@ static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
 	 * only copy the information from the master page table,
 	 * nothing more.
 	 */
-#ifdef CONFIG_64BIT
-# define VMALLOC_FAULT_TARGET no_context
-#else
-# define VMALLOC_FAULT_TARGET vmalloc_fault
+#ifdef CONFIG_32BIT
+#define VMALLOC_FAULT_TARGET vmalloc_fault
 #endif
+
+#ifdef CONFIG_64BIT
+#define VMALLOC_FAULT_TARGET no_context
+#endif
+
 	if (unlikely(address >= VMALLOC_START && address <= VMALLOC_END))
 		goto VMALLOC_FAULT_TARGET;
 
@@ -252,15 +255,15 @@ vmalloc_fault:
 		pmd_t *pmd, *pmd_k;
 		pte_t *pte_k;
 
-		pgd = (pgd_t *) pgd_current[raw_smp_processor_id()] + offset;
+		pgd = (pgd_t *) __csrrd(LOONGARCH_CSR_PGD) +offset ;
 		pgd_k = init_mm.pgd + offset;
 
 		if (!pgd_present(*pgd_k))
 			goto no_context;
 		set_pgd(pgd, *pgd_k);
 
-		pud = pud_offset(pgd, address);
-		pud_k = pud_offset(pgd_k, address);
+		pud = pud_offset((p4d_t *)pgd, address);
+		pud_k = pud_offset((p4d_t *)pgd_k, address);
 		if (!pud_present(*pud_k))
 			goto no_context;
 

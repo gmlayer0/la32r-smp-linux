@@ -48,19 +48,97 @@ __asm__(".macro	parse_r var r\n\t"
 	_IFC_REG(20) _IFC_REG(21) _IFC_REG(22) _IFC_REG(23)
 	_IFC_REG(24) _IFC_REG(25) _IFC_REG(26) _IFC_REG(27)
 	_IFC_REG(28) _IFC_REG(29) _IFC_REG(30) _IFC_REG(31)
+	".ifc	\\r, $a0 \n\t"
+	"\\var	= 4	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $a1 \n\t"
+	"\\var	= 5	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $a2 \n\t"
+	"\\var	= 6	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $a3 \n\t"
+	"\\var	= 7	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $a4 \n\t"
+	"\\var	= 8	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $a5 \n\t"
+	"\\var	= 9	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $a6 \n\t"
+	"\\var	= 10	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $a7 \n\t"
+	"\\var	= 11	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t0 \n\t"
+	"\\var	= 12	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t1 \n\t"
+	"\\var	= 13	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t2 \n\t"
+	"\\var	= 14	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t3 \n\t"
+	"\\var	= 15	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t4 \n\t"
+	"\\var	= 16	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t5 \n\t"
+	"\\var	= 17	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t6 \n\t"
+	"\\var	= 18	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t7 \n\t"
+	"\\var	= 19	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $t8 \n\t"
+	"\\var	= 20	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s0 \n\t"
+	"\\var	= 23	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s1 \n\t"
+	"\\var	= 24	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s2 \n\t"
+	"\\var	= 25	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s3 \n\t"
+	"\\var	= 26	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s4 \n\t"
+	"\\var	= 27	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s5 \n\t"
+	"\\var	= 28	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s6 \n\t"
+	"\\var	= 29	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s7 \n\t"
+	"\\var	= 30	\n\t"
+	".endif\n\t"
+	".ifc	\\r, $s8 \n\t"
+	"\\var	= 31	\n\t"
+	".endif\n\t"
 	".iflt	\\var\n\t"
 	".error	\"Unable to parse register name \\r\"\n\t"
 	".endif\n\t"
 	".endm");
 
 #undef _IFC_REG
-
+#ifdef CONFIG_64BIT
 /* CPUCFG */
 static inline u32 read_cpucfg(u32 reg)
 {
 	return __cpucfg(reg);
 }
-
+#endif
 #endif /* !__ASSEMBLY__ */
 
 /* LoongArch Registers */
@@ -223,6 +301,7 @@ static inline u32 read_cpucfg(u32 reg)
 
 #ifndef __ASSEMBLY__
 
+#if defined(CONFIG_64BIT)
 /* CSR */
 static inline u32 csr_readl(u32 reg)
 {
@@ -253,6 +332,39 @@ static inline u64 csr_xchgq(u64 val, u64 mask, u32 reg)
 {
 	return __dcsrxchg(val, mask, reg);
 }
+#endif
+
+#ifdef CONFIG_32BIT
+static inline u32 csr_readl(u32 reg)
+{
+	return __csrrd(reg);
+}
+
+static inline u64 csr_readq(u32 reg)
+{
+	return __csrrd(reg);
+}
+
+static inline void csr_writel(u32 val, u32 reg)
+{
+	__csrwr(val, reg);
+}
+
+static inline void csr_writeq(u64 val, u32 reg)
+{
+	__csrwr(val, reg);
+}
+
+static inline u32 csr_xchgl(u32 val, u32 mask, u32 reg)
+{
+	return __csrxchg(val, mask, reg);
+}
+
+static inline u64 csr_xchgq(u64 val, u64 mask, u32 reg)
+{
+	return __csrxchg(val, mask, reg);
+}
+#endif
 
 /* IOCSR */
 static inline u32 iocsr_readl(u32 reg)
@@ -262,7 +374,7 @@ static inline u32 iocsr_readl(u32 reg)
 
 static inline u64 iocsr_readq(u32 reg)
 {
-	return __iocsrrd_d(reg);
+	return __iocsrrd_w(reg);
 }
 
 static inline void iocsr_writel(u32 val, u32 reg)
@@ -272,7 +384,7 @@ static inline void iocsr_writel(u32 val, u32 reg)
 
 static inline void iocsr_writeq(u64 val, u32 reg)
 {
-	__iocsrwr_d(val, reg);
+	__iocsrwr_w(val, reg);
 }
 
 #endif /* !__ASSEMBLY__ */
@@ -949,6 +1061,7 @@ static inline void iocsr_writeq(u64 val, u32 reg)
 #define LOONGARCH_CSR_DMWIN3		0x183	/* 64 direct map win3: MEM */
 
 /* Direct Map window 0/1 */
+#ifdef CONFIG_64BIT
 #define CSR_DMW0_PLV0		_CONST64_(1 << 0)
 #define CSR_DMW0_VSEG		_CONST64_(0x8000)
 #define CSR_DMW0_BASE		(CSR_DMW0_VSEG << DMW_PABITS)
@@ -959,6 +1072,19 @@ static inline void iocsr_writeq(u64 val, u32 reg)
 #define CSR_DMW1_VSEG		_CONST64_(0x9000)
 #define CSR_DMW1_BASE		(CSR_DMW1_VSEG << DMW_PABITS)
 #define CSR_DMW1_INIT		(CSR_DMW1_BASE | CSR_DMW1_MAT | CSR_DMW1_PLV0)
+
+#else
+#define CSR_DMW0_PLV0		_ULCAST_(1 << 0)
+#define CSR_DMW0_VSEG		_ULCAST_(0x8)
+#define CSR_DMW0_BASE		(CSR_DMW0_VSEG << DMW_PABITS)
+#define CSR_DMW0_INIT		(CSR_DMW0_BASE | CSR_DMW0_PLV0)
+
+#define CSR_DMW1_PLV0		_ULCAST_(1 << 0)
+#define CSR_DMW1_MAT		_ULCAST_(1 << 4)
+#define CSR_DMW1_VSEG		_ULCAST_(0xa)
+#define CSR_DMW1_BASE		(CSR_DMW1_VSEG << DMW_PABITS)
+#define CSR_DMW1_INIT		(CSR_DMW1_BASE | CSR_DMW1_MAT | CSR_DMW1_PLV0)
+#endif
 
 /* Performance Counter registers */
 #define LOONGARCH_CSR_PERFCTRL0		0x200	/* 32 perf event 0 config */
@@ -1174,7 +1300,7 @@ static inline void iocsr_writeq(u64 val, u32 reg)
 #define IOCSR_EXTIOI_VECTOR_NUM			256
 
 #ifndef __ASSEMBLY__
-
+#ifdef CONFIG_64BIT
 static inline u64 drdtime(void)
 {
 	int rID = 0;
@@ -1187,6 +1313,26 @@ static inline u64 drdtime(void)
 		);
 	return val;
 }
+#endif
+
+#ifdef CONFIG_32BIT
+static inline u64 drdtime(void)
+{
+        u32 val_l = 0;
+        u32 val_h = 0;
+        u64 ullTimeVal = 0;
+
+        __asm__ __volatile__(
+                "rdcntvl.w %0 \n\t"
+                "rdcntvh.w %1 \n\t"
+                :"=r"(val_l),"=r"(val_h)
+                :
+                );
+        ullTimeVal = (val_h & -1ULL) << 32 | val_l;
+
+        return ullTimeVal;
+}
+#endif
 
 static inline unsigned int get_csr_cpuid(void)
 {
@@ -1202,7 +1348,7 @@ static inline void csr_any_send(unsigned int addr, unsigned int data,
 	val |= (node << IOCSR_ANY_SEND_NODE_SHIFT);
 	val |= (data_mask << IOCSR_ANY_SEND_MASK_SHIFT);
 	val |= ((uint64_t)data << IOCSR_ANY_SEND_BUF_SHIFT);
-	__iocsrwr_d(val, LOONGARCH_IOCSR_ANY_SEND);
+	__iocsrwr_w(val, LOONGARCH_IOCSR_ANY_SEND);
 }
 
 static inline unsigned int read_csr_excode(void)
@@ -1227,12 +1373,7 @@ static inline void write_csr_pagesize(unsigned int size)
 
 #define read_csr_asid()			__csrrd(LOONGARCH_CSR_ASID)
 #define write_csr_asid(val)		__csrwr(val, LOONGARCH_CSR_ASID)
-#define read_csr_entryhi()		__dcsrrd(LOONGARCH_CSR_TLBEHI)
-#define write_csr_entryhi(val)		__dcsrwr(val, LOONGARCH_CSR_TLBEHI)
-#define read_csr_entrylo0()		__dcsrrd(LOONGARCH_CSR_TLBELO0)
-#define write_csr_entrylo0(val)		__dcsrwr(val, LOONGARCH_CSR_TLBELO0)
-#define read_csr_entrylo1()		__dcsrrd(LOONGARCH_CSR_TLBELO1)
-#define write_csr_entrylo1(val)		__dcsrwr(val, LOONGARCH_CSR_TLBELO1)
+
 #define read_csr_ecfg()			__csrrd(LOONGARCH_CSR_ECFG)
 #define write_csr_ecfg(val)		__csrwr(val, LOONGARCH_CSR_ECFG)
 #define read_csr_estat()		__csrrd(LOONGARCH_CSR_ESTAT)
@@ -1242,13 +1383,20 @@ static inline void write_csr_pagesize(unsigned int size)
 #define read_csr_euen()			__csrrd(LOONGARCH_CSR_EUEN)
 #define write_csr_euen(val)		__csrwr(val, LOONGARCH_CSR_EUEN)
 #define read_csr_cpuid()		__csrrd(LOONGARCH_CSR_CPUID)
-#define read_csr_prcfg1()		__dcsrrd(LOONGARCH_CSR_PRCFG1)
-#define write_csr_prcfg1(val)		__dcsrwr(val, LOONGARCH_CSR_PRCFG1)
-#define read_csr_prcfg2()		__dcsrrd(LOONGARCH_CSR_PRCFG2)
-#define write_csr_prcfg2(val)		__dcsrwr(val, LOONGARCH_CSR_PRCFG2)
-#define read_csr_prcfg3()		__dcsrrd(LOONGARCH_CSR_PRCFG3)
-#define write_csr_prcfg3(val)		__dcsrwr(val, LOONGARCH_CSR_PRCFG3)
-#define read_csr_stlbpgsize()		__dcsrrd(LOONGARCH_CSR_STLBPGSIZE)
+
+#if defined(CONFIG_64BIT)
+#define read_csr_prcfg1()               __dcsrrd(LOONGARCH_CSR_PRCFG1)
+#define write_csr_prcfg1(val)           __dcsrwr(val, LOONGARCH_CSR_PRCFG1)
+#define read_csr_prcfg2()               __dcsrrd(LOONGARCH_CSR_PRCFG2)
+#define write_csr_prcfg2(val)           __dcsrwr(val, LOONGARCH_CSR_PRCFG2)
+#define read_csr_prcfg3()               __dcsrrd(LOONGARCH_CSR_PRCFG3)
+#define write_csr_prcfg3(val)           __dcsrwr(val, LOONGARCH_CSR_PRCFG3)
+#define read_csr_stlbpgsize()           __dcsrrd(LOONGARCH_CSR_STLBPGSIZE)
+#define read_csr_entrylo0()		__dcsrrd(LOONGARCH_CSR_TLBELO0)
+#define read_csr_entrylo1()		__dcsrrd(LOONGARCH_CSR_TLBELO1)
+#define write_csr_entryhi(val)		__dcsrwr(val, LOONGARCH_CSR_TLBEHI)
+#define write_csr_entrylo0(val)         __dcsrwr(val, LOONGARCH_CSR_TLBELO0)
+#define write_csr_entrylo1(val)         __dcsrwr(val, LOONGARCH_CSR_TLBELO1)
 #define write_csr_stlbpgsize(val)	__dcsrwr(val, LOONGARCH_CSR_STLBPGSIZE)
 #define read_csr_rvacfg()		__dcsrrd(LOONGARCH_CSR_RVACFG)
 #define write_csr_rvacfg(val)		__dcsrwr(val, LOONGARCH_CSR_RVACFG)
@@ -1273,6 +1421,46 @@ static inline void write_csr_pagesize(unsigned int size)
 #define write_csr_perfcntr2(val)	__dcsrwr(val, LOONGARCH_CSR_PERFCNTR2)
 #define write_csr_perfctrl3(val)	__dcsrwr(val, LOONGARCH_CSR_PERFCTRL3)
 #define write_csr_perfcntr3(val)	__dcsrwr(val, LOONGARCH_CSR_PERFCNTR3)
+
+#elif defined(CONFIG_32BIT)
+#define read_csr_prcfg1()               __csrrd(LOONGARCH_CSR_PRCFG1)
+#define write_csr_prcfg1(val)           __csrwr(val, LOONGARCH_CSR_PRCFG1)
+#define read_csr_prcfg2()               __csrrd(LOONGARCH_CSR_PRCFG2)
+#define write_csr_prcfg2(val)           __csrwr(val, LOONGARCH_CSR_PRCFG2)
+#define read_csr_prcfg3()               __csrrd(LOONGARCH_CSR_PRCFG3)
+#define write_csr_prcfg3(val)           __csrwr(val, LOONGARCH_CSR_PRCFG3)
+#define read_csr_stlbpgsize()           __csrrd(LOONGARCH_CSR_STLBPGSIZE)
+#define read_csr_entrylo0()		__csrrd(LOONGARCH_CSR_TLBELO0)
+#define read_csr_entrylo1()		__csrrd(LOONGARCH_CSR_TLBELO1)
+#define read_csr_entryhi()		__csrrd(LOONGARCH_CSR_TLBEHI)
+#define write_csr_entryhi(val)		__csrwr(val, LOONGARCH_CSR_TLBEHI)
+#define write_csr_entrylo0(val)         __csrwr(val, LOONGARCH_CSR_TLBELO0)
+#define write_csr_entrylo1(val)         __csrwr(val, LOONGARCH_CSR_TLBELO1)
+#define write_csr_stlbpgsize(val)	__csrwr(val, LOONGARCH_CSR_STLBPGSIZE)
+#define read_csr_rvacfg()		__csrrd(LOONGARCH_CSR_RVACFG)
+#define write_csr_rvacfg(val)		__csrwr(val, LOONGARCH_CSR_RVACFG)
+#define write_csr_tintclear(val)	__csrwr(val, LOONGARCH_CSR_TINTCLR)
+#define read_csr_impctl1()		__csrrd(LOONGARCH_CSR_IMPCTL1)
+#define write_csr_impctl1(val)		__csrwr(val, LOONGARCH_CSR_IMPCTL1)
+#define write_csr_impctl2(val)		__csrwr(val, LOONGARCH_CSR_IMPCTL2)
+
+#define read_csr_perfctrl0()		__csrrd(LOONGARCH_CSR_PERFCTRL0)
+#define read_csr_perfcntr0()		__csrrd(LOONGARCH_CSR_PERFCNTR0)
+#define read_csr_perfctrl1()		__csrrd(LOONGARCH_CSR_PERFCTRL1)
+#define read_csr_perfcntr1()		__csrrd(LOONGARCH_CSR_PERFCNTR1)
+#define read_csr_perfctrl2()		__csrrd(LOONGARCH_CSR_PERFCTRL2)
+#define read_csr_perfcntr2()		__csrrd(LOONGARCH_CSR_PERFCNTR2)
+#define read_csr_perfctrl3()		__csrrd(LOONGARCH_CSR_PERFCTRL3)
+#define read_csr_perfcntr3()		__csrrd(LOONGARCH_CSR_PERFCNTR3)
+#define write_csr_perfctrl0(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL0)
+#define write_csr_perfcntr0(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR0)
+#define write_csr_perfctrl1(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL1)
+#define write_csr_perfcntr1(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR1)
+#define write_csr_perfctrl2(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL2)
+#define write_csr_perfcntr2(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR2)
+#define write_csr_perfctrl3(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL3)
+#define write_csr_perfcntr3(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR3)
+#endif
 
 /*
  * Manipulate bits in a register.
@@ -1320,12 +1508,18 @@ change_##name(unsigned long change, unsigned long val)		\
 __BUILD_CSR_OP(euen)
 __BUILD_CSR_OP(ecfg)
 __BUILD_CSR_OP(tlbidx)
-
+#ifdef CONFIG_64BIT
 #define set_csr_estat(val)	\
 	__dcsrxchg(val, val, LOONGARCH_CSR_ESTAT)
 #define clear_csr_estat(val)	\
 	__dcsrxchg(~(val), val, LOONGARCH_CSR_ESTAT)
 
+#else
+#define set_csr_estat(val)      \
+        __csrxchg(val, val, LOONGARCH_CSR_ESTAT)
+#define clear_csr_estat(val)    \
+        __csrxchg(~(val), val, LOONGARCH_CSR_ESTAT)
+#endif
 #endif /* __ASSEMBLY__ */
 
 /* Generic EntryLo bit definitions */
@@ -1441,6 +1635,10 @@ __BUILD_CSR_OP(tlbidx)
 #define PL_256M		28
 
 /* ExStatus.ExcCode */
+#ifdef CONFIG_32BIT
+#define EXCCODE_GENERIC		32
+#endif
+
 #define EXCCODE_RSV		0	/* Reserved */
 #define EXCCODE_TLBL		1	/* TLB miss on a load */
 #define EXCCODE_TLBS		2	/* TLB miss on a store */

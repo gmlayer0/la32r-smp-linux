@@ -57,6 +57,11 @@
 /*
  * Stack alignment
  */
+#if (_LOONGARCH_SIM == _LOONGARCH_SIM_ABILP32)
+#define ALSZ    7
+#define ALMASK  ~7
+#endif
+
 #if (_LOONGARCH_SIM == _LOONGARCH_SIM_ABILP64)
 #define ALSZ	15
 #define ALMASK	~15
@@ -79,6 +84,15 @@
  * Use the following macros in assemblercode to load/store registers,
  * pointers etc.
  */
+#if (_LOONGARCH_SIM == _LOONGARCH_SIM_ABILP32)
+#define REG_S           st.w
+#define REG_L           ld.w
+#define REG_SUBU        sub.w
+#define REG_ADDU        add.w
+#define REG_PTR_S       st.w
+#define REG_PTR_L       ld.w
+#endif
+
 #if (_LOONGARCH_SIM == _LOONGARCH_SIM_ABILP64)
 #define REG_S		st.d
 #define REG_L		ld.d
@@ -207,6 +221,15 @@
 #define PTR		.dword
 #define PTRSIZE		8
 #define PTRLOG		3
+#endif
+#ifdef CONFIG_32BIT
+#define LONG_LPTR       ld.w
+#define LONG_SPTR       st.w
+#endif
+
+#ifdef CONFIG_64BIT
+#define LONG_LPTR       ldptr.d
+#define LONG_SPTR       stptr.d
 #endif
 
 #endif /* __ASM_ASM_H */

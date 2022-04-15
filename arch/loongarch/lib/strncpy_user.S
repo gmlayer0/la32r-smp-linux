@@ -25,11 +25,11 @@ SYM_FUNC_START(__strncpy_from_user)
 
 1:	ld.b	t0, a1, 0
 	st.b	t0, a0, 0
-	addi.d	a0, a0, 1
-	addi.d	a1, a1, 1
+	INT_ADDIU	a0, a0, 1
+	INT_ADDIU	a1, a1, 1
 	beqz	t0, 2f
 
-	addi.d	a3, a3, 1
+	INT_ADDIU	a3, a3, 1
 	blt	a3, a2, 1b
 
 	/*

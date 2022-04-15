@@ -14,6 +14,7 @@ extern u64 const_clock_freq;
 
 extern void sync_counter(void);
 
+#ifdef CONFIG_64BIT
 static inline unsigned int calc_const_freq(void)
 {
 	unsigned int res;
@@ -34,6 +35,14 @@ static inline unsigned int calc_const_freq(void)
 	else
 		return (base_freq * cfm / cfd);
 }
+#endif
+
+#ifdef CONFIG_32BIT
+static inline unsigned int calc_const_freq(void)
+{
+	return 200000000;
+}
+#endif
 
 /*
  * Initialize the calling CPU's timer interrupt as clockevent device

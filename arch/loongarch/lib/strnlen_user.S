@@ -22,8 +22,8 @@ SYM_FUNC_START(__strnlen_user)
 	move	a2, zero
 
 1:	ld.b	t0, a0, 0
-	addi.d	a0, a0, 1
-	addi.d	a2, a2, 1
+	INT_ADDIU	a0, a0, 1
+	INT_ADDIU	a2, a2, 1
 	beqz	t0, 2f
 
 	bge	a1, a2, 1b

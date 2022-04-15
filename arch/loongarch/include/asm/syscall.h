@@ -68,7 +68,13 @@ static inline void syscall_get_arguments(struct task_struct *task,
 
 static inline int syscall_get_arch(struct task_struct *task)
 {
+#ifdef CONFIG_32BIT
+	return AUDIT_ARCH_LOONGARCH32;
+#endif
+
+#ifdef CONFIG_64BIT
 	return AUDIT_ARCH_LOONGARCH64;
+#endif
 }
 
 #endif	/* __ASM_LOONGARCH_SYSCALL_H */

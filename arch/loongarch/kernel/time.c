@@ -17,11 +17,10 @@
 #include <asm/loongarchregs.h>
 #include <asm/time.h>
 
-u64 cpu_clock_freq;
-EXPORT_SYMBOL(cpu_clock_freq);
 u64 const_clock_freq;
 EXPORT_SYMBOL(const_clock_freq);
-
+u64 cpu_clock_freq;
+EXPORT_SYMBOL(cpu_clock_freq);
 static DEFINE_SPINLOCK(state_lock);
 static DEFINE_PER_CPU(struct clock_event_device, constant_clockevent_device);
 
@@ -65,12 +64,14 @@ static int constant_set_state_oneshot_stopped(struct clock_event_device *evt)
 
 static int constant_set_state_periodic(struct clock_event_device *evt)
 {
-	unsigned long period;
+	u64 period;
 	unsigned long timer_config;
 
 	spin_lock(&state_lock);
 
-	period = const_clock_freq / HZ;
+	period = const_clock_freq;
+	do_div(period, HZ);
+
 	timer_config = period & CSR_TCFG_VAL;
 	timer_config |= (CSR_TCFG_PERIOD | CSR_TCFG_EN);
 	csr_writeq(timer_config, LOONGARCH_CSR_TCFG);
@@ -98,7 +99,7 @@ static int constant_timer_next_event(unsigned long delta, struct clock_event_dev
 
 static unsigned long __init get_loops_per_jiffy(void)
 {
-	unsigned long lpj = (unsigned long)const_clock_freq;
+	u64 lpj = const_clock_freq;
 
 	do_div(lpj, HZ);
 
@@ -128,30 +129,20 @@ unsigned long calibrate_delay_is_known(void)
 }
 #endif
 
-static long init_timeval;
-
-void sync_counter(void)
-{
-	/* Ensure counter begin at 0 */
-	csr_writeq(-init_timeval, LOONGARCH_CSR_CNTC);
-}
-
 int constant_clockevent_init(void)
 {
 	unsigned int irq;
 	unsigned int cpu = smp_processor_id();
 	unsigned long min_delta = 0x600;
-	unsigned long max_delta = (1UL << 48) - 1;
+	unsigned long max_delta = (1ULL << 31) - 1;
 	struct clock_event_device *cd;
 	static int timer_irq_installed = 0;
 
 	irq = LOONGSON_TIMER_IRQ;
 
 	cd = &per_cpu(constant_clockevent_device, cpu);
-
 	cd->name = "Constant";
-	cd->features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_PERCPU;
-
+	cd->features = CLOCK_EVT_FEAT_ONESHOT;
 	cd->irq = irq;
 	cd->rating = 320;
 	cd->cpumask = cpumask_of(cpu);
@@ -169,11 +160,10 @@ int constant_clockevent_init(void)
 
 	timer_irq_installed = 1;
 
-	sync_counter();
-
 	if (request_irq(irq, constant_timer_interrupt, IRQF_PERCPU | IRQF_TIMER, "timer", NULL))
 		pr_err("Failed to request irq %d (timer)\n", irq);
 
+	set_csr_ecfg(0x800);
 	lpj_fine = get_loops_per_jiffy();
 	pr_info("Constant clock event device register\n");
 
@@ -187,7 +177,7 @@ static u64 read_const_counter(struct clocksource *clk)
 
 static struct clocksource clocksource_const = {
 	.name = "Constant",
-	.rating = 400,
+	.rating = 320,
 	.read = read_const_counter,
 	.mask = CLOCKSOURCE_MASK(64),
 	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
@@ -195,28 +185,9 @@ static struct clocksource clocksource_const = {
 	.shift = 10,
 };
 
-unsigned long long notrace sched_clock(void)
+u64 native_sched_clock(void)
 {
-	/* 64-bit arithmetic can overflow, so use 128-bit. */
-	u64 t1, t2, t3;
-	unsigned long long rv;
-	u64 mult = clocksource_const.mult;
-	u64 shift = clocksource_const.shift;
-	u64 cnt = read_const_counter(NULL);
-
-	__asm__ (
-		"nor		%[t1], $r0, %[shift]	\n\t"
-		"mulh.du	%[t2], %[cnt], %[mult]	\n\t"
-		"mul.d		%[t3], %[cnt], %[mult]	\n\t"
-		"slli.d		%[t2], %[t2], 1		\n\t"
-		"srl.d		%[rv], %[t3], %[shift]	\n\t"
-		"sll.d		%[t1], %[t2], %[t1]	\n\t"
-		"or		%[rv], %[t1], %[rv]	\n\t"
-		: [rv] "=&r" (rv), [t1] "=&r" (t1), [t2] "=&r" (t2), [t3] "=&r" (t3)
-		: [cnt] "r" (cnt), [mult] "r" (mult), [shift] "r" (shift)
-		: );
-
-	return rv;
+	return read_const_counter(NULL);
 }
 
 int __init constant_clocksource_init(void)
@@ -231,6 +202,8 @@ int __init constant_clocksource_init(void)
 
 	res = clocksource_register_hz(&clocksource_const, freq);
 
+	sched_clock_register(native_sched_clock, 64, freq);
+
 	pr_info("Constant clock source device register\n");
 
 	return res;
@@ -242,8 +215,6 @@ void __init time_init(void)
 		const_clock_freq = cpu_clock_freq;
 	else
 		const_clock_freq = calc_const_freq();
-
-	init_timeval = drdtime() - csr_readq(LOONGARCH_CSR_CNTC);
 
 	constant_clockevent_init();
 	constant_clocksource_init();

@@ -58,7 +58,7 @@ extern asmlinkage void handle_lsx(void);
 extern asmlinkage void handle_lasx(void);
 extern asmlinkage void handle_reserved(void);
 extern asmlinkage void handle_watch(void);
-
+extern asmlinkage void except_vec_vi_handler(void);
 extern void *vi_table[];
 static vi_handler_t ip_handlers[EXCCODE_INT_NUM];
 
@@ -200,9 +200,6 @@ static void __show_regs(const struct pt_regs *regs)
 
 	if (exccode >= EXCCODE_TLBL && exccode <= EXCCODE_ALE)
 		printk("BadVA : %0*lx\n", field, regs->csr_badvaddr);
-
-	printk("PrId  : %08x (%s)\n", read_cpucfg(LOONGARCH_CPUCFG0),
-	       cpu_family_string());
 }
 
 void show_regs(struct pt_regs *regs)
@@ -601,9 +598,8 @@ extern void cache_error_setup(void);
 
 static void configure_exception_vector(void)
 {
-	csr_writeq(eentry, LOONGARCH_CSR_EENTRY);
-	csr_writeq(eentry, LOONGARCH_CSR_MERRENTRY);
-	csr_writeq(tlbrentry, LOONGARCH_CSR_TLBRENTRY);
+	csr_writel(eentry + 0x4000, LOONGARCH_CSR_EENTRY);
+	csr_writel( (tlbrentry & 0x0fffffff), LOONGARCH_CSR_TLBRENTRY);
 }
 
 void __init boot_cpu_trap_init(void)
@@ -613,6 +609,7 @@ void __init boot_cpu_trap_init(void)
 	memblock_set_bottom_up(true);
 	eentry = (unsigned long)memblock_alloc(size, 1 << fls(size));
 	tlbrentry = (unsigned long)memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+	printk("eentry = 0x%lx,tlbrentry = 0x%lx", eentry, tlbrentry);
 	memblock_set_bottom_up(false);
 
 	setup_vint_size(vec_size);
@@ -691,6 +688,8 @@ void __init trap_init(void)
 		vec_start = vi_table[i - EXCCODE_INT_START];
 		set_handler(i * vec_size, vec_start, vec_size);
 	}
+
+	set_handler(EXCCODE_GENERIC * vec_size , except_vec_vi_handler, vec_size);
 
 	set_handler(EXCCODE_TLBL * vec_size, handle_tlb_load, vec_size);
 	set_handler(EXCCODE_TLBS * vec_size, handle_tlb_store, vec_size);

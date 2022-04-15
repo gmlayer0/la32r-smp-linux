@@ -23,8 +23,8 @@ SYM_FUNC_START(__clear_user)
 	beqz	a1, 2f
 
 1:	st.b	zero, a0, 0
-	addi.d	a0, a0, 1
-	addi.d	a1, a1, -1
+	LONG_ADDIU	a0, a0, 1
+	LONG_ADDIU	a1, a1, -1
 	bgt	a1, zero, 1b
 
 2:	move	v0, a1

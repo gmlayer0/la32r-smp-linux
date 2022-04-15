@@ -9,7 +9,13 @@
 #include <linux/mmzone.h>
 #include <asm/io.h>
 #include <asm/pgtable-bits.h>
+#ifdef CONFIG_64BIT
 #include <asm/pgtable-64.h>
+#endif
+#ifdef CONFIG_32BIT
+#include <asm/pgtable-32.h>
+#endif
+
 
 struct mm_struct;
 struct vm_area_struct;

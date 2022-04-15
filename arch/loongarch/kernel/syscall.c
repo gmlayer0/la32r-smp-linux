@@ -30,6 +30,7 @@
 
 #define __str2(x) #x
 #define __str(x) __str2(x)
+
 #define save_static(symbol)                            \
 __asm__(                                               \
        ".text\n\t"                                     \
@@ -37,15 +38,15 @@ __asm__(                                               \
        ".align\t2\n\t"                                 \
        ".type\t__" #symbol ", @function\n\t"           \
 	"__"#symbol":\n\t"                             \
-       "st.d\t$r23,$r3,"__str(PT_R23)"\n\t"            \
-       "st.d\t$r24,$r3,"__str(PT_R24)"\n\t"            \
-       "st.d\t$r25,$r3,"__str(PT_R25)"\n\t"            \
-       "st.d\t$r26,$r3,"__str(PT_R26)"\n\t"            \
-       "st.d\t$r27,$r3,"__str(PT_R27)"\n\t"            \
-       "st.d\t$r28,$r3,"__str(PT_R28)"\n\t"            \
-       "st.d\t$r29,$r3,"__str(PT_R29)"\n\t"            \
-       "st.d\t$r30,$r3,"__str(PT_R30)"\n\t"            \
-       "st.d\t$r31,$r3,"__str(PT_R31)"\n\t"            \
+       __str(LONG_S)"\t$r23,$r3,"__str(PT_R23)"\n\t"            \
+       __str(LONG_S)"\t$r24,$r3,"__str(PT_R24)"\n\t"            \
+       __str(LONG_S)"\t$r25,$r3,"__str(PT_R25)"\n\t"            \
+       __str(LONG_S)"\t$r26,$r3,"__str(PT_R26)"\n\t"            \
+       __str(LONG_S)"\t$r27,$r3,"__str(PT_R27)"\n\t"            \
+       __str(LONG_S)"\t$r28,$r3,"__str(PT_R28)"\n\t"            \
+       __str(LONG_S)"\t$r29,$r3,"__str(PT_R29)"\n\t"            \
+       __str(LONG_S)"\t$r30,$r3,"__str(PT_R30)"\n\t"            \
+       __str(LONG_S)"\t$r31,$r3,"__str(PT_R31)"\n\t"            \
        "b\t" #symbol "\n\t"                            \
        ".size\t__" #symbol",. - __" #symbol)
 

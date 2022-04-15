@@ -25,6 +25,8 @@ typedef struct {
 #define local_inc(l)	atomic_long_inc(&(l)->a)
 #define local_dec(l)	atomic_long_dec(&(l)->a)
 
+#if defined(CONFIG_64BIT)
+
 /*
  * Same as above, but return the result value
  */
@@ -56,6 +58,48 @@ static inline long local_sub_return(long i, local_t *l)
 
 	return result;
 }
+#elif defined(CONFIG_32BIT)
+
+/*
+ * Same as above, but return the result value
+ */
+static __inline__ long local_add_return(long i, local_t * l)
+{
+        unsigned long temp;
+        unsigned long result;
+
+        __asm__ __volatile__(
+        "1:"    __LL    "%1, %2         # local_add_return      \n"
+        "       add.w   %0, %1, %3                              \n"
+                __SC    "%0, %2                                 \n"
+        "       beq     %0, $r0, 1b                             \n"
+        "       add.w   %0, %1, %3                              \n"
+        : "=&r" (result), "=&r" (temp), "=m" (l->a.counter)
+        : "r" (i), "m" (l->a.counter)
+        : "memory");
+
+        return result;
+}
+
+static __inline__ long local_sub_return(long i, local_t * l)
+{
+        unsigned long result;
+        unsigned long temp;
+
+        __asm__ __volatile__(
+        "1:"    __LL    "%1, %2         # local_sub_return      \n"
+        "       sub.w   %0, %1, %3                              \n"
+                __SC    "%0, %2                                 \n"
+        "       beq     %0, $r0, 1b                             \n"
+        "       sub.w   %0, %1, %3                              \n"
+        : "=&r" (result), "=&r" (temp), "=m" (l->a.counter)
+        : "r" (i), "m" (l->a.counter)
+        : "memory");
+
+        return result;
+}
+#endif
+
 
 #define local_cmpxchg(l, o, n) \
 	((long)cmpxchg_local(&((l)->a.counter), (o), (n)))

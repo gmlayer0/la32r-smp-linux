@@ -37,7 +37,7 @@ config LOONGARCH
 	select ARCH_INLINE_SPIN_UNLOCK_IRQRESTORE if !PREEMPTION
 	select ARCH_SUPPORTS_ACPI
 	select ARCH_SUPPORTS_HUGETLBFS
-	select ARCH_SUPPORTS_NUMA_BALANCING
+	#select ARCH_SUPPORTS_NUMA_BALANCING
 	select ARCH_USE_BUILTIN_BSWAP
 	select ARCH_USE_CMPXCHG_LOCKREF if 64BIT
 	select ARCH_USE_QUEUED_RWLOCKS
@@ -66,7 +66,7 @@ config LOONGARCH
 	select HAVE_ARCH_MMAP_RND_BITS if MMU
 	select HAVE_ARCH_SECCOMP_FILTER
 	select HAVE_ARCH_TRACEHOOK
-	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
+	select HAVE_ARCH_TRANSPARENT_HUGEPAGE if CPU_SUPPORTS_HUGEPAGES && 64BIT
 	select HAVE_ASM_MODVERSIONS
 	select HAVE_CONTEXT_TRACKING
 	select HAVE_COPY_THREAD_TLS
@@ -102,7 +102,7 @@ menu "Machine selection"
 
 choice
 	prompt "System type"
-	default MACH_LOONGSON64
+	default MACH_LOONGSON32
 
 config MACH_LOONGSON64
 	bool "Loongson 64-bit family of machines"
@@ -125,9 +125,29 @@ config MACH_LOONGSON64
 	  machines are based on new Loongson-3 processors (Old Loongson is MIPS
 	  compatible, while new Loongson is based on LoongArch ISA).
 
+config MACH_LOONGSON32
+	bool "Loongson 32-bit family of machines"
+	select IRQ_LOONGARCH_CPU
+	select NR_CPUS_DEFAULT_1
+#	select SYS_SUPPORTS_HIGHMEM
+	select SYS_HAS_CPU_LOONGSON32
+	select SYS_SUPPORTS_32BIT_KERNEL
+	select ZONE_DMA32
+#	select PCI
+#	select HAVE_PCI
+	help
+	  This enables the support of Loongson 32-bit family of machines. These
+	  machines are based on new Loongson-3 processors.
 endchoice
 
+source "arch/loongarch/loongson32/Kconfig"
+
 endmenu
+
+if 32BIT
+config SYS_HAS_EARLY_PRINTK
+        bool
+endif
 
 config GENERIC_HWEIGHT
 	bool
@@ -144,6 +164,7 @@ config SCHED_OMIT_FRAME_POINTER
 config SYS_SUPPORTS_HOTPLUG_CPU
 	bool
 
+
 config GENERIC_CSUM
 	def_bool y
 
@@ -152,10 +173,9 @@ config L1_CACHE_SHIFT
 	default "6"
 
 menu "CPU selection"
-
 choice
 	prompt "CPU type"
-	default CPU_LOONGSON64
+	default CPU_LOONGSON32
 
 config CPU_LOONGSON64
 	bool "Loongson 64-bit CPU"
@@ -169,19 +189,34 @@ config CPU_LOONGSON64
 	  The Loongson 64-bit processor implements the LoongArch64 (the 64-bit
 	  version of LoongArch) instruction set.
 
-endchoice
+config CPU_LOONGSON32
+	bool "Loongson 32-bit CPU"
+	depends on SYS_HAS_CPU_LOONGSON32
+	#select ARCH_HAS_PHYS_TO_DMA
+	select CPU_SUPPORTS_32BIT_KERNEL
+	#select SWIOTLB
+	select ARCH_SUPPORTS_ATOMIC_RMW
+	help
+	  The Loongson 32-bit processor implements the LoongArch32 (the 32-bit
+	  version of LoongArch) instruction set.
 
+endchoice
 config SYS_HAS_CPU_LOONGSON64
 	bool
 
-endmenu
+config SYS_HAS_CPU_LOONGSON32
+	bool
 
+endmenu
 config SYS_SUPPORTS_32BIT_KERNEL
 	bool
+
 config SYS_SUPPORTS_64BIT_KERNEL
 	bool
+
 config CPU_SUPPORTS_32BIT_KERNEL
 	bool
+
 config CPU_SUPPORTS_64BIT_KERNEL
 	bool
 
@@ -208,11 +243,10 @@ config 64BIT
 	  Select this option if you want to build a 64-bit kernel.
 
 endchoice
-
 choice
 	prompt "Kernel page size"
-	default PAGE_SIZE_16KB
-
+	default PAGE_SIZE_16KB if MACH_LOONGSON64
+	default PAGE_SIZE_4KB if MACH_LOONGSON32
 config PAGE_SIZE_4KB
 	bool "4kB"
 	help
@@ -446,11 +480,25 @@ config SECCOMP
 	  enabled via /proc/<pid>/seccomp, it cannot be disabled
 	  and the task is only allowed to execute a few safe syscalls
 	  defined by each seccomp mode.
-
 	  If unsure, say Y. Only embedded should say N here.
+#if 32bit
+config BUILTIN_DTB
+        bool "Enable builtin dtb in kernel"
+        depends on MACH_LOONGSON32
+        default y
+        help
+          Enable builtin dtb in kernel, If the firmware does not provide
+          an available DTB, this will be used.
+
+config BUILTIN_DTB_NAME
+        string "Built in DTB"
+        depends on BUILTIN_DTB
+        default "loongson32_ls"
+        help
+          Set the name of the DTB to embed in the vmlinux binary
+#if 32bit end
 
 endmenu
-
 config ARCH_ENABLE_MEMORY_HOTPLUG
 	def_bool y
 	depends on LOONGARCH
@@ -475,6 +523,7 @@ config PGTABLE_LEVELS
 	int
 	default 4 if PAGE_SIZE_4KB && VA_BITS_48
 	default 2 if PAGE_SIZE_64KB && VA_BITS_40
+	default 2 if PAGE_SIZE_4KB
 	default 3
 
 config MMU

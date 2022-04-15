@@ -3,8 +3,8 @@
 # Makefile for the Linux/LoongArch-specific parts of the memory manager.
 #
 
-obj-y				+= init.o cache.o tlb.o tlbex.o extable.o \
-				   fault.o ioremap.o maccess.o mmap.o pgtable.o page.o
+obj-y				+= init.o cache.o tlb.o extable.o \
+				   fault.o ioremap.o mmap.o pgtable.o page.o
 
-obj-$(CONFIG_64BIT)		+= pgtable-64.o
+obj-$(CONFIG_32BIT)		+= pgtable-32.o tlbex-32.o
 obj-$(CONFIG_HUGETLB_PAGE)	+= hugetlbpage.o

@@ -715,7 +715,7 @@ int __init early_serial_setup(struct uart_port *port)
 	p->membase      = port->membase;
 	p->irq          = port->irq;
 	p->irqflags     = port->irqflags;
-	p->uartclk      = port->uartclk;
+	p->uartclk      = 33000000;
 	p->fifosize     = port->fifosize;
 	p->regshift     = port->regshift;
 	p->iotype       = port->iotype;

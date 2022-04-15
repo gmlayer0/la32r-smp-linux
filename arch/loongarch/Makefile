@@ -2,17 +2,24 @@
 #
 # Author: Huacai Chen <chenhuacai@loongson.cn>
 # Copyright (C) 2020-2021 Loongson Technology Corporation Limited
-
+#
 KBUILD_DEFCONFIG := loongson3_defconfig
-
+#ifdef CONFIG_32BIT
+KBUILD_DTBS      := dtbs
+#endif
 #
 # Select the object file format to substitute into the linker script.
 #
+32bit-tool-archpref     = loongarch32
 64bit-tool-archpref	= loongarch64
 32bit-bfd		= elf32-loongarch
 64bit-bfd		= elf64-loongarch
 32bit-emul		= elf32loongarch
 64bit-emul		= elf64loongarch
+ifdef CONFIG_32BIT
+tool-archpref           =$(32bit-tool-archpref)
+UTS_MACHINE             := loongarch32
+endif
 
 ifdef CONFIG_64BIT
 tool-archpref		= $(64bit-tool-archpref)
@@ -24,8 +31,14 @@ ifneq ($(SUBARCH),$(ARCH))
     CROSS_COMPILE := $(call cc-cross-prefix, $(tool-archpref)-linux-  $(tool-archpref)-linux-gnu-  $(tool-archpref)-unknown-linux-gnu-)
   endif
 endif
-
 cflags-y += $(call cc-option, -mno-check-zero-division)
+ifdef CONFIG_32BIT
+ld-emul                 = $(32bit-emul)
+vmlinux-32              = vmlinux.32
+
+cflags-y                += -mabi=ilp32
+endif
+
 
 ifdef CONFIG_64BIT
 ld-emul			= $(64bit-emul)
@@ -47,9 +60,17 @@ KBUILD_AFLAGS_KERNEL		+= -Wa,-mla-global-with-pcrel
 KBUILD_CFLAGS_KERNEL		+= -Wa,-mla-global-with-pcrel
 KBUILD_AFLAGS_MODULE		+= -Wa,-mla-global-with-abs
 KBUILD_CFLAGS_MODULE		+= -fno-plt -Wa,-mla-global-with-abs,-mla-local-with-abs
-
+#ifdef CONFIG_32BIT
+KBUILD_CFLAGS_MODULE            += -fno-optimize-sibling-calls
+ifneq ($(call as-option,-Wa$(comma)-msoft-float,),)
+        cflags-y                += -DGAS_HAS_SET_HARDFLOAT -Wa,-msoft-float
+endif
+toolchain-virt                          := $(call cc-option-yn,$(loongarch-cflags) -mvirt)
+cflags-$(toolchain-virt)                += -DTOOLCHAIN_SUPPORTS_VIRT
+toolchain-crc                           := $(call cc-option-yn,$(loongarch-cflags) -Wa$(comma)-mcrc)
+cflags-$(toolchain-crc)                 += -DTOOLCHAIN_SUPPORTS_CRC
+#endif
 cflags-y += -ffreestanding
-
 # Some distribution-specific toolchains might pass the -fstack-check
 # option during the build, which adds a simple stack-probe at the beginning
 # of every function.  This stack probe is to ensure that there is enough
@@ -73,8 +94,10 @@ drivers-$(CONFIG_PCI)		+= arch/loongarch/pci/
 KBUILD_AFLAGS	+= $(cflags-y)
 KBUILD_CFLAGS	+= $(cflags-y)
 KBUILD_CPPFLAGS += -DVMLINUX_LOAD_ADDRESS=$(load-y)
-
 bootvars-y	= VMLINUX_LOAD_ADDRESS=$(load-y) PLATFORM="$(platform-y)"
+ifdef CONFIG_32BIT
+bootvars-y      += ADDR_BITS=32
+endif
 
 ifdef CONFIG_64BIT
 bootvars-y	+= ADDR_BITS=64
@@ -106,15 +129,15 @@ vdso_install:
 
 # boot image targets (arch/loongarch/boot/)
 boot-y := vmlinux.bin
-
-all:	$(all-y)
+all:	$(all-y) $(KBUILD_DTBS)
 
 # boot
 $(boot-y): vmlinux FORCE
 	$(Q)$(MAKE) $(build)=arch/loongarch/boot VMLINUX=vmlinux \
 		$(bootvars-y) arch/loongarch/boot/$@
-
 CLEAN_FILES += vmlinux
+# device-trees
+core-$(CONFIG_BUILTIN_DTB) += arch/loongarch/boot/dts/
 
 install:
 	$(Q)install -D -m 755 vmlinux $(INSTALL_PATH)/vmlinux-$(KERNELRELEASE)

@@ -28,6 +28,22 @@ extern u64 __ua_limit;
 
 #endif /* CONFIG_64BIT */
 
+
+#ifdef CONFIG_32BIT
+
+extern u32 __ua_limit;
+#define __UA_LIMIT      __ua_limit
+
+#define __UA_ADDR       ".word"
+#define __UA_LA         "la.abs"
+#define __UA_ADDU       "add.w"
+#define __UA_t0         "$r12"
+#define __UA_t1         "$r13"
+#define __UA_SLLI       "slli.w"
+
+#endif /* CONFIG_32BIT */
+
+
 /*
  * Is a address valid? This does a straightforward calculation rather
  * than tests.
@@ -251,8 +267,8 @@ do {									\
 	} __gu_tmp;							\
 									\
 	__asm__ __volatile__(						\
-	"1:	ld.w	%1, (%3)				\n"	\
-	"2:	ld.w	%D1, 4(%3)				\n"	\
+	"1:	ld.w	%1, %3 , 0				\n"	\
+	"2:	ld.w	%D1, %3 , 4				\n"	\
 	"3:							\n"	\
 	"	.section	.fixup,\"ax\"			\n"	\
 	"4:	li.w	%0, %4					\n"	\
@@ -310,8 +326,8 @@ do {									\
 #define __put_data_asm_ll32(insn, ptr)					\
 {									\
 	__asm__ __volatile__(						\
-	"1:	st.w	%2, (%3)	# __put_user_asm_ll32	\n"	\
-	"2:	st.w	%D2, 4(%3)				\n"	\
+	"1:	st.w	%2, %3 ,0	# __put_user_asm_ll32	\n"	\
+	"2:	st.w	%D2, %3 ,4				\n"	\
 	"3:							\n"	\
 	"	.section	.fixup,\"ax\"			\n"	\
 	"4:	li.w	%0, %4					\n"	\

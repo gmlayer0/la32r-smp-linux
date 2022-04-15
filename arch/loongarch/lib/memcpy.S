@@ -6,7 +6,7 @@
 #include <asm/asmmacro.h>
 #include <asm/export.h>
 #include <asm/regdef.h>
-
+#include <asm/asm.h>
 /*
  * void *memcpy(void *dst, const void *src, size_t n)
  *
@@ -20,9 +20,9 @@ SYM_FUNC_START(memcpy)
 
 1:	ld.b	t0, a1, 0
 	st.b	t0, a0, 0
-	addi.d	a0, a0, 1
-	addi.d	a1, a1, 1
-	addi.d	a2, a2, -1
+	LONG_ADDIU	a0, a0, 1
+	LONG_ADDIU	a1, a1, 1
+	LONG_ADDIU	a2, a2, -1
 	bgt	a2, zero, 1b
 
 2:	move	v0, a3

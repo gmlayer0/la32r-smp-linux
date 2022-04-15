@@ -23,6 +23,9 @@
 
 #include "access-helper.h"
 
+extern unsigned long unaligned_read(void *addr, void *value, unsigned long n, bool symbol);
+extern unsigned long unaligned_write(void *addr, unsigned long value, unsigned long n);
+
 static inline void write_fpr(unsigned int fd, unsigned long value)
 {
 #define WRITE_FPR(fd, value)		\
@@ -274,32 +277,32 @@ static void emulate_load_store_insn(struct pt_regs *regs, void __user *addr, uns
 	if (insn.reg2i12_format.opcode == ldd_op ||
 		insn.reg2i14_format.opcode == ldptrd_op ||
 		insn.reg3_format.opcode == ldxd_op) {
-		LoadDW(addr, value, res);
+		res = unaligned_read(addr, &value, 8, 1);
 		if (res)
 			goto fault;
 		regs->regs[insn.reg2i12_format.rd] = value;
 	} else if (insn.reg2i12_format.opcode == ldw_op ||
 		insn.reg2i14_format.opcode == ldptrw_op ||
 		insn.reg3_format.opcode == ldxw_op) {
-		LoadW(addr, value, res);
+		res = unaligned_read(addr, &value, 4, 1);
 		if (res)
 			goto fault;
 		regs->regs[insn.reg2i12_format.rd] = value;
 	} else if (insn.reg2i12_format.opcode == ldwu_op ||
 		insn.reg3_format.opcode == ldxwu_op) {
-		LoadWU(addr, value, res);
+		res = unaligned_read(addr, &value, 4, 0);
 		if (res)
 			goto fault;
 		regs->regs[insn.reg2i12_format.rd] = value;
 	} else if (insn.reg2i12_format.opcode == ldh_op ||
 		insn.reg3_format.opcode == ldxh_op) {
-		LoadHW(addr, value, res);
+		res = unaligned_read(addr, &value, 2, 1);
 		if (res)
 			goto fault;
 		regs->regs[insn.reg2i12_format.rd] = value;
 	} else if (insn.reg2i12_format.opcode == ldhu_op ||
 		insn.reg3_format.opcode == ldxhu_op) {
-		LoadHWU(addr, value, res);
+		res = unaligned_read(addr, &value, 2, 0);
 		if (res)
 			goto fault;
 		regs->regs[insn.reg2i12_format.rd] = value;
@@ -307,44 +310,44 @@ static void emulate_load_store_insn(struct pt_regs *regs, void __user *addr, uns
 		insn.reg2i14_format.opcode == stptrd_op ||
 		insn.reg3_format.opcode == stxd_op) {
 		value = regs->regs[insn.reg2i12_format.rd];
-		StoreDW(addr, value, res);
+		res = unaligned_write(addr, value, 8);
 		if (res)
 			goto fault;
 	} else if (insn.reg2i12_format.opcode == stw_op ||
 		insn.reg2i14_format.opcode == stptrw_op ||
 		insn.reg3_format.opcode == stxw_op) {
 		value = regs->regs[insn.reg2i12_format.rd];
-		StoreW(addr, value, res);
+		res = unaligned_write(addr, value, 4);
 		if (res)
 			goto fault;
 	} else if (insn.reg2i12_format.opcode == sth_op ||
 		insn.reg3_format.opcode == stxh_op) {
 		value = regs->regs[insn.reg2i12_format.rd];
-		StoreHW(addr, value, res);
+		res = unaligned_write(addr, value, 2);
 		if (res)
 			goto fault;
 	} else if (insn.reg2i12_format.opcode == fldd_op ||
 		insn.reg3_format.opcode == fldxd_op) {
-		LoadDW(addr, value, res);
+		res = unaligned_read(addr, &value, 8, 1);
 		if (res)
 			goto fault;
 		write_fpr(insn.reg2i12_format.rd, value);
 	} else if (insn.reg2i12_format.opcode == flds_op ||
 		insn.reg3_format.opcode == fldxs_op) {
-		LoadW(addr, value, res);
+		res = unaligned_read(addr, &value, 4, 1);
 		if (res)
 			goto fault;
 		write_fpr(insn.reg2i12_format.rd, value);
 	} else if (insn.reg2i12_format.opcode == fstd_op ||
 		insn.reg3_format.opcode == fstxd_op) {
 		value = read_fpr(insn.reg2i12_format.rd);
-		StoreDW(addr, value, res);
+		res = unaligned_write(addr, value, 8);
 		if (res)
 			goto fault;
 	} else if (insn.reg2i12_format.opcode == fsts_op ||
 		insn.reg3_format.opcode == fstxs_op) {
 		value = read_fpr(insn.reg2i12_format.rd);
-		StoreW(addr, value, res);
+		res = unaligned_write(addr, value, 4);
 		if (res)
 			goto fault;
 	} else

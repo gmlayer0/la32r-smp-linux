@@ -6,6 +6,7 @@
 #include <asm/asmmacro.h>
 #include <asm/export.h>
 #include <asm/regdef.h>
+#include <asm/asm.h>
 
 /*
  * void *rmemcpy(void *dst, const void *src, size_t n)
@@ -18,14 +19,14 @@ SYM_FUNC_START(rmemcpy)
 	move	a3, a0
 	beqz	a2, 2f
 
-	add.d	a0, a0, a2
-	add.d	a1, a1, a2
+	INT_ADDU	a0, a0, a2
+	INT_ADDU	a1, a1, a2
 
 1:	ld.b	t0, a1, -1
 	st.b	t0, a0, -1
-	addi.d	a0, a0, -1
-	addi.d	a1, a1, -1
-	addi.d	a2, a2, -1
+	INT_ADDIU	a0, a0, -1
+	INT_ADDIU	a1, a1, -1
+	INT_ADDIU	a2, a2, -1
 	bgt	a2, zero, 1b
 
 2:	move	v0, a3

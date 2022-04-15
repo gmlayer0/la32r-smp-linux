@@ -6,6 +6,7 @@
 #include <asm/asmmacro.h>
 #include <asm/export.h>
 #include <asm/regdef.h>
+#include <asm/asm.h>
 
 /*
  * void *memset(void *s, int c, size_t n)
@@ -19,8 +20,8 @@ SYM_FUNC_START(memset)
 	beqz	a2, 2f
 
 1:	st.b	a1, a0, 0
-	addi.d	a0, a0, 1
-	addi.d	a2, a2, -1
+	INT_ADDIU	a0, a0, 1
+	INT_ADDIU	a2, a2, -1
 	bgt	a2, zero, 1b
 
 2:	move	v0, a3

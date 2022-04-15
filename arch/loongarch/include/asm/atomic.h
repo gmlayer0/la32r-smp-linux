@@ -32,7 +32,7 @@
  * Atomically sets the value of @v to @i.
  */
 #define arch_atomic_set(v, i)	WRITE_ONCE((v)->counter, (i))
-
+#ifdef CONFIG_64BIT
 #define ATOMIC_OP(op, I, asm_op)					\
 static inline void arch_atomic_##op(int i, atomic_t *v)			\
 {									\
@@ -70,14 +70,81 @@ static inline int arch_atomic_fetch_##op##_relaxed(int i, atomic_t *v)	\
 									\
 	return result;							\
 }
+#endif
 
+#ifdef CONFIG_32BIT   /* CONFIG_32BIT */
+#define ATOMIC_OP(op, I, asm_op)                                        \
+static __inline__ void arch_atomic_##op(int i, atomic_t * v)                 \
+{                                                                       \
+        int temp ;                                              \
+        loongson_llsc_mb();                                     \
+        __asm__ __volatile__(                                   \
+        "1:     ll.w        %0, %1      #atomic_" #op "  \n"    \
+        "       " #asm_op " %0, %0, %2                   \n"    \
+        "       sc.w        %0, %1                       \n"    \
+        "       beq         %0, $r0, 1b                  \n"    \
+        :"=&r" (temp) , "+ZB"(v->counter)     \
+        :"r" (I)                                               \
+        );                                                      \
+}
+
+#define ATOMIC_OP_RETURN(op, I, asm_op)                                    \
+static __inline__ int arch_atomic_##op##_return_relaxed(int i, atomic_t * v)       \
+{                                                                             \
+        int result;                                                           \
+        int temp;                                                             \
+                                                                              \
+        loongson_llsc_mb();                                                   \
+        __asm__ __volatile__(                                                 \
+                "1:     ll.w    %1, %2          # atomic_" #op "_return \n"   \
+                "       " #asm_op " %0, %1, %3                          \n"   \
+                "       sc.w    %0, %2                                  \n"   \
+                "       beq    %0, $r0 ,1b                             \n"   \
+                "       " #asm_op " %0, %1, %3                          \n"   \
+                : "=&r" (result), "=&r" (temp),                               \
+                  "+ZB"(v->counter)                        \
+                : "r" (I));                                                  \
+        return result;                                                        \
+}
+
+#define ATOMIC_FETCH_OP(op,I, asm_op)                                     \
+static __inline__ int arch_atomic_fetch_##op##_relaxed(int i, atomic_t * v)        \
+{                                                                             \
+        int result;                                                           \
+        int temp;                                                     \
+                                                                      \
+        loongson_llsc_mb();                                           \
+        __asm__ __volatile__(                                         \
+        "1:     ll.w    %1, %2          # atomic_fetch_" #op "  \n"   \
+        "       " #asm_op " %0, %1, %3                          \n"   \
+        "       sc.w    %0, %2                                  \n"   \
+        "       beq     %0, $r0 ,1b                             \n"   \
+        "       add.w     %0, %1  ,$r0                            \n"   \
+        : "=&r" (result), "=&r" (temp),                               \
+        "+ZB" (v->counter)                          \
+        : "r" (I));                                                  \
+                                                                      \
+        return result;                                                \
+}
+#endif
+
+#ifdef CONFIG_64BIT
 #define ATOMIC_OPS(op, I, asm_op, c_op)					\
 	ATOMIC_OP(op, I, asm_op)					\
 	ATOMIC_OP_RETURN(op, I, asm_op, c_op)				\
 	ATOMIC_FETCH_OP(op, I, asm_op)
-
 ATOMIC_OPS(add, i, add, +)
 ATOMIC_OPS(sub, -i, add, +)
+#endif
+
+#ifdef CONFIG_32BIT
+#define ATOMIC_OPS(op,I ,asm_op, c_op)                                          \
+        ATOMIC_OP(op, I, asm_op)                                           \
+        ATOMIC_OP_RETURN(op, I , asm_op)                                    \
+        ATOMIC_FETCH_OP(op, I, asm_op)
+ATOMIC_OPS(add, i , add.w ,+=)
+ATOMIC_OPS(sub, -i , add.w ,+=)
+#endif
 
 #define arch_atomic_add_return_relaxed	arch_atomic_add_return_relaxed
 #define arch_atomic_sub_return_relaxed	arch_atomic_sub_return_relaxed
@@ -155,11 +222,8 @@ static inline int arch_atomic_sub_if_positive(int i, atomic_t *v)
  * @v: pointer of type atomic_t
  */
 #define arch_atomic_dec_if_positive(v)	arch_atomic_sub_if_positive(1, v)
-
 #ifdef CONFIG_64BIT
-
 #define ATOMIC64_INIT(i)    { (i) }
-
 /*
  * arch_atomic64_read - read atomic variable
  * @v: pointer of type atomic64_t
@@ -296,7 +360,5 @@ static inline long arch_atomic64_sub_if_positive(long i, atomic64_t *v)
  * @v: pointer of type atomic64_t
  */
 #define arch_atomic64_dec_if_positive(v)	arch_atomic64_sub_if_positive(1, v)
-
 #endif /* CONFIG_64BIT */
-
 #endif /* _ASM_ATOMIC_H */

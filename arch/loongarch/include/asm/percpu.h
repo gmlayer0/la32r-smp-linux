@@ -5,8 +5,8 @@
 #ifndef __ASM_PERCPU_H
 #define __ASM_PERCPU_H
 
+#ifdef CONFIG_64BIT
 #include <asm/cmpxchg.h>
-
 /* Use r21 for fast access */
 register unsigned long __my_cpu_offset __asm__("$r21");
 
@@ -191,6 +191,7 @@ do {									\
 #define this_cpu_xchg_2(pcp, val) _percpu_xchg(pcp, val)
 #define this_cpu_xchg_4(pcp, val) _percpu_xchg(pcp, val)
 #define this_cpu_xchg_8(pcp, val) _percpu_xchg(pcp, val)
+#endif
 
 #include <asm-generic/percpu.h>
 

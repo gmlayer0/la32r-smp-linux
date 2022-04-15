@@ -52,10 +52,12 @@ static inline void set_io_port_base(unsigned long base)
  * Change "struct page" to physical address.
  */
 #define page_to_phys(page)	((dma_addr_t)page_to_pfn(page) << PAGE_SHIFT)
-
+#ifdef CONFIG_64BIT
 extern void __init __iomem *early_ioremap(u64 phys_addr, unsigned long size);
+#else
+extern void __init __iomem *early_ioremap(u32 phys_addr, unsigned long size);
+#endif
 extern void __init early_iounmap(void __iomem *addr, unsigned long size);
-
 #define early_memremap early_ioremap
 #define early_memunmap early_iounmap
 
@@ -128,13 +130,14 @@ static inline void iounmap(const volatile void __iomem *addr)
 /*
  * String version of I/O memory access operations.
  */
+#ifdef CONFIG_64BIT
 extern void __memset_io(volatile void __iomem *dst, int c, size_t count);
 extern void __memcpy_toio(volatile void __iomem *to, const void *from, size_t count);
 extern void __memcpy_fromio(void *to, const volatile void __iomem *from, size_t count);
 #define memset_io(c, v, l)     __memset_io((c), (v), (l))
 #define memcpy_fromio(a, c, l) __memcpy_fromio((a), (c), (l))
 #define memcpy_toio(c, a, l)   __memcpy_toio((c), (a), (l))
-
+#endif
 #define PCI_IOBASE ((void __iomem *)PIO_OFFSET)
 
 #include <asm-generic/io.h>

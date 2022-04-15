@@ -8,7 +8,7 @@
  * Copyright (C) 1994, 95, 96, 97, 98, 99, 2000, 01, 02, 03  Ralf Baechle
  * Copyright (C) 1996 Stoned Elipot
  * Copyright (C) 1999 Silicon Graphics, Inc.
- * Copyright (C) 2000, 2001, 2002, 2007	 Maciej W. Rozycki
+ * Copyright (C) 2000, 2001, 2002, 2007         Maciej W. Rozycki
  */
 #include <linux/init.h>
 #include <linux/ioport.h>
@@ -32,9 +32,12 @@
 #include <asm/dma.h>
 #include <asm/sections.h>
 #include <asm/setup.h>
-#include <asm/smp.h>
 
-DEFINE_PER_CPU(unsigned long, kernelsp);
+#ifdef CONFIG_SMP
+#include <asm/smp.h>
+#endif
+
+unsigned long kernelsp[NR_CPUS];
 unsigned long fw_arg0, fw_arg1, fw_arg2, fw_arg3;
 struct cpuinfo_loongarch cpu_data[NR_CPUS] __read_mostly;
 
@@ -92,7 +95,6 @@ void __init detect_memory_region(phys_addr_t start, phys_addr_t sz_min, phys_add
  * Manage initrd
  */
 #ifdef CONFIG_BLK_DEV_INITRD
-
 static int __init rd_start_early(char *p)
 {
 	unsigned long start = memparse(p, &p);
@@ -318,11 +320,9 @@ static void __init arch_mem_init(char **cmdline_p)
 	memblock_set_bottom_up(false);
 	sparse_init();
 	memblock_set_bottom_up(true);
-
 	plat_swiotlb_setup();
 
 	dma_contiguous_reserve(PFN_PHYS(max_low_pfn));
-
 	memblock_dump_all();
 
 	early_memtest(PFN_PHYS(ARCH_PFN_OFFSET), PFN_PHYS(max_low_pfn));
@@ -393,12 +393,18 @@ static void __init prefill_possible_map(void)
 #else
 static inline void prefill_possible_map(void) {}
 #endif
+#ifdef CONFIG_EARLY_PRINTK
+extern void setup_early_printk(void);
+#endif
 
 void __init setup_arch(char **cmdline_p)
 {
 	cpu_probe();
-
 	early_init();
+
+#ifdef CONFIG_EARLY_PRINTK
+	setup_early_printk();
+#endif
 	bootcmdline_init(cmdline_p);
 
 	init_initrd();
@@ -409,7 +415,9 @@ void __init setup_arch(char **cmdline_p)
 	arch_mem_init(cmdline_p);
 
 	resource_init();
+#ifdef CONFIG_SMP
 	plat_smp_setup();
+#endif
 	prefill_possible_map();
 
 	cpu_cache_init();

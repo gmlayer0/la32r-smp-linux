@@ -139,7 +139,7 @@ void free_init_pages(const char *what, unsigned long begin, unsigned long end)
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
 	free_reserved_area((void *)start, (void *)end, POISON_FREE_INITMEM,
-			   "initrd");
+			"initrd");
 }
 #endif
 
@@ -179,17 +179,6 @@ void arch_refresh_nodedata(int nid, pg_data_t *pgdat)
 {
 	BUG();
 }
-#endif
-
-#ifdef CONFIG_NUMA
-int memory_add_physaddr_to_nid(u64 start)
-{
-	int nid;
-
-	nid = pa_to_nid(start);
-	return nid;
-}
-EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
 #endif
 
 #ifdef CONFIG_MEMORY_HOTREMOVE

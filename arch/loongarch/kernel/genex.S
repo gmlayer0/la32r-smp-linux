@@ -74,7 +74,6 @@ SYM_FUNC_END(except_vec_cex)
 	.macro	__BUILD_HANDLER exception handler clear verbose ext
 	.align	5
 	SYM_FUNC_START(handle_\exception)
-	BACKUP_T0T1
 	SAVE_ALL
 	SYM_INNER_LABEL(handle_\exception\ext, SYM_L_GLOBAL)
 	__build_clear_\clear
@@ -112,46 +111,66 @@ SYM_FUNC_END(handle_syscall)
  * Common Vectored Interrupt
  * Complete the register saves and invoke the do_vi() handler
  */
+
 SYM_FUNC_START(except_vec_vi_handler)
-	la	t1, __arch_cpu_idle
-	LONG_L  t0, sp, PT_EPC
+
+	BACKUP_T0T1
+	csrrd	t0, LOONGARCH_CSR_ESTAT
+	srli.w	t1, t0, 0x10   /* get Ecode */
+	andi	t1, t1, 0x3f
+	beq	t1, zero, 1f	/* if irq */
+
+        csrrd	t0, LOONGARCH_CSR_EENTRY
+        slli.w	t1, t1, 0x9  /* get ex entry shift = Ecode * vec_size  */
+        add.w	t0, t0, t1
+        lu12i.w	t1, 0x4
+        sub.w	t0, t0, t1
+        jirl	zero,t0 , 0  /* go to exception_handler */
+
+1:
+	SAVE_SOME
+	la.abs	t1, __arch_cpu_idle
+	LONG_L	t0, sp, PT_EPC
+
 	/* 32 byte rollback region */
 	ori	t0, t0, 0x1f
 	xori	t0, t0, 0x1f
-	bne	t0, t1, 1f
-	LONG_S  t0, sp, PT_EPC
-1:	SAVE_TEMP
+	bne	t0, t1, 2f
+	LONG_S	t0, sp, PT_EPC
+2:
+	SAVE_TEMP
 	SAVE_STATIC
+
 	CLI
+	TRACE_IRQS_OFF
 
-	LONG_L		s0, tp, TI_REGS
-	LONG_S		sp, tp, TI_REGS
+	ld.w	s0, tp, TI_REGS
+	st.w	sp, tp, TI_REGS
+	move	s1, sp
 
-	move		s1, sp /* Preserve sp */
+	csrrd	t0, LOONGARCH_CSR_TMID
+	la.abs	t1, irq_stack
+	slli.w	t0, t0, LONGLOG
+	ld.w	t0, t1, 0
 
-	/* Get IRQ stack for this CPU */
-	la		t1, irq_stack
-	LONG_ADDU	t1, t1, x0
-	LONG_L		t0, t1, 0
+	li.w	t1, ~(_THREAD_SIZE-1)
+	and	t1, t1, sp
+	beq	t0, t1, 2f
 
-	/* Check if already on IRQ stack */
-	PTR_LI		t1, ~(_THREAD_SIZE-1)
-	and		t1, t1, sp
-	beq		t0, t1, 2f
+	li.w	t1, _IRQ_STACK_START
+	add.w	sp, t0, t1
+	st.w	s1,sp, 0
 
-	/* Switch to IRQ stack */
-	li.w		t1, _IRQ_STACK_START
-	PTR_ADDU	sp, t0, t1
+2:
+	la.abs	t0, plat_irq_dispatch
+	jirl	ra, t0, 0
 
-	/* Save task's sp on IRQ stack so that unwinding can follow it */
-	LONG_S		s1, sp, 0
-2:	la		t0, do_vi
-	jirl		ra, t0, 0
+	move	sp, s1
 
-	move		sp, s1 /* Restore sp */
-	la		t0, ret_from_irq
-	jirl    	zero, t0, 0
+	la.abs	t0, ret_from_irq
+	jirl	zero, t0, 0
 SYM_FUNC_END(except_vec_vi_handler)
+
 
 	.macro	BUILD_VI_HANDLER num
 	.align	5

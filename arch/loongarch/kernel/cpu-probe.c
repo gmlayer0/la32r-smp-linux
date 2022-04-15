@@ -73,17 +73,6 @@ static void cpu_probe_addrbits(struct cpuinfo_loongarch *c)
 
 static void set_isa(struct cpuinfo_loongarch *c, unsigned int isa)
 {
-	switch (isa) {
-	case LOONGARCH_CPU_ISA_LA64:
-		c->isa_level |= LOONGARCH_CPU_ISA_LA64;
-		fallthrough;
-	case LOONGARCH_CPU_ISA_LA32S:
-		c->isa_level |= LOONGARCH_CPU_ISA_LA32S;
-		fallthrough;
-	case LOONGARCH_CPU_ISA_LA32R:
-		c->isa_level |= LOONGARCH_CPU_ISA_LA32R;
-		break;
-	}
 }
 
 static void decode_configs(struct cpuinfo_loongarch *c)

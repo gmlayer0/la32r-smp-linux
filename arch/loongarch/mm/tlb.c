@@ -122,6 +122,7 @@ void local_flush_tlb_one(unsigned long page)
 	invtlb_addr(INVTLB_ADDR_GTRUE_OR_ASID, 0, page);
 }
 
+#ifdef CONFIG_HUGETLB_PAGE
 static void __update_hugetlb(struct vm_area_struct *vma, unsigned long address, pte_t *ptep)
 {
 	int idx;
@@ -147,20 +148,23 @@ static void __update_hugetlb(struct vm_area_struct *vma, unsigned long address, 
 
 	local_irq_restore(flags);
 }
+#endif
 
 void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t *ptep)
 {
 	int idx;
 	unsigned long flags;
-
+	unsigned long ptep_val;
 	/*
 	 * Handle debugger faulting in for debugee.
 	 */
 	if (current->active_mm != vma->vm_mm)
 		return;
 
+#ifdef CONFIG_HUGETLB_PAGE
 	if (pte_val(*ptep) & _PAGE_HUGE)
 		return __update_hugetlb(vma, address, ptep);
+#endif
 
 	local_irq_save(flags);
 
@@ -172,18 +176,19 @@ void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t *ptep
 	tlb_probe();
 	idx = read_csr_tlbidx();
 	write_csr_pagesize(PS_DEFAULT_SIZE);
-	write_csr_entrylo0(pte_val(*ptep++));
-	write_csr_entrylo1(pte_val(*ptep));
+	ptep_val = ( ( pte_val(*ptep) >>12)<<8)|( pte_val(*ptep) & 0xff );
+	write_csr_entrylo0(ptep_val);
+	ptep++;
+	ptep_val = ( ( pte_val(*ptep) >>12)<<8)|( pte_val(*ptep) & 0xff );
+	write_csr_entrylo1(ptep_val);
 	if (idx < 0)
 		tlb_write_random();
 	else
 		tlb_write_indexed();
-
 	local_irq_restore(flags);
 }
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-
 int has_transparent_hugepage(void)
 {
 	static unsigned int size = -1;
@@ -199,7 +204,6 @@ int has_transparent_hugepage(void)
 	}
 	return size == PS_HUGE_SIZE;
 }
-
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE  */
 
 static void setup_pw(void)
@@ -221,13 +225,6 @@ static void setup_pw(void)
 	pte_i  = PAGE_SHIFT;    /* 3rd level PTE */
 	pte_w  = PAGE_SHIFT - 3;
 
-#ifndef __PAGETABLE_PMD_FOLDED
-	csr_writeq(pte_i | pte_w << 5 | pmd_i << 10 | pmd_w << 15, LOONGARCH_CSR_PWCTL0);
-	csr_writeq(pgd_i | pgd_w << 6, LOONGARCH_CSR_PWCTL1);
-#else
-	csr_writeq(pte_i | pte_w << 5, LOONGARCH_CSR_PWCTL0);
-	csr_writeq(pgd_i | pgd_w << 6, LOONGARCH_CSR_PWCTL1);
-#endif
 	csr_writeq((long)swapper_pg_dir, LOONGARCH_CSR_PGDH);
 }
 
@@ -242,12 +239,14 @@ static void output_pgtable_bits_defines(void)
 
 	pr_define("_PAGE_VALID_SHIFT %d\n", _PAGE_VALID_SHIFT);
 	pr_define("_PAGE_DIRTY_SHIFT %d\n", _PAGE_DIRTY_SHIFT);
+#ifdef CONFIG_HUGETLB_PAGE
 	pr_define("_PAGE_HUGE_SHIFT %d\n", _PAGE_HUGE_SHIFT);
+#endif
 	pr_define("_PAGE_GLOBAL_SHIFT %d\n", _PAGE_GLOBAL_SHIFT);
+
 	pr_define("_PAGE_PRESENT_SHIFT %d\n", _PAGE_PRESENT_SHIFT);
 	pr_define("_PAGE_WRITE_SHIFT %d\n", _PAGE_WRITE_SHIFT);
-	pr_define("_PAGE_NO_READ_SHIFT %d\n", _PAGE_NO_READ_SHIFT);
-	pr_define("_PAGE_NO_EXEC_SHIFT %d\n", _PAGE_NO_EXEC_SHIFT);
+
 	pr_define("_PFN_SHIFT %d\n", _PFN_SHIFT);
 	pr_debug("\n");
 }
@@ -261,16 +260,17 @@ void setup_tlb_handler(void)
 
 	/* The tlb handlers are generated only once */
 	if (!run_once) {
-		memcpy((void *)tlbrentry, handle_tlb_refill, 0x80);
-		local_flush_icache_range(tlbrentry, tlbrentry + 0x80);
+		memcpy((void *)tlbrentry, handle_tlb_refill, 0x200);
+		local_flush_icache_range(tlbrentry, tlbrentry + 0x200);
 		run_once++;
 	}
 }
 void tlb_init(void)
 {
 	write_csr_pagesize(PS_DEFAULT_SIZE);
+#ifdef CONFIG_64BIT
 	write_csr_stlbpgsize(PS_DEFAULT_SIZE);
-
+#endif
 	if (read_csr_pagesize() != PS_DEFAULT_SIZE)
 		panic("MMU doesn't support PAGE_SIZE=0x%lx", PAGE_SIZE);
 

@@ -4,6 +4,7 @@ config DTC
 
 menuconfig OF
 	bool "Device Tree and Open Firmware support"
+	select OF_EARLY_FLATTREE
 	help
 	  This option enables the device tree infrastructure.
 	  It is automatically selected by platforms that need it or can

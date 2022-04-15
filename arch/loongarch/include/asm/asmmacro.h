@@ -10,6 +10,7 @@
 #ifdef CONFIG_32BIT
 #include <asm/asmmacro-32.h>
 #endif
+
 #ifdef CONFIG_64BIT
 #include <asm/asmmacro-64.h>
 #endif
@@ -259,10 +260,16 @@
 	fld.d	$f30, \tmp, THREAD_FPR30 - THREAD_FPR0
 	fld.d	$f31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
-
 .macro move dst src
-	slli.d	\dst, \src, 0
+#ifdef CONFIG_64BIT
+	slli.d  \dst, \src, 0
+#endif
+
+#ifdef CONFIG_32BIT
+	slli.w \dst, \src, 0
+#endif
 .endm
+
 
 .macro jr dst
 	jirl	zero, \dst, 0
@@ -287,6 +294,16 @@
 .macro bgez r0 label
 	bge \r0, zero, \label
 .endm
+#ifdef CONFIG_32BIT
+.macro beqz r0 label
+        beq \r0, zero , \label
+.endm
+
+.macro bnez r0 label
+        bne \r0, zero , \label
+.endm
+#endif
+
 
 #define v0 $r4
 #define v1 $r5

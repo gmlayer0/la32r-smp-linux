@@ -4,7 +4,13 @@
  * Copyright (C) 2020-2021 Loongson Technology Corporation Limited
  */
 
+#ifdef CONFIG_32BIT
+OUTPUT_FORMAT("elf32-loongarch", "elf32-loongarch", "elf32-loongarch")
+#endif
+
+#ifdef CONFIG_64BIT
 OUTPUT_FORMAT("elf64-loongarch", "elf64-loongarch", "elf64-loongarch")
+#endif
 
 OUTPUT_ARCH(loongarch)
 

@@ -6,7 +6,6 @@
 #define _ASM_ADDRSPACE_H
 
 #include <linux/const.h>
-
 #include <asm/loongarchregs.h>
 
 /*
@@ -31,7 +30,14 @@ extern unsigned long vm_map_base;
 #define UNCAC_BASE		CSR_DMW0_BASE
 #endif
 
+#ifdef CONFIG_32BIT
+#define DMW_PABITS	28
+#endif
+
+#ifdef CONFIG_64BIT
 #define DMW_PABITS	48
+#endif
+
 #define TO_PHYS_MASK	((1ULL << DMW_PABITS) - 1)
 
 /*
@@ -79,32 +85,38 @@ extern unsigned long vm_map_base;
  *  32/64-bit LoongArch address spaces
  */
 #ifdef __ASSEMBLY__
+#ifdef CONFIG_32BIT
 #define _ACAST32_
+#endif
+#ifdef CONFIG_64BIT
 #define _ACAST64_
+#endif
+
 #else
+#ifdef CONFIG_32BIT
 #define _ACAST32_		(_ATYPE_)(_ATYPE32_)	/* widen if necessary */
+#endif
+#ifdef CONFIG_64BIT
 #define _ACAST64_		(_ATYPE64_)		/* do _not_ narrow */
+#endif
 #endif
 
 #ifdef CONFIG_32BIT
-
+#define MAP_BASE                _AC(0xc0000000, UL)
 #define UVRANGE			0x00000000
 #define KPRANGE0		0x80000000
 #define KPRANGE1		0xa0000000
 #define KVRANGE			0xc0000000
-
-#else
-
+#endif
+#ifdef CONFIG_64BIT
 #define XUVRANGE		_CONST64_(0x0000000000000000)
 #define XSPRANGE		_CONST64_(0x4000000000000000)
 #define XKPRANGE		_CONST64_(0x8000000000000000)
 #define XKVRANGE		_CONST64_(0xc000000000000000)
-
 #endif
 
 /*
  * Returns the physical address of a KPRANGEx / XKPRANGE address
  */
-#define PHYSADDR(a)		((_ACAST64_(a)) & TO_PHYS_MASK)
-
+#define PHYSADDR(a)		((_ACAST32_(a)) & TO_PHYS_MASK)
 #endif /* _ASM_ADDRSPACE_H */

@@ -23,6 +23,7 @@
 #define __AMAND_SYNC	"amand_db.w	"
 #define __AMOR_SYNC	"amor_db.w	"
 #define __AMXOR_SYNC	"amxor_db.w	"
+
 #elif _LOONGARCH_SZLONG == 64
 #define __LL		"ll.d	"
 #define __SC		"sc.d	"
@@ -42,18 +43,32 @@
  * Note that @nr may be almost arbitrarily large; this function is not
  * restricted to acting on a single-word quantity.
  */
+
 static inline void set_bit(unsigned long nr, volatile unsigned long *addr)
 {
+#ifdef CONFIG_32BIT
+	unsigned long temp;
+#endif
 	int bit = nr % BITS_PER_LONG;
 	volatile unsigned long *m = &addr[BIT_WORD(nr)];
 
+#ifdef CONFIG_64BIT
 	__asm__ __volatile__(
 	"   " __AMOR_SYNC "$zero, %1, %0        \n"
 	: "+ZB" (*m)
 	: "r" (1UL << bit)
 	: "memory");
+#else
+	loongson_llsc_mb();
+	__asm__ __volatile__(
+	"1:     " __LL "%0, %1                  \n"
+	"       or      %0, %0, %2                      \n"
+	"       " __SC  "%0, %1                 \n"
+	"       beq     %0, $r0, 1b             \n"
+	: "=&r" (temp), "=" GCC_OFF_SMALL_ASM() (*m)
+	: "r" (1UL << bit));
+#endif
 }
-
 /*
  * clear_bit - Clears a bit in memory
  * @nr: Bit to clear
@@ -66,14 +81,28 @@ static inline void set_bit(unsigned long nr, volatile unsigned long *addr)
  */
 static inline void clear_bit(unsigned long nr, volatile unsigned long *addr)
 {
+#ifdef CONFIG_32BIT
+	unsigned long temp;
+#endif
 	int bit = nr % BITS_PER_LONG;
 	volatile unsigned long *m = &addr[BIT_WORD(nr)];
 
+#ifdef CONFIG_64BIT
 	__asm__ __volatile__(
 	"   " __AMAND_SYNC "$zero, %1, %0       \n"
 	: "+ZB" (*m)
 	: "r" (~(1UL << bit))
 	: "memory");
+#else
+        loongson_llsc_mb();
+        __asm__ __volatile__(
+        "1:     " __LL "%0, %1                  \n"
+        "       and     %0, %0, %2                      \n"
+        "       " __SC  "%0, %1                 \n"
+        "       beq     %0, $r0, 1b             \n"
+        : "=&r" (temp), "=" GCC_OFF_SMALL_ASM() (*m)
+        : "r" (~(1UL << bit)));
+#endif
 }
 
 /*
@@ -100,16 +129,29 @@ static inline void clear_bit_unlock(unsigned long nr, volatile unsigned long *ad
  */
 static inline void change_bit(unsigned long nr, volatile unsigned long *addr)
 {
+#ifdef CONFIG_32BIT
+        unsigned long temp;
+#endif
 	int bit = nr % BITS_PER_LONG;
 	volatile unsigned long *m = &addr[BIT_WORD(nr)];
 
+#ifdef CONFIG_64BIT
 	__asm__ __volatile__(
 	"   " __AMXOR_SYNC "$zero, %1, %0       \n"
 	: "+ZB" (*m)
 	: "r" (1UL << bit)
 	: "memory");
+#else
+	loongson_llsc_mb();
+	__asm__ __volatile__(
+	"1:     "__LL "%0, %1           \n"
+	"       xor     %0, %0, %2      \n"
+	"       "__SC "%0, %1           \n"
+	"       beq     %0, $r0, 1b     \n"
+	: "=&r" (temp), "+" GCC_OFF_SMALL_ASM() (*m)
+	: "r" (1UL << bit));
+#endif
 }
-
 /*
  * test_and_set_bit - Set a bit and return its old value
  * @nr: Bit to set
@@ -121,10 +163,14 @@ static inline void change_bit(unsigned long nr, volatile unsigned long *addr)
 static inline int test_and_set_bit(unsigned long nr,
 	volatile unsigned long *addr)
 {
+#ifdef CONFIG_32BIT
+	unsigned long temp;
+#endif
 	int bit = nr % BITS_PER_LONG;
 	unsigned long res;
 	volatile unsigned long *m = &addr[BIT_WORD(nr)];
 
+#ifdef CONFIG_64BIT
 	__asm__ __volatile__(
 	"   " __AMOR_SYNC "%1, %2, %0       \n"
 	: "+ZB" (*m), "=&r" (res)
@@ -132,10 +178,20 @@ static inline int test_and_set_bit(unsigned long nr,
 	: "memory");
 
 	res = res & (1UL << bit);
+#else
+__asm__ __volatile__(
+	"1:     "__LL  "%0, %1          \n"
+	"       or      %2, %0, %3      \n"
+	"       "__SC   "%2, %1         \n"
+	"       beq     %2, $r0, 1b     \n"
+	: "=&r" (temp), "+" GCC_OFF_SMALL_ASM() (*m), "=&r" (res)
+	: "r" (1UL << bit)
+	: "memory");
+	res = temp & (1UL << bit);
+#endif
 
 	return res != 0;
 }
-
 /*
  * test_and_set_bit_lock - Set a bit and return its old value
  * @nr: Bit to set
@@ -147,10 +203,14 @@ static inline int test_and_set_bit(unsigned long nr,
 static inline int test_and_set_bit_lock(unsigned long nr,
 	volatile unsigned long *addr)
 {
+#ifdef CONFIG_32BIT
+	unsigned long temp;
+#endif
 	int bit = nr % BITS_PER_LONG;
 	unsigned long res;
 	volatile unsigned long *m = &addr[BIT_WORD(nr)];
 
+#ifdef CONFIG_64BIT
 	__asm__ __volatile__(
 	"   " __AMOR_SYNC "%1, %2, %0       \n"
 	: "+ZB" (*m), "=&r" (res)
@@ -158,7 +218,18 @@ static inline int test_and_set_bit_lock(unsigned long nr,
 	: "memory");
 
 	res = res & (1UL << bit);
+#else
+        __asm__ __volatile__(
+        "1:     " __LL "%0, %1                          \n"
+        "       or      %2, %0, %3                      \n"
+        "       " __SC  "%2, %1                         \n"
+        "       beq %2, $r0, 1b                         \n"
+        : "=&r" (temp), "+" GCC_OFF_SMALL_ASM() (*m), "=&r" (res)
+        : "r" (1UL << bit)
+        : "memory");
 
+        res = temp & (1UL << bit);
+#endif
 	return res != 0;
 }
 /*
@@ -176,17 +247,26 @@ static inline int test_and_clear_bit(unsigned long nr,
 	unsigned long res, temp;
 	volatile unsigned long *m = &addr[BIT_WORD(nr)];
 
+#ifdef CONFIG_64BIT
 	__asm__ __volatile__(
 	"   " __AMAND_SYNC "%1, %2, %0      \n"
 	: "+ZB" (*m), "=&r" (temp)
 	: "r" (~(1UL << bit))
 	: "memory");
-
-	res = temp & (1UL << bit);
-
+#else
+        __asm__ __volatile__(
+        "1:     " __LL  "%0, %1 # test_and_clear_bit    \n"
+        "       or      %2, %0, %3                      \n"
+        "       xor     %2, %2, %3                      \n"
+        "       " __SC  "%2, %1                         \n"
+        "       beq     %2, $r0, 1b                     \n"
+        : "=&r" (temp), "+" GCC_OFF_SMALL_ASM() (*m), "=&r" (res)
+        : "r" (1UL << bit)
+        : "memory");
+#endif
+        res = temp & (1UL << bit);
 	return res != 0;
 }
-
 /*
  * test_and_change_bit - Change a bit and return its old value
  * @nr: Bit to change
@@ -198,18 +278,30 @@ static inline int test_and_clear_bit(unsigned long nr,
 static inline int test_and_change_bit(unsigned long nr,
 	volatile unsigned long *addr)
 {
+#ifdef CONFIG_32BIT
+        unsigned long temp;
+#endif
 	int bit = nr % BITS_PER_LONG;
 	unsigned long res;
 	volatile unsigned long *m = &addr[BIT_WORD(nr)];
 
+#ifdef CONFIG_64BIT
 	__asm__ __volatile__(
 	"   " __AMXOR_SYNC "%1, %2, %0      \n"
 	: "+ZB" (*m), "=&r" (res)
 	: "r" (1UL << bit)
 	: "memory");
-
 	res = res & (1UL << bit);
-
+#else
+        __asm__ __volatile__(
+        "1:     " __LL  "%0, %1 # test_and_change_bit   \n"
+        "       xor     %2, %0, %3                      \n"
+        "       " __SC  "\t%2, %1                       \n"
+        "       beq     %2, $r0, 1b"
+        : "=&r" (temp), "+" GCC_OFF_SMALL_ASM() (*m), "=&r" (res)
+        : "r" (1UL << bit)
+        : "memory");
+#endif
 	return res != 0;
 }
 
@@ -229,15 +321,102 @@ static inline void __clear_bit_unlock(unsigned long nr, volatile unsigned long *
 	clear_bit(nr, addr);
 }
 
+#ifdef CONFIG_64BIT
 #include <asm-generic/bitops/builtin-ffs.h>
 #include <asm-generic/bitops/builtin-fls.h>
 #include <asm-generic/bitops/builtin-__ffs.h>
 #include <asm-generic/bitops/builtin-__fls.h>
+#endif
+
+#ifdef CONFIG_32BIT
+static inline int fls(int x)
+{
+        int r;
+
+        r = 32;
+        if (!x)
+                return 0;
+        if (!(x & 0xffff0000u)) {
+                x <<= 16;
+                r -= 16;
+        }
+        if (!(x & 0xff000000u)) {
+                x <<= 8;
+                r -= 8;
+        }
+        if (!(x & 0xf0000000u)) {
+                x <<= 4;
+                r -= 4;
+        }
+        if (!(x & 0xc0000000u)) {
+                x <<= 2;
+                r -= 2;
+        }
+        if (!(x & 0x80000000u)) {
+                x <<= 1;
+                r -= 1;
+        }
+        return r;
+}
+
+static inline int ffs(int word)
+{
+        if (!word)
+                return 0;
+
+        return fls(word & -word);
+}
+
+static inline unsigned long __fls(unsigned long word)
+{
+        int num;
+
+        if (BITS_PER_LONG == 64 && !__builtin_constant_p(word)) {
+                __asm__(
+                "       clz.d   %0, %1                          \n"
+                : "=r" (num)
+                : "r" (word));
+
+                return 63 - num;
+        }
+
+        num = BITS_PER_LONG - 1;
+#if BITS_PER_LONG == 64
+        if (!(word & (~0ul << 32))) {
+                num -= 32;
+                word <<= 32;
+        }
+#endif
+        if (!(word & (~0ul << (BITS_PER_LONG-16)))) {
+                num -= 16;
+                word <<= 16;
+        }
+        if (!(word & (~0ul << (BITS_PER_LONG-8)))) {
+                num -= 8;
+                word <<= 8;
+        }
+        if (!(word & (~0ul << (BITS_PER_LONG-4)))) {
+                num -= 4;
+                word <<= 4;
+        }
+        if (!(word & (~0ul << (BITS_PER_LONG-2)))) {
+                num -= 2;
+                word <<= 2;
+        }
+        if (!(word & (~0ul << (BITS_PER_LONG-1))))
+                num -= 1;
+        return num;
+}
+
+static inline unsigned long __ffs(unsigned long word)
+{
+        return __fls(word & -word);
+}
+#endif
 
 #include <asm-generic/bitops/ffz.h>
 #include <asm-generic/bitops/fls64.h>
 #include <asm-generic/bitops/find.h>
-
 #ifdef __KERNEL__
 
 #include <asm-generic/bitops/sched.h>

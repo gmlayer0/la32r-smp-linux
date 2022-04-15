@@ -1,18 +1,21 @@
-Linux kernel
-============
+内核编译
+    1.进入源码目录
+	cd linux-5.14-loongarch32
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+    1.配置la_build.sh下loongarch32工具链位置
+	vim la_build.sh
+	修改CROSS_COMPILE参数，例：CROSS_COMPILE=~/work/toolchain/install/bin/loongarch32-linux-gnu-
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+    2.创建生成目录
+	mkdir la_build
 
-    https://www.kernel.org/doc/html/latest/
+    4.复制配置文件config文件到la_build目录下
+	cp config.back ./la_build/.config
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+    5.编译好的busybox放在了initrd_pck32目录下
+	修改la_build/.config文件中的CONFIG_INITRAMFS_SOURCE参数
+	例：CONFIG_INITRAMFS_SOURCE="~/linux-5.14-loongarch32/initrd_pck32"
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+    5. 执行 ./la_build.sh开始编译。默认打开了debug_info
+
+    6.生成的vmlinux内核位于la_build目录下

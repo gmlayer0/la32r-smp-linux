@@ -71,7 +71,24 @@ static __always_inline int clock_getres_fallback(
 
 	return ret;
 }
+#ifdef CONFIG_32BIT
+static __always_inline u64 __arch_get_hw_counter(s32 clock_mode,
+						 const struct vdso_data *vd)
+{
+	unsigned int count;
+	unsigned int count1;
+	u64 res;
 
+	__asm__ __volatile__(
+	"	rdcntvl.w %0\n"
+	"   rdcntvh.w %1\n "
+	: "=r" (count), "=r"(count1));
+
+	res = ((u64)count1 <<32)| count;
+	return res;
+}
+
+#else
 static __always_inline u64 __arch_get_hw_counter(s32 clock_mode,
 						 const struct vdso_data *vd)
 {
@@ -83,6 +100,7 @@ static __always_inline u64 __arch_get_hw_counter(s32 clock_mode,
 
 	return count;
 }
+#endif
 
 static inline bool loongarch_vdso_hres_capable(void)
 {

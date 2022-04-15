@@ -69,6 +69,7 @@ arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 	return ret;
 }
 
+#ifdef CONFIG_64BIT
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr, u32 oldval, u32 newval)
 {
@@ -101,8 +102,44 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr, u32 oldval, u32 newv
 	: "memory", "t0");
 
 	*uval = val;
-
 	return ret;
 }
+#endif
 
+#ifdef CONFIG_32BIT
+static inline int
+futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr, u32 oldval, u32 newval)
+{
+	int ret = 0;
+	u32 val = 0;
+
+	if (!access_ok(uaddr, sizeof(u32)))
+		return -EFAULT;
+
+	__asm__ __volatile__(
+	"# futex_atomic_cmpxchg_inatomic			\n"
+	"1:	ll.w	%1, %3					\n"
+	"	bne	%1, %z4, 3f				\n"
+	"	or	$t0, %z5, $zero				\n"
+	"2:	sc.w	$t0, %2					\n"
+	"	beq	$zero, $t0, 1b				\n"
+	"3:							\n"
+	__WEAK_LLSC_MB
+	"	.section .fixup,\"ax\"				\n"
+	"4:	li.w	 %0, %6					\n"
+	"	b	3b					\n"
+	"	.previous					\n"
+	"	.section __ex_table,\"a\"			\n"
+	"	"__UA_ADDR "\t1b, 4b				\n"
+	"	"__UA_ADDR "\t2b, 4b				\n"
+	"	.previous					\n"
+	: "+r" (ret), "=&r" (val), "=" GCC_OFF_SMALL_ASM() (*uaddr)
+	: GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oldval), "Jr" (newval),
+	  "i" (-EFAULT)
+	: "memory", "t0");
+
+	*uval = val;
+	return ret;
+}
+#endif
 #endif /* _ASM_FUTEX_H */

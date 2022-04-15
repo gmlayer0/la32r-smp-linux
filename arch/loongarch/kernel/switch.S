@@ -18,15 +18,15 @@
 	.align	5
 SYM_FUNC_START(resume)
 	csrrd	t1, LOONGARCH_CSR_PRMD
-	stptr.d	t1, a0, THREAD_CSRPRMD
+	LONG_SPTR	t1, a0, THREAD_CSRPRMD
 	csrrd	t1, LOONGARCH_CSR_CRMD
-	stptr.d	t1, a0, THREAD_CSRCRMD
+	LONG_SPTR	t1, a0, THREAD_CSRCRMD
 	csrrd	t1, LOONGARCH_CSR_ECFG
-	stptr.d	t1, a0, THREAD_CSRECFG
+	LONG_SPTR	t1, a0, THREAD_CSRECFG
 	csrrd	t1, LOONGARCH_CSR_EUEN
-	stptr.d	t1, a0, THREAD_CSREUEN
+	LONG_SPTR	t1, a0, THREAD_CSREUEN
 	cpu_save_nonscratch a0
-	stptr.d	ra, a0, THREAD_REG01
+	LONG_SPTR	ra, a0, THREAD_REG01
 
 	/*
 	 * The order of restoring the registers takes care of the race
@@ -39,9 +39,9 @@ SYM_FUNC_START(resume)
 	PTR_ADDU	t0, t0, tp
 	set_saved_sp	t0, t1, t2
 
-	ldptr.d	t1, a1, THREAD_CSRPRMD
+	LONG_LPTR	t1, a1, THREAD_CSRPRMD
 	csrwr	t1, LOONGARCH_CSR_PRMD
-	ldptr.d	t1, a1, THREAD_CSREUEN
+	LONG_LPTR	t1, a1, THREAD_CSREUEN
 	csrwr	t1, LOONGARCH_CSR_EUEN
 
 	jr	ra

@@ -162,7 +162,7 @@
 	andi	t0, t0, 0x3	/* extract pplv bit */
 	beqz	t0, 9f
 
-	li.d	tp, ~_THREAD_MASK
+	PTR_LI	tp, ~_THREAD_MASK
 	and	tp, tp, sp
 	cfi_st  x0, PT_R21, \docfi
 9:

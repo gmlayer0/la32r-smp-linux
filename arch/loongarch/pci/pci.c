@@ -181,6 +181,7 @@ int pcibios_dev_init(struct pci_dev *dev)
 		return 0;
 	return acpi_pci_irq_enable(dev);
 #endif
+	return 0;
 }
 
 int pcibios_enable_device(struct pci_dev *dev, int mask)

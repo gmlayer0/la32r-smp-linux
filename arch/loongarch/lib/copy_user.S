@@ -25,9 +25,9 @@ SYM_FUNC_START(__copy_user)
 
 1:	ld.b	t0, a1, 0
 2:	st.b	t0, a0, 0
-	addi.d	a0, a0, 1
-	addi.d	a1, a1, 1
-	addi.d	a2, a2, -1
+	LONG_ADDIU	a0, a0, 1
+	LONG_ADDIU	a1, a1, 1
+	LONG_ADDIU	a2, a2, -1
 	bgt	a2, zero, 1b
 
 3:	move	v0, a2

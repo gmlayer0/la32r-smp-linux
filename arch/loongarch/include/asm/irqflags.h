@@ -46,7 +46,23 @@ static inline int arch_irqs_disabled(void)
 {
 	return arch_irqs_disabled_flags(arch_local_save_flags());
 }
-
 #endif /* #ifndef __ASSEMBLY__ */
+#ifdef CONFIG_TRACE_IRQFLAGS
+# define TRACE_IRQS_ON                                                  \
+        CLI;    /* make sure trace_hardirqs_on() is called in kernel level */ \
+        jal     trace_hardirqs_on
+# define TRACE_IRQS_ON_RELOAD                                           \
+        TRACE_IRQS_ON;                                                  \
+        TRACE_IRQS_RELOAD_REGS
+# define TRACE_IRQS_OFF                                                 \
+        bl     trace_hardirqs_off
+#else
+# define TRACE_IRQS_ON
+# define TRACE_IRQS_ON_RELOAD
+# define TRACE_IRQS_OFF
+#endif
+
+
+
 
 #endif /* _ASM_IRQFLAGS_H */

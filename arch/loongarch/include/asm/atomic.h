@@ -77,7 +77,6 @@ static inline int arch_atomic_fetch_##op##_relaxed(int i, atomic_t *v)	\
 static __inline__ void arch_atomic_##op(int i, atomic_t * v)                 \
 {                                                                       \
         int temp ;                                              \
-        loongson_llsc_mb();                                     \
         __asm__ __volatile__(                                   \
         "1:     ll.w        %0, %1      #atomic_" #op "  \n"    \
         "       " #asm_op " %0, %0, %2                   \n"    \
@@ -94,7 +93,6 @@ static __inline__ int arch_atomic_##op##_return_relaxed(int i, atomic_t * v)    
         int result;                                                           \
         int temp;                                                             \
                                                                               \
-        loongson_llsc_mb();                                                   \
         __asm__ __volatile__(                                                 \
                 "1:     ll.w    %1, %2          # atomic_" #op "_return \n"   \
                 "       " #asm_op " %0, %1, %3                          \n"   \
@@ -113,7 +111,6 @@ static __inline__ int arch_atomic_fetch_##op##_relaxed(int i, atomic_t * v)     
         int result;                                                           \
         int temp;                                                     \
                                                                       \
-        loongson_llsc_mb();                                           \
         __asm__ __volatile__(                                         \
         "1:     ll.w    %1, %2          # atomic_fetch_" #op "  \n"   \
         "       " #asm_op " %0, %1, %3                          \n"   \

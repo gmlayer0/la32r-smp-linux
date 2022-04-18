@@ -59,7 +59,6 @@ static inline void set_bit(unsigned long nr, volatile unsigned long *addr)
 	: "r" (1UL << bit)
 	: "memory");
 #else
-	loongson_llsc_mb();
 	__asm__ __volatile__(
 	"1:     " __LL "%0, %1                  \n"
 	"       or      %0, %0, %2                      \n"
@@ -94,7 +93,6 @@ static inline void clear_bit(unsigned long nr, volatile unsigned long *addr)
 	: "r" (~(1UL << bit))
 	: "memory");
 #else
-        loongson_llsc_mb();
         __asm__ __volatile__(
         "1:     " __LL "%0, %1                  \n"
         "       and     %0, %0, %2                      \n"
@@ -142,7 +140,6 @@ static inline void change_bit(unsigned long nr, volatile unsigned long *addr)
 	: "r" (1UL << bit)
 	: "memory");
 #else
-	loongson_llsc_mb();
 	__asm__ __volatile__(
 	"1:     "__LL "%0, %1           \n"
 	"       xor     %0, %0, %2      \n"

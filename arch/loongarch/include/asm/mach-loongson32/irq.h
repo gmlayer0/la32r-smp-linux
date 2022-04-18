@@ -14,8 +14,8 @@
 #define LOONGSON_LPC_LAST_IRQ		(LOONGSON_LPC_IRQ_BASE + 15)
 
 #define LOONGSON_CPU_IRQ_BASE		16
-#define LOONGSON_LINTC_IRQ		(LOONGSON_CPU_IRQ_BASE + 2) /* IP2 for CPU local interrupt controller */
-#define LOONGSON_BRIDGE_IRQ		(LOONGSON_CPU_IRQ_BASE + 3) /* IP3 for bridge */
+#define LOONGSON_UART_IRQ		(LOONGSON_CPU_IRQ_BASE + 2) /* IP2 for CPU local interrupt controller */
+#define LOONGSON_GMAC_IRQ		(LOONGSON_CPU_IRQ_BASE + 3) /* IP3 for bridge */
 #define LOONGSON_TIMER_IRQ		(LOONGSON_CPU_IRQ_BASE + 11) /* IP11 CPU Timer */
 #define LOONGSON_CPU_LAST_IRQ		(LOONGSON_CPU_IRQ_BASE + 14)
 

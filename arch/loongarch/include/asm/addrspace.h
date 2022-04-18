@@ -85,24 +85,19 @@ extern unsigned long vm_map_base;
  *  32/64-bit LoongArch address spaces
  */
 #ifdef __ASSEMBLY__
-#ifdef CONFIG_32BIT
 #define _ACAST32_
-#endif
-#ifdef CONFIG_64BIT
+#ifndef CONFIG_32BIT
 #define _ACAST64_
 #endif
 
 #else
-#ifdef CONFIG_32BIT
 #define _ACAST32_		(_ATYPE_)(_ATYPE32_)	/* widen if necessary */
-#endif
-#ifdef CONFIG_64BIT
+#ifndef CONFIG_32BIT
 #define _ACAST64_		(_ATYPE64_)		/* do _not_ narrow */
 #endif
 #endif
 
 #ifdef CONFIG_32BIT
-#define MAP_BASE                _AC(0xc0000000, UL)
 #define UVRANGE			0x00000000
 #define KPRANGE0		0x80000000
 #define KPRANGE1		0xa0000000

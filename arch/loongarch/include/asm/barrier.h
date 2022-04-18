@@ -33,16 +33,6 @@
 #define __smp_mb__before_atomic()	barrier()
 #define __smp_mb__after_atomic()	__smp_mb()
 
-
-#ifdef CONFIG_CPU_LOONGSON3_WORKAROUNDS /* Loongson-3's LLSC workaround */
-#define loongson_llsc_mb()      __asm__ __volatile__(__WEAK_LLSC_MB : : :"memory")
-#else
-#define loongson_llsc_mb()      do { } while (0)
-#endif
-
-
-
-
 /**
  * array_index_mask_nospec() - generate a ~0 mask when index < size, 0 otherwise
  * @index: array element index

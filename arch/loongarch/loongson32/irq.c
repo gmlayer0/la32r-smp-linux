@@ -29,14 +29,14 @@ struct fwnode_handle *acpi_picdomain_handle[MAX_PCH_PICS];
 
 void mach_irq_dispatch(unsigned int pending)
 {
-        if (pending & 0x800)
+    if (pending & 0x800)
 		do_IRQ(LOONGSON_TIMER_IRQ);
 	if (pending & 0x20)
 		do_IRQ(4);
 	if (pending & 0x4)
-		do_IRQ(LOONGSON_BRIDGE_IRQ) ; //in fact , it's for ehternet
+		do_IRQ(LOONGSON_GMAC_IRQ) ; //in fact , it's for ehternet
 	if (pending & 0x8)
-		do_IRQ(LOONGSON_LINTC_IRQ);
+		do_IRQ(LOONGSON_UART_IRQ);
 }
 
 asmlinkage void plat_irq_dispatch(void)
@@ -70,27 +70,12 @@ void __init setup_IRQ(void)
 	irqchip_init();
 }
 
-static inline void mask_loongson_irq(struct irq_data *d) { }
-static inline void unmask_loongson_irq(struct irq_data *d) { }
-
-static struct irq_chip loongson_irq_chip = {
-	.name           = "Loongson",
-	.irq_ack        = mask_loongson_irq,
-	.irq_mask       = mask_loongson_irq,
-	.irq_mask_ack   = mask_loongson_irq,
-	.irq_unmask     = unmask_loongson_irq,
-	.irq_eoi        = unmask_loongson_irq,
-};
-
-
 void __init arch_init_irq(void)
 {
 	clear_csr_ecfg(ECFG0_IM);
 	clear_csr_estat(ESTATF_IP);
 
 	setup_IRQ();
-	irq_set_chip_and_handler(LOONGSON_LINTC_IRQ,
-			&loongson_irq_chip, handle_percpu_irq);
 
 	set_csr_ecfg(ECFGF_IP0 | ECFGF_IP1 |ECFGF_IP2 | ECFGF_IP3| ECFGF_IPI | ECFGF_PC);
 }

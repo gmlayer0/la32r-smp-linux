@@ -1444,22 +1444,6 @@ static inline void write_csr_pagesize(unsigned int size)
 #define write_csr_impctl1(val)		__csrwr(val, LOONGARCH_CSR_IMPCTL1)
 #define write_csr_impctl2(val)		__csrwr(val, LOONGARCH_CSR_IMPCTL2)
 
-#define read_csr_perfctrl0()		__csrrd(LOONGARCH_CSR_PERFCTRL0)
-#define read_csr_perfcntr0()		__csrrd(LOONGARCH_CSR_PERFCNTR0)
-#define read_csr_perfctrl1()		__csrrd(LOONGARCH_CSR_PERFCTRL1)
-#define read_csr_perfcntr1()		__csrrd(LOONGARCH_CSR_PERFCNTR1)
-#define read_csr_perfctrl2()		__csrrd(LOONGARCH_CSR_PERFCTRL2)
-#define read_csr_perfcntr2()		__csrrd(LOONGARCH_CSR_PERFCNTR2)
-#define read_csr_perfctrl3()		__csrrd(LOONGARCH_CSR_PERFCTRL3)
-#define read_csr_perfcntr3()		__csrrd(LOONGARCH_CSR_PERFCNTR3)
-#define write_csr_perfctrl0(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL0)
-#define write_csr_perfcntr0(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR0)
-#define write_csr_perfctrl1(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL1)
-#define write_csr_perfcntr1(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR1)
-#define write_csr_perfctrl2(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL2)
-#define write_csr_perfcntr2(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR2)
-#define write_csr_perfctrl3(val)	__csrwr(val, LOONGARCH_CSR_PERFCTRL3)
-#define write_csr_perfcntr3(val)	__csrwr(val, LOONGARCH_CSR_PERFCNTR3)
 #endif
 
 /*

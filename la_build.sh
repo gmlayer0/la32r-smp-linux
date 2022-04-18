@@ -4,6 +4,11 @@ export CROSS_COMPILE=~/install-32-glibc-loongarch-novec-reduce-linux-5-14/bin/lo
 export ARCH=loongarch
 OUT=la_build
 
+if [ ! -d la_build ] ;then
+    mkdir la_build
+    make la32_defconfig O=${OUT}
+fi
+
 echo "----------------output ${OUT}----------------"
 
 make menuconfig O=${OUT}

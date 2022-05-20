@@ -9,3 +9,4 @@ obj-$(CONFIG_SMP)	+= smp.o
 obj-$(CONFIG_PCI_MSI)	+= msi.o
 
 obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
+obj-$(CONFIG_DMA_NONCOHERENT)   += dma-noncoherent.o

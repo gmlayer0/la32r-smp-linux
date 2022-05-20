@@ -67,6 +67,45 @@ static char *way_string[] = { NULL, "direct mapped", "2-way",
 	"13-way", "14-way", "15-way", "16-way",
 };
 
+#ifdef CONFIG_32BIT
+
+/* DMA cache operations. */
+void (*_dma_cache_wback_inv)(unsigned long start, unsigned long size);
+void (*_dma_cache_wback)(unsigned long start, unsigned long size);
+void (*_dma_cache_inv)(unsigned long start, unsigned long size);
+
+static void la32_dma_cache_wback_inv(unsigned long addr, unsigned long size)
+ {
+     /* Catch bad driver code */
+     BUG_ON(size == 0);
+
+     if (size >= dcache_size) {
+         blast_dcache16();
+     } else {
+         blast_dcache_range(addr, addr + size);
+     }
+}
+
+static void la32_dma_cache_inv(unsigned long addr, unsigned long size)
+{
+    /* Catch bad driver code */
+    BUG_ON(size == 0);
+
+    if ( size >= dcache_size) {
+        blast_dcache16();
+    } else {
+        unsigned long lsize = cpu_dcache_line_size();
+        unsigned long almask = ~(lsize - 1);
+
+        cache_op(Hit_Writeback_Inv_D, addr & almask);
+        cache_op(Hit_Writeback_Inv_D, (addr + size - 1)  & almask);
+        blast_inv_dcache_range(addr, addr + size);
+    }
+
+}
+
+#endif
+
 static void probe_pcache(void)
 {
 	struct cpuinfo_loongarch *c = &current_cpu_data;
@@ -95,10 +134,12 @@ static void probe_pcache(void)
 	sets  = 1 << ((config & CPUCFG18_L1D_SETS_M) >> CPUCFG18_L1D_SETS);
 	ways  = ((config & CPUCFG18_L1D_WAYS_M) >> CPUCFG18_L1D_WAYS) + 1;
 
-	if (lsize)
-                        c->dcache.linesz = 2 << lsize;
-                else
-                        c->dcache.linesz = 0;
+	if (lsize) {
+        c->dcache.linesz = 2 << lsize;
+    }
+    else {
+        c->dcache.linesz = 0;
+    }
 	c->dcache.sets = 64 << ((config >> 13) & 7);
 	c->dcache.ways = 1 + ((config >> 7) & 7);
 	dcache_size = c->dcache.sets *
@@ -112,6 +153,12 @@ static void probe_pcache(void)
 
 	pr_info("Primary data cache %ldkB, %s, %s, %s, linesize %d bytes\n",
 		dcache_size >> 10, way_string[c->dcache.ways], "VIPT", "no aliases", c->dcache.linesz);
+#ifdef CONFIG_32BIT
+    _dma_cache_wback_inv    = la32_dma_cache_wback_inv;
+    _dma_cache_wback    = la32_dma_cache_wback_inv;
+    _dma_cache_inv      = la32_dma_cache_inv;
+#endif
+
 }
 
 void cpu_cache_init(void)

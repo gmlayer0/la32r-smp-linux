@@ -67,6 +67,17 @@ static inline void __iomem *ioremap_prot(phys_addr_t offset, unsigned long size,
 	return (void __iomem *)(unsigned long)(IO_BASE + offset);
 }
 
+#ifdef CONFIG_DMA_NONCOHERENT
+
+extern void (*_dma_cache_wback_inv)(unsigned long start, unsigned long size);
+extern void (*_dma_cache_wback)(unsigned long start, unsigned long size);
+extern void (*_dma_cache_inv)(unsigned long start, unsigned long size);
+
+#define dma_cache_wback_inv(start, size)    _dma_cache_wback_inv(start, size)
+#define dma_cache_wback(start, size)        _dma_cache_wback(start, size)
+#define dma_cache_inv(start, size)      _dma_cache_inv(start, size)
+#endif
+
 /*
  * ioremap -   map bus memory into CPU space
  * @offset:    bus address of the memory

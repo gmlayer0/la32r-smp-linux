@@ -6,6 +6,12 @@
 #
 # Networking Core Drivers
 #
+#
+
+obj-$(CONFIG_DMFE_MAC) += dmfe.o
+
+
+
 obj-$(CONFIG_BONDING) += bonding/
 obj-$(CONFIG_IPVLAN) += ipvlan/
 obj-$(CONFIG_IPVTAP) += ipvlan/

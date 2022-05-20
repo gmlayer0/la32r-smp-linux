@@ -392,6 +392,25 @@ config VETH
 	  When one end receives the packet it appears on its pair and vice
 	  versa.
 
+config LS1X_GMAC
+     tristate "Loongson ls1x GMAC support"
+     default n
+
+ config GMAC_NAPI
+     tristate "ls1x GMAC use napi"
+     default n
+
+ config GMAC_COHERENT
+     bool "ls1x gmac coherent"
+     default n
+     depends on LS1X_GMAC
+
+ config FIX_COHERENT_UNALIGNED
+     bool "fix coherent unaligned"
+     depends on GMAC_COHERENT
+     default y
+
+
 config VIRTIO_NET
 	tristate "Virtio network driver"
 	depends on VIRTIO
@@ -603,5 +622,13 @@ config NET_FAILOVER
 	  an alternate low latency datapath. It also enables live migration of
 	  a VM with direct attached VF by failing over to the paravirtual
 	  datapath when the VF is unplugged.
+
+config DMFE_MAC
+     tristate "LS232 SOC MAC 10/100M Fast Ethernet Adapter support"
+     help
+       This is a driver for the Fast Ethernet PCI network cards based on
+       the ITC MAC chips. If you have one of those, say Y and
+       To compile this driver as a module, choose M here: the module
+       will be called dmfe.  This is recommended.
 
 endif # NETDEVICES

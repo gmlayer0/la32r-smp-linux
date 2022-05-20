@@ -2,6 +2,7 @@
 
 obj-$(CONFIG_MTD_RAW_NAND)		+= nand.o
 obj-$(CONFIG_MTD_SM_COMMON) 		+= sm_common.o
+obj-$(CONFIG_MTD_NAND_LS1A)		+= ls1a_nand.o
 
 obj-$(CONFIG_MTD_NAND_CAFE)		+= cafe_nand.o
 obj-$(CONFIG_MTD_NAND_AMS_DELTA)	+= ams-delta.o

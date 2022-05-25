@@ -10,7 +10,7 @@ KBUILD_DTBS      := dtbs
 #
 # Select the object file format to substitute into the linker script.
 #
-32bit-tool-archpref     = loongarch32
+32bit-tool-archpref     = loongarch32r
 64bit-tool-archpref	= loongarch64
 32bit-bfd		= elf32-loongarch
 64bit-bfd		= elf64-loongarch
@@ -18,7 +18,7 @@ KBUILD_DTBS      := dtbs
 64bit-emul		= elf64loongarch
 ifdef CONFIG_32BIT
 tool-archpref           =$(32bit-tool-archpref)
-UTS_MACHINE             := loongarch32
+UTS_MACHINE             := loongarch32r
 endif
 
 ifdef CONFIG_64BIT
@@ -36,7 +36,7 @@ ifdef CONFIG_32BIT
 ld-emul                 = $(32bit-emul)
 vmlinux-32              = vmlinux.32
 
-cflags-y                += -mabi=ilp32
+cflags-y                += -mabi=ilp32s
 endif
 
 

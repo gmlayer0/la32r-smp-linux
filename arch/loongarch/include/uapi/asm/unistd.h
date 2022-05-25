@@ -4,7 +4,7 @@
 #define __ARCH_WANT_SYS_CLONE3
 #define __ARCH_WANT_SET_GET_RLIMIT
 
-#ifdef __loongarch32
+#ifdef __loongarch32r
 #define __ARCH_WANT_STAT64
 #define __ARCH_WANT_TIME32_SYSCALLS
 #endif

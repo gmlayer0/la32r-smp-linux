@@ -600,8 +600,11 @@ int apply_relocate(Elf_Shdr *sechdrs, const char *strtab,
 	return 0;
 }
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_MODULES_USE_ELF_RELA
+=======
+>>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)
 int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
 		       unsigned int symindex, unsigned int relsec,
 		       struct module *me)
@@ -657,4 +660,7 @@ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)

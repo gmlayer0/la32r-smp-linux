@@ -1897,9 +1897,12 @@ static int do_execveat_common(int fd, struct filename *filename,
 	bprm->argc = retval;
 
 	retval = count(envp, MAX_ARG_STRINGS);
+<<<<<<< HEAD
 	if (retval == 0)
 		pr_warn_once("process '%s' launched '%s' with NULL argv: empty string added\n",
 				current->comm, bprm->filename);
+=======
+>>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)
 	if (retval < 0)
 		goto out_free;
 	bprm->envc = retval;
@@ -1921,6 +1924,7 @@ static int do_execveat_common(int fd, struct filename *filename,
 	if (retval < 0)
 		goto out_free;
 
+<<<<<<< HEAD
 	if (bprm->argc == 0) {
 		retval = copy_string_kernel("", bprm);
 		if (retval < 0)
@@ -1928,6 +1932,8 @@ static int do_execveat_common(int fd, struct filename *filename,
 		bprm->argc = 1;
 	}
 
+=======
+>>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)
 	retval = bprm_execve(bprm, fd, filename, flags);
 out_free:
 	free_bprm(bprm);
@@ -1956,8 +1962,11 @@ int kernel_execve(const char *kernel_filename,
 	}
 
 	retval = count_strings_kernel(argv);
+<<<<<<< HEAD
 	if (WARN_ON_ONCE(retval == 0))
 		retval = -EINVAL;
+=======
+>>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)
 	if (retval < 0)
 		goto out_free;
 	bprm->argc = retval;

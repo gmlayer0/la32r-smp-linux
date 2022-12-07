@@ -74,6 +74,7 @@
 #define SHOW_MEDIA_TYPE(mode) printk(" dmfe: Change Speed to %sMhz %s duplex\n",mode & 1 ?"100":"10", mode & 4 ? "full":"half");
 
 #define CONFIG_SOC_MAC_HARDWARE_ACCELERATE  1
+//#define DBG_FLAG3 1
 //#define DBG_FLAG 1
 //#define DBG_FLAG2 1
 #define MAC_REG_BASE    0xbf005200
@@ -322,7 +323,7 @@ static int dmfe_descriptor_init(struct net_device *dev)
 	}
     tp->buf_pool_start = tp->buf_pool_ptr;
     tp->buf_pool_dma_start = tp->buf_pool_dma_ptr;
-#ifdef DBG_FLAG
+#ifdef DBG_FLAG3
     printk("dmfe_descriptor_init===>tp->tx_desc_head:%x,tp->tx_desc_dma_head:%x\n",tp->tx_desc_head,tp->tx_desc_dma_head);
     printk("dmfe_descriptor_init===>tp->rx_desc_head:%x,tp->rx_desc_dma_head:%x\n",tp->rx_desc_head,tp->rx_desc_dma_head);
     printk("dmfe_descriptor_init===>tp->buf_pool_ptr:%x,tp->buf_pool_dma_ptr:%x\n",tp->buf_pool_ptr,tp->buf_pool_dma_ptr);
@@ -379,6 +380,9 @@ static int dmfe_descriptor_init(struct net_device *dev)
 		}
 		rx->skb = skb;
 		rx->rdes2 = cpu_to_le32(dma_map_single(&dev->dev, skb->data, RX_BUF_SIZE, DMA_FROM_DEVICE));
+	#ifdef DBG_FLAG3
+		printk("dmfe_descriptor_init===>this rx->rdes2:%x\n", rx->rdes2);
+	#endif
 		// set the owner bit for MAC.
                 wmb();
 		rx->rdes0 = cpu_to_le32(0x80000000);
@@ -442,6 +446,9 @@ static void allocate_rx_buffer(struct net_device *dev)
 		}
 		rx->skb = skb;
 		rx->rdes2 = cpu_to_le32(dma_map_single(&dev->dev, skb->data, RX_BUF_SIZE, DMA_FROM_DEVICE));
+	#ifdef DBG_FLAG3
+		printk("allocate_rx_buffer===>this rx->rdes2:%x\n", rx->rdes2);
+	#endif
 
 	        wmb();
 		rx->rdes0 = cpu_to_le32(0x80000000);
@@ -489,6 +496,7 @@ printk("dmfe_hw_init===============================================>begin\n");
 	writel(tp->tx_desc_dma_head, tp->ioaddr+CSR4);
 
 	tp->media_mode = DMFE_100MFD;  // DMFE_AUTO;
+	//tp->media_mode = DMFE_10MFD;  // DMFE_AUTO;
 
 	if (dev->irq == DMFE1_IRQ) {
 		dmfe_set_phyxcer(dev);
@@ -754,6 +762,9 @@ static int dmfe_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	tx->skb = skb;
         skb_copy_from_linear_data(skb, tx->tx_buf_ptr, skb->len);
 	tx->tdes2 = cpu_to_le32(dma_map_single(&dev->dev, skb->data, skb->len, DMA_TO_DEVICE));
+#ifdef DBG_FLAG3
+	printk("dmfe_start_xmit===>this tx->tdes2:%x\n", tx->tdes2);
+#endif
 	tx->tdes1 = cpu_to_le32(0xE1000000 | skb->len);
 	tx->tdes0 = cpu_to_le32(0x80000000);
     //tx->tdes0 = cpu_to_le32(DES0_BASE);
@@ -788,6 +799,9 @@ static void dmfe_reuse_skb(struct net_device *dev, struct sk_buff * skb)
 	if (!(rx->rdes0 & cpu_to_le32(0x80000000))) {
 		rx->skb = skb;
 		rx->rdes2 = cpu_to_le32(dma_map_single(&dev->dev, skb->data, RX_BUF_SIZE, DMA_FROM_DEVICE));
+	#ifdef DBG_FLAG3
+		printk("dmfe_reuse_skb===>this rx->rdes2:%x\n", rx->rdes2);
+	#endif
 		wmb();
 		rx->rdes0 = cpu_to_le32(0x80000000);
 
@@ -957,6 +971,9 @@ printk("dmfe_rx_clean===================================>start\n");
 					panic("dmfe no memory\n");
 				}
 				rx->rdes2 = cpu_to_le32(dma_map_single(&dev->dev, rx->skb->data, RX_BUF_SIZE, DMA_FROM_DEVICE));
+			#ifdef DBG_FLAG3
+				printk("dmfe_rx_clean===>this rx->rdes2:%x\n", rx->rdes2);
+			#endif
 			}
 		}
                 wmb();
@@ -1302,7 +1319,9 @@ static void update_csr6(u32 val, void *ioaddr)
 {
 	writel((val & (~0x2002)), ioaddr);
 	udelay(5);
-	writel((val | 0x2002), ioaddr);
+	//writel((val | 0x2002), ioaddr);
+	writel((val | 0x602002), ioaddr);
+	
 	udelay(5);
 }
 
@@ -1343,7 +1362,6 @@ static void dmfe_set_phyxcer(struct net_device *dev)
 	struct dmfe_private 	*tp = netdev_priv(dev);
 	u16 	phy_reg;
 	int 	i = 0;
-
 	/* restart auto negotion */
 	phy_reg = phy_read(tp->ioaddr, tp->phy_addr, 0, tp->chip_id);
 	phy_write(tp->ioaddr, tp->phy_addr, 0, 0x200|phy_reg, tp->chip_id);
@@ -1385,6 +1403,12 @@ static void dmfe_set_phyxcer(struct net_device *dev)
 	}
 	phy_write(tp->ioaddr, tp->phy_addr, 4, phy_reg, tp->chip_id);
 
+#if 0
+	phy_reg = phy_read(tp->ioaddr, tp->phy_addr, 0, tp->chip_id);
+	phy_reg &= ~(1 << 12); /* to close th auto negotiation */
+	phy_reg |= 1 << 8; /* Full duplex mode */
+	phy_reg &= ~(1 << 13); /* 10Mbps mode */
+#endif
 	/* Restart Auto-Negotiation */
 	phy_write(tp->ioaddr, tp->phy_addr, 0, 0x1200, tp->chip_id);
 

@@ -178,7 +178,6 @@ static void __init ls1x_irq_init(int base)
 static void ls1x_irq_dispatch(int n)
 {
 	u32 int_status, irq;
-
 	//printk("####ls1x interrupt :n=%d\n", n);
 	/* Get pending sources, masked by current enables */
 	int_status = __raw_readl(LS1X_INTC_INTISR(n)) &
@@ -207,7 +206,7 @@ void mach_irq_dispatch(unsigned int pending)
 	if (pending & 0x4) {
 		ls1x_irq_dispatch(0); 	/* IP2 */
 	}
-	if (pending & 0x8) {
+    else if (pending & 0x8) {
 		ls1x_irq_dispatch(1); /* IP3 */
 	}
 #endif

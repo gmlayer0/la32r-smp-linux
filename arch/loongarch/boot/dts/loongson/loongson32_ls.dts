@@ -76,7 +76,6 @@
                 interrupts = <4>;
                 dma-mask = <0x0 0xffffffff>;
             };
-#endif
 
         nand@0x1fe78000{
              #address-cells = <1>;
@@ -99,6 +98,7 @@
                  reg = <0x01400000 0x0>;
              };
          };
+#endif
 
     };
 };

@@ -255,7 +255,7 @@ vmalloc_fault:
 		pmd_t *pmd, *pmd_k;
 		pte_t *pte_k;
 
-		pgd = (pgd_t *) __csrrd(LOONGARCH_CSR_PGD) +offset ;
+		pgd = (pgd_t *) __csrrd_w(LOONGARCH_CSR_PGD) +offset ;
 		pgd_k = init_mm.pgd + offset;
 
 		if (!pgd_present(*pgd_k))

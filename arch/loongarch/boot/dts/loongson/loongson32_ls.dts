@@ -32,7 +32,7 @@
     memory {
         name = "memory";
         device_type = "memory";
-        reg =  <0x00000000  0x08000000>;
+        reg =  <0x00000000  0x1fe00000>;
         };
 
 	cpuic: interrupt-controller {

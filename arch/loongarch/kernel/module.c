@@ -75,7 +75,11 @@ static int apply_r_larch_mark_pcrel(struct module *me, u32 *location, Elf_Addr v
 static int apply_r_larch_sop_push_pcrel(struct module *me, u32 *location, Elf_Addr v,
 						s64 *rela_stack, size_t *rela_stack_top)
 {
+#ifdef CONFIG_32BIT
+	return rela_stack_push(v - (u32)location, rela_stack, rela_stack_top);
+#else
 	return rela_stack_push(v - (u64)location, rela_stack, rela_stack_top);
+#endif
 }
 
 static int apply_r_larch_sop_push_absolute(struct module *me, u32 *location, Elf_Addr v,
@@ -596,6 +600,8 @@ int apply_relocate(Elf_Shdr *sechdrs, const char *strtab,
 	return 0;
 }
 
+
+#ifdef CONFIG_MODULES_USE_ELF_RELA
 int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
 		       unsigned int symindex, unsigned int relsec,
 		       struct module *me)
@@ -651,3 +657,4 @@ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
 
 	return 0;
 }
+#endif

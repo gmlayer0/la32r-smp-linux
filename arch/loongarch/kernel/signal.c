@@ -127,6 +127,7 @@ static int restore_hw_fp_context(void __user *sc)
  * Extended context handling.
  */
 
+#if 0
 static inline void __user *sc_to_extcontext(void __user *sc)
 {
 	struct ucontext __user *uc;
@@ -149,6 +150,7 @@ static int restore_extcontext(void __user *buf)
 {
 	return 0;
 }
+#endif
 
 /*
  * Helper routines
@@ -156,7 +158,7 @@ static int restore_extcontext(void __user *buf)
 static int protected_save_fp_context(void __user *sc)
 {
 	int err = 0;
-	unsigned int used, ext_sz;
+	unsigned int used;
 	struct loongarch_abi *abi = current->thread.abi;
 	uint64_t __user *fpregs = sc + abi->off_sc_fpregs;
 	uint32_t __user *fcc = sc + abi->off_sc_fcsr;
@@ -188,11 +190,12 @@ static int protected_save_fp_context(void __user *sc)
 	}
 
 fp_done:
+#if 0
 	ext_sz = err = save_extcontext(sc_to_extcontext(sc));
 	if (err < 0)
 		return err;
 	used |= ext_sz ? USED_EXTCONTEXT : 0;
-
+#endif
 	return __put_user(used, flags);
 }
 
@@ -247,9 +250,10 @@ static int protected_restore_fp_context(void __user *sc)
 	}
 
 fp_done:
+#if 0
 	if (!err && (used & USED_EXTCONTEXT))
 		err = restore_extcontext(sc_to_extcontext(sc));
-
+#endif
 	return err ?: sig;
 }
 
@@ -576,11 +580,12 @@ static int signal_setup(void)
 	 * regardless of the type of signal, such that userland can always know
 	 * where to look if it wishes to find the extended context structures.
 	 */
+#if 0
 	BUILD_BUG_ON((offsetof(struct sigframe, sf_extcontext) -
 		      offsetof(struct sigframe, sf_sc)) !=
 		     (offsetof(struct rt_sigframe, rs_uc.uc_extcontext) -
 		      offsetof(struct rt_sigframe, rs_uc.uc_mcontext)));
-
+#endif
 #ifdef CONFIG_SMP
 	/* For now just do the cpu_has_fpu check when the functions are invoked */
 	save_fp_context = smp_save_fp_context;

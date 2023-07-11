@@ -17,10 +17,6 @@
  * of the extended context data is indicated by the magic value
  * END_EXTCONTEXT_MAGIC.
  */
-struct extcontext {
-	unsigned int		magic;
-	unsigned int		size;
-};
 
 /**
  * struct ucontext - user context structure
@@ -29,18 +25,20 @@ struct extcontext {
  * @uc_stack:
  * @uc_mcontext:	holds basic processor state
  * @uc_sigmask:
- * @uc_extcontext:	holds extended processor state
  */
 struct ucontext {
 	/* Historic fields matching asm-generic */
 	unsigned long		uc_flags;
 	struct ucontext		*uc_link;
 	stack_t			uc_stack;
-	struct sigcontext	uc_mcontext;
 	sigset_t		uc_sigmask;
+	/* reserved space, sigmask will be expanded in the future. */
+	__u8              __unused[1024 / 8 - sizeof(sigset_t)];
 
-	/* Extended context structures may follow ucontext */
-	//unsigned long long	uc_extcontext[0];
+	/* sigcontext will be expanded too, for example, vector ISA extension will
+	 * almost certainly add ISA state, putting mcontext at the end in order to
+	 * allow for infinite extensibility. */
+	struct sigcontext	uc_mcontext;
 };
 
 #endif /* __LOONGARCH_UAPI_ASM_UCONTEXT_H */

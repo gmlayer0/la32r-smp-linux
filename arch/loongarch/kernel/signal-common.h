@@ -20,8 +20,8 @@
 /*
  * Determine which stack to use..
  */
-extern void __user *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
-				 size_t frame_size);
+//extern void __user *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
+//				 struct extctx_layout *extctx);
 /* Check and clear pending FPU exceptions in saved CSR */
 extern int fpcsr_pending(unsigned int __user *fpcsr);
 

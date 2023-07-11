@@ -132,4 +132,20 @@ static inline union fpureg *get_fpu_regs(struct task_struct *tsk)
 	return tsk->thread.fpu.fpr;
 }
 
+static inline int thread_lsx_context_live(void)
+{
+        if (__builtin_constant_p(cpu_has_lsx) && !cpu_has_lsx)
+                return 0;
+
+        return test_thread_flag(TIF_LSX_CTX_LIVE);
+}
+
+static inline int thread_lasx_context_live(void)
+{
+        if (__builtin_constant_p(cpu_has_lasx) && !cpu_has_lasx)
+                return 0;
+
+        return test_thread_flag(TIF_LASX_CTX_LIVE);
+}
+
 #endif /* _ASM_FPU_H */

@@ -12,6 +12,23 @@
 #include <asm/thread_info.h>
 #include <uapi/asm/ptrace.h>
 
+struct pt_regs {
+	/* Saved main processor registers. */
+	unsigned long regs[32];
+
+	/* Saved special registers. */
+	unsigned long csr_crmd;
+	unsigned long csr_prmd;
+	unsigned long csr_euen;
+	unsigned long csr_ecfg;
+	unsigned long csr_estat;
+	unsigned long csr_epc;
+	unsigned long csr_badvaddr;
+	unsigned long orig_a0;
+	unsigned long __last[0];
+} __aligned(8);
+
+
 static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
 {
 	return regs->regs[3];

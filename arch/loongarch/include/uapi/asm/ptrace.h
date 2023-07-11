@@ -28,20 +28,34 @@
  * If you add a register here, also add it to regoffset_table[] in
  * arch/loongarch/kernel/ptrace.c.
  */
-struct pt_regs {
-	/* Saved main processor registers. */
-	unsigned long regs[32];
 
-	/* Saved special registers. */
-	unsigned long csr_crmd;
-	unsigned long csr_prmd;
-	unsigned long csr_euen;
-	unsigned long csr_ecfg;
-	unsigned long csr_estat;
-	unsigned long csr_epc;
-	unsigned long csr_badvaddr;
-	unsigned long orig_a0;
-	unsigned long __last[0];
-} __aligned(8);
+struct user_pt_regs {
+        /* Main processor registers. */
+        unsigned long regs[32];
+
+        /* Original syscall arg0. */
+        unsigned long orig_a0;
+
+        /* Special CSR registers. */
+        unsigned long csr_era;
+        unsigned long csr_badv;
+        unsigned long reserved[10];
+} __attribute__((aligned(8)));
+
+struct user_fp_state {
+        uint64_t fpr[32];
+        uint64_t fcc;
+        uint32_t fcsr;
+};
+
+struct user_lsx_state {
+        /* 32 registers, 128 bits width per register. */
+        uint64_t vregs[32*2];
+};
+
+struct user_lasx_state {
+        /* 32 registers, 256 bits width per register. */
+        uint64_t vregs[32*4];
+};
 
 #endif /* _UAPI_ASM_PTRACE_H */

@@ -155,7 +155,7 @@ static void __init ls1x_irq_init(int base)
 			__raw_writel(0x80004001, LS1X_INTC_INTIEN(n));
 			//__raw_writel(0x1, LS1X_INTC_INTIEN(n));
 		if (1 == n)
-			__raw_writel(0x8, LS1X_INTC_INTIEN(n));
+			__raw_writel(0xc, LS1X_INTC_INTIEN(n));
 	}
 
 	for (n = base; n < NR_IRQS_NEW; n++) {

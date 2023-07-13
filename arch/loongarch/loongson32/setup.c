@@ -364,3 +364,58 @@ static int __init register_gop_device(void)
 	return PTR_ERR_OR_ZERO(pd);
 }
 subsys_initcall(register_gop_device);
+
+#include <linux/serial_8250.h>
+#include <linux/if.h>
+#include <net/ethoc.h>
+#include <linux/usb/c67x00.h>
+/*----------------------------------------------------------------------------
+ *  USB Host/Device -- Cypress CY7C67300 yzk add
+ */
+
+static struct resource c67x00_res[] = {
+	[0] = { /* register space */
+		.start = 0x1fe00000,
+		.end   = 0x1fe10000 - 1,
+		.flags = IORESOURCE_MEM,
+	},
+	[1] = { /* IRQ number */
+		.start = 63,
+		.end   = 63,
+		.flags = IORESOURCE_IRQ,
+	},
+};
+
+static struct c67x00_platform_data c67x00_pdata = {
+	.sie_config = 0x11,
+	.hpi_regstep = 4,
+};
+
+static struct platform_device c67x00_device = {
+	.name = "c67x00",
+	.id = -1,
+	.num_resources = ARRAY_SIZE(c67x00_res),
+	.resource = c67x00_res,
+	.dev = {
+		.platform_data = &c67x00_pdata,
+	},
+};
+
+/* platform devices */
+static struct platform_device *platform_devices[] __initdata = {
+	&c67x00_device,
+};
+
+static int __init bxhpi_init(void)
+{
+	/* register platform devices */
+	platform_add_devices(platform_devices, ARRAY_SIZE(platform_devices));
+
+	return 0;
+}
+
+/*
+ * Register to be done during do_initcalls().
+ */
+arch_initcall(bxhpi_init);
+

@@ -68,7 +68,42 @@
                         phy_addr = <0xffffffff>;
                         dma-mask = <0xffffffff 0xffffffff>;
                 };
+
+		generic_conf0: generic_conf@1fd00100 {
+			compatible = "syscon";
+			reg = <0x1fd00100 0x0004>;
+		};
+
+		dma1: dma@0x1fd01160 {
+			compatible = "loongson,loongson2-apbdma";
+			reg = <0x1fd01160 0x8>;
+			loongson,apbdma-conf = <&generic_conf0 0x0 0x0>;
+			#dma-cells = <0>;
+			dma-channels = <1>;
+			interrupt-parent = <&cpuic>;
+			interrupts = <27>;			/* todo */
+		};
+
+		sdio@0x1fe0c000 {
+			#address-cells = <1>;
+
+			compatible = "loongson,ls2k_sdio";
+			reg = <0x1fe6c000 0x1000>;
+			interrupt-parent = <&cpuic>;
+			interrupts = <44>;
+			interrupt-names = "bx_mci_irq";
+
+			dmas = <&dma1>;
+			dma-names = "sdio_rw";
+			dma-mask = <0xffffffff 0xffffffff>;
+			clock-frequency = <33000000>;
+			bus-width = <1>;
+			cd-debounce-delay-ms = <0>;
+			non-removable;
+		};
+
 #if 0
+
             ahci@0x1fe30000{
                 compatible = "snps,spear-ahci";
                 reg = <0x1fe30000 0x10000>;

@@ -43,30 +43,27 @@ struct fwnode_handle *acpi_picdomain_handle[MAX_PCH_PICS];
 
 static void ls1x_irq_ack(struct irq_data *d)
 {
-	unsigned int bit = (d->irq - LS1X_IRQ_BASE) & 0x1f;
-	unsigned int n = (d->irq - LS1X_IRQ_BASE) >> 5;
+	unsigned int bit = (d->irq - (unsigned int)LS1X_IRQ_BASE) & 0x1f;
+	unsigned int n = (d->irq - (unsigned int)LS1X_IRQ_BASE) >> 5;
 
-//	printk("========== %s====\n", __func__);
 	__raw_writel(__raw_readl(LS1X_INTC_INTCLR(n))
 			| (1 << bit), LS1X_INTC_INTCLR(n));
 }
 
 static void ls1x_irq_mask(struct irq_data *d)
 {
-	unsigned int bit = (d->irq - LS1X_IRQ_BASE) & 0x1f;
-	unsigned int n = (d->irq - LS1X_IRQ_BASE) >> 5;
+	unsigned int bit = (d->irq - (unsigned int)LS1X_IRQ_BASE) & 0x1f;
+	unsigned int n = (d->irq - (unsigned int)LS1X_IRQ_BASE) >> 5;
 
-//	printk("========== %s====\n", __func__);
 	__raw_writel(__raw_readl(LS1X_INTC_INTIEN(n))
 			& ~(1 << bit), LS1X_INTC_INTIEN(n));
 }
 
 static void ls1x_irq_mask_ack(struct irq_data *d)
 {
-	unsigned int bit = (d->irq - LS1X_IRQ_BASE) & 0x1f;
-	unsigned int n = (d->irq - LS1X_IRQ_BASE) >> 5;
+	unsigned int bit = (d->irq - (unsigned int)LS1X_IRQ_BASE) & 0x1f;
+	unsigned int n = (d->irq - (unsigned int)LS1X_IRQ_BASE) >> 5;
 
-//	printk("========== %s====\n", __func__);
 	__raw_writel(__raw_readl(LS1X_INTC_INTIEN(n))
 			& ~(1 << bit), LS1X_INTC_INTIEN(n));
 	__raw_writel(__raw_readl(LS1X_INTC_INTCLR(n))
@@ -75,20 +72,18 @@ static void ls1x_irq_mask_ack(struct irq_data *d)
 
 static void ls1x_irq_unmask(struct irq_data *d)
 {
-	unsigned int bit = (d->irq - LS1X_IRQ_BASE) & 0x1f;
-	unsigned int n = (d->irq - LS1X_IRQ_BASE) >> 5;
+	unsigned int bit = (d->irq - (unsigned int)LS1X_IRQ_BASE) & 0x1f;
+	unsigned int n = (d->irq - (unsigned int)LS1X_IRQ_BASE) >> 5;
 
-//	printk("========== %s====\n", __func__);
 	__raw_writel(__raw_readl(LS1X_INTC_INTIEN(n))
 			| (1 << bit), LS1X_INTC_INTIEN(n));
 }
 
 static int ls1x_irq_settype(struct irq_data *d, unsigned int type)
 {
-	unsigned int bit = (d->irq - LS1X_IRQ_BASE) & 0x1f;
-	unsigned int n = (d->irq - LS1X_IRQ_BASE) >> 5;
+	unsigned int bit = (d->irq - (unsigned int)LS1X_IRQ_BASE) & 0x1f;
+	unsigned int n = (d->irq - (unsigned int)LS1X_IRQ_BASE) >> 5;
 
-	printk("========== %s====\n", __func__);
 	switch (type) {
 	case IRQ_TYPE_LEVEL_HIGH:
 		__raw_writel(__raw_readl(LS1X_INTC_INTPOL(n))
@@ -156,7 +151,9 @@ static void __init ls1x_irq_init(int base)
 		//__raw_writel(n ? 0x0 : 0xe001, LS1X_INTC_INTEDGE(n));			//todo!!
 		__raw_writel(n ? 0x0 : 0x0, LS1X_INTC_INTEDGE(n));			//todo!!
 		if (0 == n)
-			__raw_writel(0x1, LS1X_INTC_INTIEN(n));
+			//__raw_writel(0x80000001, LS1X_INTC_INTIEN(n));
+			__raw_writel(0x80004001, LS1X_INTC_INTIEN(n));
+			//__raw_writel(0x1, LS1X_INTC_INTIEN(n));
 		if (1 == n)
 			__raw_writel(0x8, LS1X_INTC_INTIEN(n));
 	}
@@ -174,7 +171,6 @@ static void __init ls1x_irq_init(int base)
 
 
 }
-
 static void ls1x_irq_dispatch(int n)
 {
 	u32 int_status, irq;
@@ -184,8 +180,7 @@ static void ls1x_irq_dispatch(int n)
 			__raw_readl(LS1X_INTC_INTIEN(n));
 
 	if (int_status) {
-		irq = LS1X_IRQ(n, __ffs(int_status));
-	//	printk("========== %s====irq is %d\n", __func__, irq);
+		irq = (unsigned int)LS1X_IRQ(n, __ffs(int_status));
 		do_IRQ(irq);
 	}
 }

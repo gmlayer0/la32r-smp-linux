@@ -28,18 +28,19 @@
  * in arch/loongarch/kernel/asm-offsets.c
  *
  */
-#ifndef CONFIG_32BIT
+#if (__SIZEOF_POINTER__ == 4)
 struct sigcontext {
-	__u64	sc_pc;
-	__u64	sc_regs[32];
+	__u32	sc_pc;
+	__u32	sc_regs[32];
 	__u32	sc_flags;
 	/* reserved space */
 	__u64   sc_extcontext[0] __attribute__((__aligned__(16)));
 };
-#else
+#endif
+#if (__SIZEOF_POINTER__ == 8)
 struct sigcontext {
-	__u32	sc_pc;
-	__u32	sc_regs[32];
+	__u64	sc_pc;
+	__u64	sc_regs[32];
 	__u32	sc_flags;
 	/* reserved space */
 	__u64   sc_extcontext[0] __attribute__((__aligned__(16)));

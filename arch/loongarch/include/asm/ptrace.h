@@ -28,7 +28,6 @@ struct pt_regs {
 	unsigned long __last[0];
 } __aligned(8);
 
-
 static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
 {
 	return regs->regs[3];

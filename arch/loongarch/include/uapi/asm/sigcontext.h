@@ -9,7 +9,7 @@
 #define _UAPI_ASM_SIGCONTEXT_H
 
 #include <linux/types.h>
-#include <asm/processor.h>
+#include <linux/posix_types.h>
 
 /* scalar FP context was used */
 #define SC_USED_FP			(1 << 0)
@@ -22,7 +22,6 @@
 /* extended context was used, see struct extcontext for details */
 #define USED_EXTCONTEXT		(1 << 1)
 
-#include <linux/posix_types.h>
 /*
  * Keep this struct definition in sync with the sigcontext fragment
  * in arch/loongarch/kernel/asm-offsets.c
@@ -58,7 +57,7 @@ struct sctx_info {
 #define FPU_CTX_MAGIC           0x46505501
 #define FPU_CTX_ALIGN           8
 struct fpu_context {
-	__u64   regs[32] FPU_ALIGN;
+	__u64   regs[32];
 	__u64   fcc;
 	__u32   fcsr;
 };

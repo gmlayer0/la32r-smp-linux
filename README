@@ -1,4 +1,7 @@
 内核编译
+内核编译可以选择单独编译和buildroot编译。
+
+单独编译：
     1.进入源码目录
 	cd linux-5.14-loongarch32
 
@@ -9,8 +12,29 @@
     3.编译好的busybox放在了initrd_pck32目录下,编译内核时需要指明其路径，修改方式有两种:
 	    3.1 修改la_build/.config文件中的CONFIG_INITRAMFS_SOURCE参数
 	    例：CONFIG_INITRAMFS_SOURCE="~/linux-5.14-loongarch32/initrd_pck32"
-        3.2 在menuconfig中"General Setup" -> "Initramfs source file(s)" 修改
+            3.2 在menuconfig中"General Setup" -> "Initramfs source file(s)" 修改
     
     4. 执行 ./la_build.sh开始编译.
 
     5.生成的vmlinux内核位于la_build目录下
+
+使用la32的buildroot编译，可以直接编译出内核以及文件系统：
+    1. 进入buildroot源码目录
+	cd /path/to/buildroot
+
+    2. 配置交叉编译工具链位于本地的路径
+	make menuconfig
+	    |---> Toolchain
+		|---> Toolchain path
+
+    3. 配置内核的URL地址
+	make menuconfig
+	    |---> kernel
+		|----> URL of custom kernel tarball
+	(也可以直接将内核的tar文件拷贝到‘/path/to/buildroot/dl/linux’路径下，就不用配置URL了)
+
+    4. 保存配置，退出，编译
+	make
+
+    5. 生成的vmlinux位于‘/path/to/buildroot/output/images’路径下。
+

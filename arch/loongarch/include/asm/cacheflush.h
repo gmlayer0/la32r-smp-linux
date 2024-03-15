@@ -22,6 +22,8 @@
 #define ClearPageDcacheDirty(page)	\
 	clear_bit(PG_dcache_dirty, &(page)->flags)
 
+extern void local_flush_cache_all(void);
+
 extern void local_flush_icache_range(unsigned long start, unsigned long end);
 
 #define flush_icache_range	local_flush_icache_range
@@ -37,18 +39,31 @@ extern void copy_from_user_page(struct vm_area_struct *vma,
 
 #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
 
-#define flush_cache_all()				do { } while (0)
-#define flush_cache_mm(mm)				do { } while (0)
-#define flush_cache_dup_mm(mm)				do { } while (0)
-#define flush_cache_range(vma, start, end)		do { } while (0)
-#define flush_cache_page(vma, vmaddr, pfn)		do { } while (0)
-#define flush_cache_vmap(start, end)			do { } while (0)
-#define flush_cache_vunmap(start, end)			do { } while (0)
-#define flush_icache_page(vma, page)			do { } while (0)
-#define flush_icache_user_page(vma, page, addr, len)	do { } while (0)
-#define flush_dcache_page(page)				do { } while (0)
-#define flush_dcache_mmap_lock(mapping)			do { } while (0)
-#define flush_dcache_mmap_unlock(mapping)		do { } while (0)
+//#define flush_cache_all()				do { } while (0)
+//#define flush_cache_mm(mm)				do { } while (0)
+//#define flush_cache_dup_mm(mm)				do { } while (0)
+//#define flush_cache_range(vma, start, end)		do { } while (0)
+//#define flush_cache_page(vma, vmaddr, pfn)		do { } while (0)
+//#define flush_cache_vmap(start, end)			do { } while (0)
+//#define flush_cache_vunmap(start, end)			do { } while (0)
+//#define flush_icache_page(vma, page)			do { } while (0)
+//#define flush_icache_user_page(vma, page, addr, len)	do { } while (0)
+//#define flush_dcache_page(page)				do { } while (0)
+//#define flush_dcache_mmap_lock(mapping)			do { } while (0)
+//#define flush_dcache_mmap_unlock(mapping)		do { } while (0)
+
+#define flush_cache_all()				              local_flush_cache_all()
+#define flush_cache_mm(mm)				              local_flush_cache_all()
+#define flush_cache_dup_mm(mm)					      local_flush_cache_all()
+#define flush_cache_range(vma, start, end)	          local_flush_cache_all()
+#define flush_cache_page(vma, vmaddr, pfn)	          local_flush_cache_all()
+#define flush_cache_vmap(start, end)		          local_flush_cache_all()
+#define flush_cache_vunmap(start, end)		          local_flush_cache_all()
+#define flush_icache_page(vma, page)		          local_flush_cache_all()
+#define flush_icache_user_page(vma, page, addr, len)  local_flush_cache_all() 
+#define flush_dcache_page(page)				          local_flush_cache_all()
+#define flush_dcache_mmap_lock(mapping)		          local_flush_cache_all()
+#define flush_dcache_mmap_unlock(mapping)	          local_flush_cache_all()
 
 #define cache_op(op, addr)						\
 	__asm__ __volatile__(						\

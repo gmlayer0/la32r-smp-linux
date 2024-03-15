@@ -24,10 +24,24 @@
 #include <asm/processor.h>
 #include <asm/setup.h>
 
+void local_flush_cache_all(void)
+{  
+   u32 num, tmp = 0; 
+   for (num = 0; num < 256; num++) {
+       cache_op(9, tmp); 
+       cache_op(9, tmp + 0x1);
+
+       tmp = tmp >> 4;
+       tmp += 1; 
+       tmp = tmp << 4;
+   }
+}
+
 /* Cache operations. */
 void local_flush_icache_range(unsigned long start, unsigned long end)
 {
 	asm volatile ("\tibar 0\n"::);
+	local_flush_cache_all();
 }
 
 void __update_cache(unsigned long address, pte_t pte)

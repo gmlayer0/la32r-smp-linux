@@ -35,9 +35,11 @@ dtb_found:
 #endif
 
 #if CONFIG_BX_SOC
+	li.w            t2, 0xfffffff
 	la              t0, __bss_start         # clear .bss
         PTR_S           zero, t0, 0
         la              t1, __bss_stop - LONGSIZE
+		and             t1, t1, t2
 1:
         PTR_ADDIU	t0, t0, LONGSIZE
         PTR_S		zero, t0, 0
@@ -45,12 +47,16 @@ dtb_found:
 #endif
 
         la              t0, fw_arg0
+		and             t0, t0, t2
         PTR_S           a0, t0, 0               # firmware arguments
         la              t0, fw_arg1
+		and             t0, t0, t2
         PTR_S           a1, t0, 0
         la              t0, fw_arg2
+		and             t0, t0, t2
         PTR_S           a2, t0, 0
         la              t0, fw_arg3
+		and             t0, t0, t2
         PTR_S           a3, t0, 0
 
 #ifdef CONFIG_USE_OF

@@ -34,7 +34,7 @@ SYM_CODE_START(kernel_entry)                    # kernel entry point
 dtb_found:
 #endif
 
-#if 0
+#if CONFIG_BX_SOC
 	la              t0, __bss_start         # clear .bss
         PTR_S           zero, t0, 0
         la              t1, __bss_stop - LONGSIZE

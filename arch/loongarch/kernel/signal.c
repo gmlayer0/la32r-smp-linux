@@ -662,10 +662,7 @@ static int smp_restore_fp_context(void __user *sc)
 }
 #endif
 
-<<<<<<< HEAD
 #if 0
-=======
->>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)
 static int signal_setup(void)
 {
 	/*
@@ -673,19 +670,12 @@ static int signal_setup(void)
 	 * regardless of the type of signal, such that userland can always know
 	 * where to look if it wishes to find the extended context structures.
 	 */
-<<<<<<< HEAD
 #if 0
-=======
->>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)
 	BUILD_BUG_ON((offsetof(struct sigframe, sf_extcontext) -
 		      offsetof(struct sigframe, sf_sc)) !=
 		     (offsetof(struct rt_sigframe, rs_uc.uc_extcontext) -
 		      offsetof(struct rt_sigframe, rs_uc.uc_mcontext)));
-<<<<<<< HEAD
 #endif
-=======
-
->>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)
 #ifdef CONFIG_SMP
 	/* For now just do the cpu_has_fpu check when the functions are invoked */
 	save_fp_context = smp_save_fp_context;
@@ -704,7 +694,4 @@ static int signal_setup(void)
 }
 
 arch_initcall(signal_setup);
-<<<<<<< HEAD
 #endif
-=======
->>>>>>> bb6b2ca56 (LoongArch32r : set cpu_clock_freq reliable .)

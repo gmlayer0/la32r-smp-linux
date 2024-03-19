@@ -14,7 +14,7 @@
                 bootargs = "earlycon";
         };
 
-
+/*
 	extioiic: interrupt-controller@0x1fe11600 {
                 compatible = "loongson,extioi-interrupt-controller";
                 interrupt-controller;
@@ -26,7 +26,7 @@
                 misc_func=<0x100>;
                 eio_en_off=<27>;
         };
-
+*/
 
 
     memory {
@@ -51,6 +51,8 @@
                         compatible = "ns16550a";
                         reg = < 0x1fe001e0  0x10>;
                         clock-frequency = <33000000>;
+                        /*clock-frequency = <26000000>;*/
+                        /*clock-frequency = <50000000>;*/
                         interrupt-parent = <&cpuic>;
                         interrupts = <2>;
                         no-loopback-test;
@@ -62,8 +64,8 @@
                         interrupt-parent = <&cpuic>;
                         interrupts = <3>;
                         interrupt-names = "macirq";
-                        mac-address = [ 64 48 48 48 48 60 ];/* [>mac 64:48:48:48:48:60 <]*/
-                        phy-mode = "rgmii";
+                       /* mac-address = [ 64 48 48 48 48 60 ];*//* [>mac 64:48:48:48:48:60 <]*/
+                       /* phy-mode = "rgmii";*/
                         bus_id = <0x0>;
                         phy_addr = <0xffffffff>;
                         dma-mask = <0xffffffff 0xffffffff>;

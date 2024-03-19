@@ -43,7 +43,13 @@ const efi_system_table_t *efi_system_table;
 
 extern void __init memblock_remove_mem(void);
 extern char __dtb_start[];
+#ifdef CONFIG_LS_SOC
 extern u32 __dtb_loongson32_ls_begin[];
+static u32 *__dtb_begin = __dtb_loongson32_ls_begin;
+#elif CONFIG_BX_SOC
+extern u32 __dtb_loongson32_bx_begin[];
+static u32 *__dtb_begin = __dtb_loongson32_bx_begin;
+#endif
 extern void __init __dt_setup_arch(void *bph);
 extern bool __init early_init_dt_verify(void *params);
 extern inline u64 of_read_number(const __be32 *cell, int size);
@@ -326,7 +332,7 @@ void __init platform_init(void)
 	acpi_table_upgrade();
 #endif
 
-	loongson_fdt_blob = __dtb_loongson32_ls_begin;
+	loongson_fdt_blob = __dtb_begin;
 	__dt_setup_arch(loongson_fdt_blob);
 	early_init_fdt_reserve_self();
 	early_init_fdt_scan_reserved_mem();

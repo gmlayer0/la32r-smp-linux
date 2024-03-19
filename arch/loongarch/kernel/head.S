@@ -34,6 +34,8 @@ SYM_CODE_START(kernel_entry)                    # kernel entry point
 dtb_found:
 #endif
 
+	li.w            t2, 0xffffffff
+
 #if CONFIG_BX_SOC
 	li.w            t2, 0xfffffff
 	la              t0, __bss_start         # clear .bss

@@ -365,6 +365,7 @@ static int __init register_gop_device(void)
 }
 subsys_initcall(register_gop_device);
 
+#ifdef BX_SOC
 #include <linux/serial_8250.h>
 #include <linux/if.h>
 #include <net/ethoc.h>
@@ -418,4 +419,4 @@ static int __init bxhpi_init(void)
  * Register to be done during do_initcalls().
  */
 arch_initcall(bxhpi_init);
-
+#endif

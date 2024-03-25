@@ -24,6 +24,7 @@
 #include <asm/processor.h>
 #include <asm/setup.h>
 
+#ifdef BX_SOC
 void local_flush_cache_all(void)
 {  
    u32 num, tmp = 0; 
@@ -36,12 +37,15 @@ void local_flush_cache_all(void)
        tmp = tmp << 4;
    }
 }
+#endif
 
 /* Cache operations. */
 void local_flush_icache_range(unsigned long start, unsigned long end)
 {
 	asm volatile ("\tibar 0\n"::);
+#ifdef BX_SOC
 	local_flush_cache_all();
+#endif
 }
 
 void __update_cache(unsigned long address, pte_t pte)

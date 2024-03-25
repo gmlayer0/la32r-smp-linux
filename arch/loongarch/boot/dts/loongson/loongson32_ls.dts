@@ -16,7 +16,6 @@
 		bootargs = "earlycon";
 	};
 
-
 	extioiic: interrupt-controller@0x1fe11600 {
 		compatible = "loongson,extioi-interrupt-controller";
 		interrupt-controller;
@@ -29,12 +28,10 @@
 		eio_en_off=<27>;
 	};
 
-
-
 	memory {
 		name = "memory";
 		device_type = "memory";
-		reg =  <0x00000000  0x1fe00000>;
+		reg = <0x00000000  0x08000000>;
 	};
 
 	cpuic: interrupt-controller {
@@ -47,11 +44,11 @@
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
-		ranges = <0x10000000 0x10000000 0x10000000 >;
+		ranges = <0x10000000 0x10000000 0x10000000>;
 
 		cpu_uart0: serial@0x1fe001e0 {
 			compatible = "ns16550a";
-			reg = < 0x1fe001e0  0x10>;
+			reg = <0x1fe001e0  0x10>;
 			clock-frequency = <33000000>;
 			interrupt-parent = <&cpuic>;
 			interrupts = <2>;
@@ -70,7 +67,6 @@
 			phy_addr = <0xffffffff>;
 			dma-mask = <0xffffffff 0xffffffff>;
 		};
-
 #if 0
 		ahci@0x1fe30000 {
 			compatible = "snps,spear-ahci";
@@ -102,7 +98,6 @@
 			};
 		};
 #endif
-
 	};
 };
 

@@ -16,11 +16,10 @@
 		bootargs = "earlycon";
 	};
 
-
 	memory {
 		name = "memory";
 		device_type = "memory";
-		reg =  <0x200000  0xee00000>;
+		reg = <0x200000 0xee00000>;
 	};
 
 	cpuic: interrupt-controller {
@@ -33,18 +32,18 @@
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
-		ranges = <0x10000000 0x10000000 0x10000000 >;
+		ranges = <0x10000000 0x10000000 0x10000000>;
 
 		cpu_uart0: serial@0x1fe001e0 {
 			compatible = "ns16550a";
-			reg = < 0x1fe40000  0x10>;
+			reg = <0x1fe40000  0x10>;
 			clock-frequency = <33000000>;
 			interrupt-parent = <&cpuic>;
 			interrupts = <13>;
 			no-loopback-test;
 		};
 
-		gmac0: dmfe@0x1ff00000{
+		gmac0: dmfe@0x1ff00000 {
 			compatible = "dmfe";
 			reg = <0x1fe10000 0x10000>;
 			interrupt-parent = <&cpuic>;
@@ -87,9 +86,8 @@
 			cd-debounce-delay-ms = <0>;
 			non-removable;
 		};
-
 #if 0
-		ahci@0x1fe30000{
+		ahci@0x1fe30000 {
 			compatible = "snps,spear-ahci";
 			reg = <0x1fe30000 0x10000>;
 			interrupt-parent = <&cpuic>;
@@ -97,7 +95,7 @@
 			dma-mask = <0x0 0xffffffff>;
 		};
 
-		nand@0x1fe78000{
+		nand@0x1fe78000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
 			compatible = "ls1a-nand";
@@ -119,7 +117,6 @@
 			};
 		};
 #endif
-
 	};
 };
 

@@ -24,73 +24,93 @@
 
 #define DMFE_IO_SIZE	0x80
 
-#define	DMFE1_IRQ	0x01
-#define DMFE2_IRQ	0x02
-#define TX_DESC_CNT     0x20            /* Allocated Tx descriptors */
-#define RX_DESC_CNT     0x40            /* Allocated Rx descriptors */
-#define DESC_ALL_CNT    (TX_DESC_CNT + RX_DESC_CNT)
-#define RX_BUF_SIZE	0x620
-#define TX_BUF_ALLOC    0x600
-#define MAX_PACKET_SIZE 1514
-#define TX_MAX_SEND_CNT 0x1             /* Maximum tx packet per time */
-#define TX_FREE_DESC_CNT (TX_DESC_CNT - 2)	/* Max TX packet count */
+#define	DMFE1_IRQ		0x01
+#define DMFE2_IRQ		0x02
+#define TX_DESC_CNT		0x20			/* Allocated Tx descriptors */
+#define RX_DESC_CNT		0x40			/* Allocated Rx descriptors */
+#define DESC_ALL_CNT		(TX_DESC_CNT + RX_DESC_CNT)
+#define RX_BUF_SIZE		0x620
+#define TX_BUF_ALLOC		0x600
+#define MAX_PACKET_SIZE		1514
+#define TX_MAX_SEND_CNT		0x1			/* Maximum tx packet per time */
+#define TX_FREE_DESC_CNT	(TX_DESC_CNT - 2)	/* Max TX packet count */
 
-#define CR0_DEFAULT     0x00E00000      /* TX & RX burst mode  */
-#define CR6_DEFAULT     0x00080000      /* HD */
-#define CR7_DEFAULT     0x180c1         /* Interrupt enable    */
-#define CR15_DEFAULT    0x06            /* TxJabber RxWatchdog */
-#define TDES0_ERR_MASK  0x4302          /* TXJT, LC, EC, FUE   */
+#define CR0_DEFAULT	0x00E00000	/* TX & RX burst mode  */
+#define CR6_DEFAULT	0x00080000	/* HD */
+#define CR7_DEFAULT	0x180c1		/* Interrupt enable    */
+#define CR15_DEFAULT	0x06		/* TxJabber RxWatchdog */
+#define TDES0_ERR_MASK	0x4302		/* TXJT, LC, EC, FUE   */
 
-#define DMFE_10MHF      0
-#define DMFE_100MHF     1
-#define DMFE_10MFD      4
-#define DMFE_100MFD     5
-#define DMFE_AUTO       8
-#define DMFE_1M_HPNA    0x10
-#define MAX_CHECK_PACKET 0x8000
-#define TOUT_LOOP       100000
+#define DMFE_10MHF		0
+#define DMFE_100MHF		1
+#define DMFE_10MFD		4
+#define DMFE_100MFD		5
+#define DMFE_AUTO		8
+#define DMFE_1M_HPNA		0x10
+#define MAX_CHECK_PACKET	0x8000
+#define TOUT_LOOP		100000
 
-#define DMFE_TIMER_WUT  (jiffies + HZ * 1)/* timer wakeup time : 1 second */
+#define DMFE_TIMER_WUT	(jiffies + HZ * 1)	/* timer wakeup time : 1 second */
 
-#define DMFE_MAX_MULTICAST 14
+#define DMFE_MAX_MULTICAST	14
 
-#define IRQ2CHIPID(irq) irq
-#define IRQ2PHYADDR(irq) (irq + 4)	// (irq ? 1:5)
-#define TIMEOUT		3*HZ
+#define IRQ2CHIPID(irq)		irq
+#define IRQ2PHYADDR(irq)	(irq + 4)	// (irq ? 1:5)
+#define TIMEOUT			3*HZ
 
-#define PCI_DM9132_ID   0x91321282      /* Davicom DM9132 ID */
-#define PCI_DM9102_ID   0x91021282      /* Davicom DM9102 ID */
-#define PCI_DM9100_ID   0x91001282      /* Davicom DM9100 ID */
-#define PCI_DM9009_ID   0x90091282      /* Davicom DM9009 ID */
+#define PCI_DM9132_ID	0x91321282	/* Davicom DM9132 ID */
+#define PCI_DM9102_ID	0x91021282	/* Davicom DM9102 ID */
+#define PCI_DM9100_ID	0x91001282	/* Davicom DM9100 ID */
+#define PCI_DM9009_ID	0x90091282	/* Davicom DM9009 ID */
 
-#define PHY_DATA_1      0x20000
-#define PHY_DATA_0      0x00000
-#define MDCLKH          0x10000
-//#define DES0_BASE       0xa0000000
-#define DES0_BASE       0x80000000
+#define PHY_DATA_1	0x20000
+#define PHY_DATA_0	0x00000
+#define MDCLKH		0x10000
+//#define DES0_BASE	0xa0000000
+#define DES0_BASE	0x80000000
 #define dw32(reg, val)	iowrite32(val, tp->ioaddr + (reg))
 #define dr32(reg)	ioread32(tp->ioaddr + (reg))
 
-#define SHOW_MEDIA_TYPE(mode) printk(" dmfe: Change Speed to %sMhz %s duplex\n",mode & 1 ?"100":"10", mode & 4 ? "full":"half");
+#define SHOW_MEDIA_TYPE(mode) \
+	printk(" dmfe: Change Speed to %sMhz %s duplex\n",mode & 1 ?"100":"10", mode & 4 ? "full":"half");
 
-#define CONFIG_SOC_MAC_HARDWARE_ACCELERATE  1
-//#define DBG_FLAG3 1
-//#define DBG_FLAG 1
-//#define DBG_FLAG2 1
-#define MAC_REG_BASE    0xbf005200
+#define CONFIG_SOC_MAC_HARDWARE_ACCELERATE	1
+//#define DBG_FLAG3	1
+//#define DBG_FLAG	1
+//#define DBG_FLAG2	1
+#define MAC_REG_BASE	0xbf005200
 #define RX_COPY_SIZE	100
-#define DM910X_RESET    1
+#define DM910X_RESET	1
 
 enum dmfe_offsets {
-        CSR0 = 0x00, CSR1 = 0x08, CSR2 = 0x10, CSR3 = 0x18, CSR4 = 0x20,
-        CSR5 = 0x28, CSR6 = 0x30, CSR7 = 0x38, CSR8 = 0x40, CSR9 = 0x48,
-        CSR10 = 0x50, CSR11 = 0x58, CSR12 = 0x60, CSR13 = 0x68, CSR14 = 0x70,
-        CSR15 = 0x78
+	CSR0 = 0x00,
+	CSR1 = 0x08,
+	CSR2 = 0x10,
+	CSR3 = 0x18,
+	CSR4 = 0x20,
+	CSR5 = 0x28,
+	CSR6 = 0x30,
+	CSR7 = 0x38,
+	CSR8 = 0x40,
+	CSR9 = 0x48,
+	CSR10 = 0x50,
+	CSR11 = 0x58,
+	CSR12 = 0x60,
+	CSR13 = 0x68,
+	CSR14 = 0x70,
+	CSR15 = 0x78,
 };
 enum dmfe_CR6_bits {
-        CR6_RXSC = 0x2, CR6_PBF = 0x8, CR6_PM = 0x40, CR6_PAM = 0x80,
-        CR6_FDM = 0x200, CR6_TXSC = 0x2000, CR6_STI = 0x100000,
-        CR6_SFT = 0x200000, CR6_RXA = 0x40000000, CR6_NO_PURGE = 0x20000000
+	CR6_RXSC = 0x2,
+	CR6_PBF = 0x8,
+	CR6_PM = 0x40,
+	CR6_PAM = 0x80,
+	CR6_FDM = 0x200,
+	CR6_TXSC = 0x2000,
+	CR6_STI = 0x100000,
+	CR6_SFT = 0x200000,
+	CR6_RXA = 0x40000000,
+	CR6_NO_PURGE = 0x20000000,
 };
 
 enum dmfe_control {
@@ -98,16 +118,22 @@ enum dmfe_control {
 };
 
 struct tx_desc {
-        volatile u32 tdes0, tdes1, tdes2, tdes3; /* Data for the card */
-        char *tx_buf_ptr;
-        struct sk_buff *skb;               	 /* Data for us */
-        struct tx_desc *next_desc;
+	volatile u32 	tdes0;
+	volatile u32	tdes1;
+	volatile u32	tdes2;
+	volatile u32	tdes3;		/* Data for the card */
+	char		*tx_buf_ptr;
+	struct sk_buff	*skb;		/* Data for us */
+	struct tx_desc	*next_desc;
 } __attribute__((aligned(32)));
 
 struct rx_desc {
-        volatile u32 rdes0, rdes1, rdes2, rdes3; /* Data for the card */
-        struct sk_buff *skb;     /* Data for us */
-        struct rx_desc *next_desc;
+	volatile u32	rdes0;
+	volatile u32	rdes1;
+	volatile u32	rdes2;
+	volatile u32	rdes3;		/* Data for the card */
+	struct sk_buff	*skb;		/* Data for us */
+	struct rx_desc	*next_desc;
 } __attribute__((aligned(32)));
 
 struct dmfe_private {
@@ -124,22 +150,22 @@ struct dmfe_private {
 	u16			PHY_reg4;
 
 	u8			phy_addr;
-        u8 			media_mode;	/* user specify media mode */
-        u8 			op_mode;	/* real work media mode */
-	u8 			link_failed;    /* Ever link failed */
-        u8                      dm910x_chk_mode;	/* Operating mode check */
+	u8 			media_mode;		/* user specify media mode */
+	u8 			op_mode;		/* real work media mode */
+	u8 			link_failed;		/* Ever link failed */
+	u8			dm910x_chk_mode;	/* Operating mode check */
 
 	struct tx_desc		*tx_desc_head;
 	dma_addr_t		tx_desc_dma_head;
 	struct rx_desc		*rx_desc_head;
 	dma_addr_t		rx_desc_dma_head;
 
-        dma_addr_t              buf_pool_dma_ptr;	/* Tx buffer pool memory */
-	dma_addr_t              buf_pool_dma_start;	/* Tx buffer pool align dword */
+	dma_addr_t		buf_pool_dma_ptr;	/* Tx buffer pool memory */
+	dma_addr_t		buf_pool_dma_start;	/* Tx buffer pool align dword */
 
-        unsigned char *buf_pool_ptr;	/* Tx buffer pool memory */
-	unsigned char *buf_pool_start;	/* Tx buffer pool align dword */
-	unsigned char *desc_pool_ptr;	/* descriptor pool memory */
+	unsigned char		*buf_pool_ptr;		/* Tx buffer pool memory */
+	unsigned char		*buf_pool_start;	/* Tx buffer pool align dword */
+	unsigned char		*desc_pool_ptr;		/* descriptor pool memory */
 
 	struct tx_desc		*cpu_cur_tx;
 	struct tx_desc		*mac_cur_tx;
@@ -228,10 +254,9 @@ static struct net_device *dmfe_init_one(struct device *device, void *base_addr, 
 
 	spin_lock_init(&tp->lock);
 	if(ether_set)
-	memcpy(dev->dev_addr, hwaddr, ETH_ALEN);
-	else
-	{
-                //dev->dev_addr[0] = 0x00;
+		memcpy(dev->dev_addr, hwaddr, ETH_ALEN);
+	else {
+		//dev->dev_addr[0] = 0x00;
 		//dev->dev_addr[1] = 0x00;
 		//dev->dev_addr[2] = 0x6c;
 		//get_random_bytes(&dev->dev_addr[3], 3);
@@ -239,9 +264,9 @@ static struct net_device *dmfe_init_one(struct device *device, void *base_addr, 
 		dev->dev_addr[0] = 0x00;
 		dev->dev_addr[1] = 0x98;
 		dev->dev_addr[2] = 0x76;
-                dev->dev_addr[3] = 0x64;
-                dev->dev_addr[4] = 0x32;
-                dev->dev_addr[5] = 0x19;
+		dev->dev_addr[3] = 0x64;
+		dev->dev_addr[4] = 0x32;
+		dev->dev_addr[5] = 0x19;
 	}
 	//dev->dev_addr[5] += irq-DMFE1_IRQ;
 
@@ -263,17 +288,17 @@ static inline unsigned int random(unsigned int ubound)
 	static unsigned int a = 1588635695,
 		q = 2,
 		r = 1117695901;
-		if(!RANDOM_SEED)RANDOM_SEED=jiffies;
+	if(!RANDOM_SEED)RANDOM_SEED=jiffies;
 	RANDOM_SEED = a*(RANDOM_SEED % q) - r*(RANDOM_SEED / q);
 	return RANDOM_SEED % ubound;
 }
 
 static int __init setether(char *str)
 {
-int i;
-for(i=0;i<6;i++,str+=3)
-hwaddr[i]=simple_strtoul(str,0,16);
-ether_set=1;
+	int i;
+	for(i=0;i<6;i++,str+=3)
+		hwaddr[i]=simple_strtoul(str,0,16);
+	ether_set=1;
 	return 1;
 }
 
@@ -294,14 +319,14 @@ static int dmfe_descriptor_init(struct net_device *dev)
 	int	i;
 	struct sk_buff		*skb;
 
-        struct tx_desc *tmp_tx;
+	struct tx_desc *tmp_tx;
 	struct rx_desc *tmp_rx;
 	unsigned char *tmp_buf;
 	dma_addr_t tmp_tx_dma, tmp_rx_dma;
 	dma_addr_t tmp_buf_dma;
 
-        dev->dev.coherent_dma_mask = 0xffffffffUL;
-        dev->dev.dma_mask  = &mask_all;
+	dev->dev.coherent_dma_mask = 0xffffffffUL;
+	dev->dev.dma_mask  = &mask_all;
 	tp->tx_desc_head = (struct tx_desc*)dma_alloc_coherent(&dev->dev, sizeof(struct tx_desc)*DESC_ALL_CNT + 0x20, &tp->tx_desc_dma_head, GFP_KERNEL);
 	if (tp->tx_desc_head == NULL) {
 		ret = -ENOMEM;
@@ -313,37 +338,37 @@ static int dmfe_descriptor_init(struct net_device *dev)
 	//	ret = -ENOMEM;
 	//	goto no_rx_desc;
 	//}
-        tp->rx_desc_head = (void *)tp->tx_desc_head + sizeof(struct tx_desc) * TX_DESC_CNT;
-        tp->rx_desc_dma_head = tp->tx_desc_dma_head + sizeof(struct tx_desc) * TX_DESC_CNT;
+	tp->rx_desc_head = (void *)tp->tx_desc_head + sizeof(struct tx_desc) * TX_DESC_CNT;
+	tp->rx_desc_dma_head = tp->tx_desc_dma_head + sizeof(struct tx_desc) * TX_DESC_CNT;
 
-        tp->buf_pool_ptr = dma_alloc_coherent(&dev->dev,TX_BUF_ALLOC * TX_DESC_CNT + 4,&tp->buf_pool_dma_ptr, GFP_KERNEL);
+	tp->buf_pool_ptr = dma_alloc_coherent(&dev->dev,TX_BUF_ALLOC * TX_DESC_CNT + 4,&tp->buf_pool_dma_ptr, GFP_KERNEL);
 	if (!tp->buf_pool_ptr) {
 		ret = -ENOMEM;
 		goto err_out_free_buf;
 	}
-    tp->buf_pool_start = tp->buf_pool_ptr;
-    tp->buf_pool_dma_start = tp->buf_pool_dma_ptr;
+	tp->buf_pool_start = tp->buf_pool_ptr;
+	tp->buf_pool_dma_start = tp->buf_pool_dma_ptr;
 #ifdef DBG_FLAG3
-    printk("dmfe_descriptor_init===>tp->tx_desc_head:%x,tp->tx_desc_dma_head:%x\n",tp->tx_desc_head,tp->tx_desc_dma_head);
-    printk("dmfe_descriptor_init===>tp->rx_desc_head:%x,tp->rx_desc_dma_head:%x\n",tp->rx_desc_head,tp->rx_desc_dma_head);
-    printk("dmfe_descriptor_init===>tp->buf_pool_ptr:%x,tp->buf_pool_dma_ptr:%x\n",tp->buf_pool_ptr,tp->buf_pool_dma_ptr);
+	printk("dmfe_descriptor_init===>tp->tx_desc_head:%x,tp->tx_desc_dma_head:%x\n",tp->tx_desc_head,tp->tx_desc_dma_head);
+	printk("dmfe_descriptor_init===>tp->rx_desc_head:%x,tp->rx_desc_dma_head:%x\n",tp->rx_desc_head,tp->rx_desc_dma_head);
+	printk("dmfe_descriptor_init===>tp->buf_pool_ptr:%x,tp->buf_pool_dma_ptr:%x\n",tp->buf_pool_ptr,tp->buf_pool_dma_ptr);
 #endif
-    tmp_buf = tp->buf_pool_start;
-    tmp_buf_dma = tp->buf_pool_dma_start;
-    tmp_tx_dma = tp->tx_desc_dma_head;
+	tmp_buf = tp->buf_pool_start;
+	tmp_buf_dma = tp->buf_pool_dma_start;
+	tmp_tx_dma = tp->tx_desc_dma_head;
 	tx = tp->tx_desc_head;
 	tx_dma = tp->tx_desc_dma_head;
 	for (i = 0; i < TX_DESC_CNT; i++) {
-        tx->tx_buf_ptr = tmp_buf;
+		tx->tx_buf_ptr = tmp_buf;
 		tx->tdes0 = cpu_to_le32(0);
-        tx->tdes1 = cpu_to_le32(0x81000000);
-        tx->tdes2 = cpu_to_le32(tmp_buf_dma);
+		tx->tdes1 = cpu_to_le32(0x81000000);
+		tx->tdes2 = cpu_to_le32(tmp_buf_dma);
 		tx_dma += sizeof(struct tx_desc);
 		tx->tdes3 = cpu_to_le32(tx_dma);   // point to next descriptor
 		tx->next_desc = tx + 1;
-        //dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
+		//dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
 
-        tmp_buf = tmp_buf + TX_BUF_ALLOC;
+		tmp_buf = tmp_buf + TX_BUF_ALLOC;
 		tmp_buf_dma = tmp_buf_dma + TX_BUF_ALLOC;
 		tx++;
 		tp->tx_avail_cnt++;
@@ -352,24 +377,24 @@ static int dmfe_descriptor_init(struct net_device *dev)
 	(--tx)->tdes3 = cpu_to_le32(tp->tx_desc_dma_head);
 	tx->next_desc = tp->tx_desc_head;
 
-    //dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
-    rx = tp->rx_desc_head;
+	//dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
+	rx = tp->rx_desc_head;
 	rx_dma = tp->rx_desc_dma_head;
 	for (i = 0; i < RX_DESC_CNT; i++) {
 		rx->rdes0 = cpu_to_le32(0);
 		rx->rdes1 = cpu_to_le32(0x01000600);
-                //rx->rdes1 = cpu_to_le32(0x010007f0);
+		//rx->rdes1 = cpu_to_le32(0x010007f0);
 		rx_dma += sizeof(struct rx_desc);  // point to next descriptor
 		rx->rdes3 = cpu_to_le32(rx_dma);
 
-        //dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
-        rx->next_desc = rx + 1;
+		//dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
+		rx->next_desc = rx + 1;
 		rx++;
 	}
 	// set the tailer point back to the header
 	(--rx)->rdes3 = cpu_to_le32(tp->rx_desc_dma_head);
 	rx->next_desc = tp->rx_desc_head;
-    //dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
+	//dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
 	rx = tp->rx_desc_head;
 	// Allocate recv data buffer.
 	while (tp->rx_avail_cnt < RX_DESC_CNT) {
@@ -380,14 +405,14 @@ static int dmfe_descriptor_init(struct net_device *dev)
 		}
 		rx->skb = skb;
 		rx->rdes2 = cpu_to_le32(dma_map_single(&dev->dev, skb->data, RX_BUF_SIZE, DMA_FROM_DEVICE));
-	#ifdef DBG_FLAG3
+#ifdef DBG_FLAG3
 		printk("dmfe_descriptor_init===>this rx->rdes2:%x\n", rx->rdes2);
-	#endif
+#endif
 		// set the owner bit for MAC.
-                wmb();
+		wmb();
 		rx->rdes0 = cpu_to_le32(0x80000000);
-        //dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
-        rx = rx->next_desc;
+		//dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
+		rx = rx->next_desc;
 		tp->rx_avail_cnt++;
 	}
 	return ret;
@@ -404,10 +429,10 @@ no_rx_buf:
 	// free the recv descriptor.
 
 no_rx_desc:
-    //dma_free_coherent(&dev->dev,  sizeof(struct rx_desc)*RX_DESC_CNT, tp->rx_desc_head, tp->rx_desc_dma_head);
+	//dma_free_coherent(&dev->dev,  sizeof(struct rx_desc)*RX_DESC_CNT, tp->rx_desc_head, tp->rx_desc_dma_head);
 
 no_tx_desc:
-    dma_free_coherent(&dev->dev,  sizeof(struct tx_desc)*DESC_ALL_CNT, tp->tx_desc_head, tp->tx_desc_dma_head);
+	dma_free_coherent(&dev->dev,  sizeof(struct tx_desc)*DESC_ALL_CNT, tp->tx_desc_head, tp->tx_desc_dma_head);
 
 err_out_free_buf:
 	dma_free_coherent(&dev->dev, TX_BUF_ALLOC * TX_DESC_CNT + 4,tp->buf_pool_ptr, tp->buf_pool_dma_ptr);
@@ -427,7 +452,7 @@ static void dmfe_descriptor_free(struct net_device *dev)
 		rx = rx->next_desc;
 	} while (rx != tp->rx_desc_head);
 
-    dma_free_coherent(&dev->dev, sizeof(struct rx_desc)*RX_DESC_CNT, tp->rx_desc_head, tp->rx_desc_dma_head);
+	dma_free_coherent(&dev->dev, sizeof(struct rx_desc)*RX_DESC_CNT, tp->rx_desc_head, tp->rx_desc_dma_head);
 	dma_free_coherent(&dev->dev, sizeof(struct tx_desc)*TX_DESC_CNT, tp->tx_desc_head, tp->tx_desc_dma_head);
 }
 
@@ -437,7 +462,7 @@ static void allocate_rx_buffer(struct net_device *dev)
 	struct rx_desc *rx;
 	struct sk_buff *skb;
 
-        rx = tp->rx_desc_head;
+	rx = tp->rx_desc_head;
 	// Allocate recv data buffer.
 	while (tp->rx_avail_cnt < RX_DESC_CNT) {
 		skb = dev_alloc_skb(RX_BUF_SIZE);
@@ -450,12 +475,12 @@ static void allocate_rx_buffer(struct net_device *dev)
 		printk("allocate_rx_buffer===>this rx->rdes2:%x\n", rx->rdes2);
 	#endif
 
-	        wmb();
+		wmb();
 		rx->rdes0 = cpu_to_le32(0x80000000);
 
-        //dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
+	//dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
 
-        rx = rx->next_desc;
+	rx = rx->next_desc;
 		tp->rx_avail_cnt++;
 	}
 }
@@ -466,18 +491,18 @@ static void dmfe_hw_init(struct net_device *dev)
 	struct dmfe_private 	*tp = netdev_priv(dev);
 	u32 			tmp;
 	void		*ioaddr = tp->ioaddr;
-    int mc_count = netdev_mc_count(dev);
+	int mc_count = netdev_mc_count(dev);
 
 #ifdef DBG_FLAG
-printk("dmfe_hw_init===============================================>begin\n");
+	printk("dmfe_hw_init===============================================>begin\n");
 #endif
 	//tmp = readl(tp->ioaddr+CSR0);
 	/* RESET MAC */
 	//writel(DMFE_RESET | tmp, ioaddr + CSR0);
 	//udelay(1000);
 
-        /* Reset DM910x MAC controller */
-        tp->cr0_data = CR0_DEFAULT;
+	/* Reset DM910x MAC controller */
+	tp->cr0_data = CR0_DEFAULT;
 	dw32(CSR0, DM910X_RESET);	/* RESET MAC */
 	udelay(1000);
 
@@ -485,10 +510,10 @@ printk("dmfe_hw_init===============================================>begin\n");
 #ifdef CONFIG_SOC_MAC_HARDWARE_ACCELERATE
 	writel(1, tp->ioaddr + CSR10);
 #endif
-        dw32(CSR0, tp->cr0_data);
+	dw32(CSR0, tp->cr0_data);
 	udelay(5);
 
-        tmp = dr32(CSR0);
+	tmp = dr32(CSR0);
 	//writel(0, tp->ioaddr + CSR0);
 	//udelay(5);
 
@@ -518,23 +543,22 @@ printk("dmfe_hw_init===============================================>begin\n");
 	writel(tp->cr7_data, tp->ioaddr + CSR7);
 
 	/* Init CR15, Tx jabber and Rx watchdog timer */
-    //	writel(tp->cr15_data, ioaddr + CSR15);
+	//	writel(tp->cr15_data, ioaddr + CSR15);
 
 	/* Enable DM910X Tx/Rx function */
 	tp->cr6_data |= CR6_RXSC | CR6_TXSC | 0x40000 | CR6_PM;  // | CR6_PBF;
-        //tp->cr6_data |= CR6_RXSC | CR6_TXSC | 0x40000;
+	//tp->cr6_data |= CR6_RXSC | CR6_TXSC | 0x40000;
 	update_csr6(tp->cr6_data, tp->ioaddr+CSR6);
 #ifdef DBG_FLAG
-    printk("dmfe_hw_init===============================================>end\n");
+	printk("dmfe_hw_init===============================================>end\n");
 #endif
-
 }
 
 static int dmfe_open(struct net_device *dev)
 {
 	struct dmfe_private 	*tp = netdev_priv(dev);
 //    struct dmfe_board_info *db = netdev_priv(dev);
-    unsigned long 		flags;
+	unsigned long 		flags;
 	int ret;
 
 	tp->cr6_data = 0x32003002;
@@ -566,7 +590,7 @@ static int dmfe_open(struct net_device *dev)
 	tp->cpu_cur_rx = tp->rx_desc_head;
 	tp->mac_cur_rx = tp->rx_desc_head;
 
-        tp->cr6_data |= CR6_SFT;	/* Store & Forward mode */
+	tp->cr6_data |= CR6_SFT;	/* Store & Forward mode */
 	tp->cr0_data = 0;
 	tp->dm910x_chk_mode = 1;
 
@@ -574,10 +598,10 @@ static int dmfe_open(struct net_device *dev)
 	dmfe_hw_init(dev);
 	netif_wake_queue(dev);
 //	init_timer(&tp->timer);
-    data1 = (unsigned long)dev;
+	data1 = (unsigned long)dev;
 //	tp->timer.data = (unsigned long)dev;
-    timer_setup(&tp->timer, dmfe_timer, 0);
-    tp->timer.expires = jiffies + TIMEOUT;
+	timer_setup(&tp->timer, dmfe_timer, 0);
+	tp->timer.expires = jiffies + TIMEOUT;
 //	tp->timer.data = (unsigned long)dev;
 //	tp->timer.function = &dmfe_timer;
 	add_timer(&tp->timer);
@@ -585,7 +609,7 @@ static int dmfe_open(struct net_device *dev)
 	spin_unlock_irqrestore(&tp->lock, flags);
 
 #ifdef DBG_FLAG
-    printk("dmfe_open===============================================>test1\n");
+	printk("dmfe_open===============================================>test1\n");
 #endif
 	return ret;
 
@@ -601,7 +625,7 @@ static int dmfe_close(struct net_device *dev)
 	unsigned long 		flags;
 
 #ifdef DBG_FLAG
-    printk("dmfe_close===============================================>begin\n");
+	printk("dmfe_close===============================================>begin\n");
 #endif
 
 	netif_stop_queue(dev);
@@ -618,7 +642,7 @@ static int dmfe_close(struct net_device *dev)
 	dmfe_descriptor_free(dev);
 
 #ifdef DBG_FLAG
-    printk("dmfe_close===============================================>end\n");
+	printk("dmfe_close===============================================>end\n");
 #endif
 	return 0;
 }
@@ -627,23 +651,23 @@ static void dmfe_set_filter_mode(struct net_device *dev)
 {
 	struct dmfe_private 	*tp = netdev_priv(dev);
 	unsigned long		flags;
-    int mc_count = netdev_mc_count(dev);
+	int mc_count = netdev_mc_count(dev);
 
 #ifdef DBG_FLAG
-    printk("dmfe_set_filter_mode===============================================>begin,dev->flags:%d\n",dev->flags);
+	printk("dmfe_set_filter_mode===============================================>begin,dev->flags:%d\n",dev->flags);
 #endif
 
 	spin_lock_irqsave(&tp->lock, flags);
 
 	if (dev->flags & IFF_PROMISC) {
-        printk("Enable PROM Mode\n");
+		printk("Enable PROM Mode\n");
 		tp->cr6_data |= CR6_PM | CR6_PBF;
 		update_csr6(tp->cr6_data, tp->ioaddr+CSR6);
 		goto out;
 	}
 
 	if (dev->flags & IFF_ALLMULTI || mc_count > DMFE_MAX_MULTICAST) {
-        printk("Pass all multicast address\n");
+		printk("Pass all multicast address\n");
 		tp->cr6_data &= ~(CR6_PM | CR6_PBF);
 		tp->cr6_data |= CR6_PAM;
 		goto out;
@@ -654,7 +678,7 @@ out:
 	spin_unlock_irqrestore(&tp->lock, flags);
 
 #ifdef DBG_FLAG
-    printk("dmfe_set_filter_mode===============================================>end\n");
+	printk("dmfe_set_filter_mode===============================================>end\n");
 #endif
 }
 
@@ -691,27 +715,27 @@ static netdev_tx_t dmfe_start_xmit2(struct sk_buff *skb,
 	dw32(CSR7, 0);
 
 	/* transmit this packet */
-        tx = tp->cpu_cur_tx;
+	tx = tp->cpu_cur_tx;
 	//skb_copy_from_linear_data(skb, tx->tx_buf_ptr, skb->len);
 	tx->tdes1 = cpu_to_le32(0xe1000000 | skb->len);
 
 	/* Point to next transmit free descriptor */
-        tp->cpu_cur_tx = tx->next_desc;
+	tp->cpu_cur_tx = tx->next_desc;
 
 	/* Transmit Packet Process */
 	if ( (!tp->tx_queue_cnt) && (tp->tx_packet_cnt < TX_MAX_SEND_CNT) ) {
 		tx->tdes0 = cpu_to_le32(0x80000000);	/* Set owner bit */
 		tp->tx_packet_cnt++;			/* Ready to send */
 
-        //dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
+		//dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
 
-        dw32(CSR1, 0x1);			/* Issue Tx polling */
+		dw32(CSR1, 0x1);			/* Issue Tx polling */
 		netif_trans_update(dev);		/* saved time stamp */
 	} else {
 
-        //dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
+		//dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
 
-        tp->tx_queue_cnt++;			/* queue TX packet */
+		tp->tx_queue_cnt++;			/* queue TX packet */
 		dw32(CSR1, 0x1);			/* Issue Tx polling */
 	}
 
@@ -736,7 +760,7 @@ static int dmfe_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	unsigned long		flags;
 
 #ifdef DBG_FLAG
-        printk("dmfe_start_xmit=============================================>begin\n");
+	printk("dmfe_start_xmit=============================================>begin\n");
 #endif
 
 	if (skb->len > MAX_PACKET_SIZE) {
@@ -760,59 +784,59 @@ static int dmfe_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	tp->tx_avail_cnt--;
 	tp->tx_packets++;
 	tx->skb = skb;
-    skb_copy_from_linear_data(skb, tx->tx_buf_ptr, skb->len);
+	skb_copy_from_linear_data(skb, tx->tx_buf_ptr, skb->len);
 #ifdef DBG_FLAG3
 	printk("dmfe_start_xmit===>this tx->tdes2:%x\n", tx->tdes2);
 #endif
 	tx->tdes1 = cpu_to_le32(0xE1000000 | skb->len);
 	tx->tdes0 = cpu_to_le32(0x80000000);
-    //tx->tdes0 = cpu_to_le32(DES0_BASE);
+	//tx->tdes0 = cpu_to_le32(DES0_BASE);
 
-//	printk("%s===>this tx->tdes0:%x\n", __func__, tx->tdes0);
-//	printk("%s===>this tx->tdes1:%x\n", __func__, tx->tdes1);
-//	printk("%s===>this tx->tdes2:%x\n", __func__, tx->tdes2);
-    //dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
+	//	printk("%s===>this tx->tdes0:%x\n", __func__, tx->tdes0);
+	//	printk("%s===>this tx->tdes1:%x\n", __func__, tx->tdes1);
+	//	printk("%s===>this tx->tdes2:%x\n", __func__, tx->tdes2);
+	//dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
 
-    writel(0x01, tp->ioaddr+CSR1);
-    netif_trans_update(dev);
-    udelay(1000);
+	writel(0x01, tp->ioaddr+CSR1);
+	netif_trans_update(dev);
+	udelay(1000);
 
-    /* Tx resource check */
+	/* Tx resource check */
 	//if ( tp->tx_queue_cnt < TX_FREE_DESC_CNT )
-		netif_wake_queue(dev);
+	netif_wake_queue(dev);
 
 	spin_unlock_irqrestore(&tp->lock, flags);
 
-    /* free this SKB */
+	/* free this SKB */
 	//dev_consume_skb_any(skb);
 
 #ifdef DBG_FLAG
-    printk("dmfe_start_xmit=============================================>end\n");
+	printk("dmfe_start_xmit=============================================>end\n");
 #endif
 	return 0;
-        //return NETDEV_TX_OK;
+	//return NETDEV_TX_OK;
 }
 
 static void dmfe_reuse_skb(struct net_device *dev, struct sk_buff * skb)
 {
-        struct dmfe_private 	*tp = netdev_priv(dev);
+	struct dmfe_private 	*tp = netdev_priv(dev);
 	struct rx_desc *rx = tp->cpu_cur_rx;
 
 	if (!(rx->rdes0 & cpu_to_le32(0x80000000))) {
 		rx->skb = skb;
 		rx->rdes2 = cpu_to_le32(dma_map_single(&dev->dev, skb->data, RX_BUF_SIZE, DMA_FROM_DEVICE));
-	#ifdef DBG_FLAG3
+#ifdef DBG_FLAG3
 		printk("dmfe_reuse_skb===>this rx->rdes2:%x\n", rx->rdes2);
-	#endif
+#endif
 		wmb();
 		rx->rdes0 = cpu_to_le32(0x80000000);
 
-        //dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
+		//dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
 
-        tp->rx_avail_cnt++;
+		tp->rx_avail_cnt++;
 		tp->cpu_cur_rx = rx->next_desc;
 	} else
-	    printk("SK Buffer reuse method error:%d\n", tp->rx_avail_cnt);
+		printk("SK Buffer reuse method error:%d\n", tp->rx_avail_cnt);
 }
 
 
@@ -827,82 +851,78 @@ static void dmfe_rx_clean2(struct net_device *dev)
 #ifdef DBG_FLAG
     printk("dmfe_rx_clean===================================>start\n");
 #endif
-    rx = tp->mac_cur_rx;
-    while(tp->rx_avail_cnt) {
-         rdes0 = le32_to_cpu(rx->rdes0);
-	 if (rdes0 & 0x80000000)	/* packet owner check */
-		break;
+	rx = tp->mac_cur_rx;
+	while(tp->rx_avail_cnt) {
+		rdes0 = le32_to_cpu(rx->rdes0);
+		if (rdes0 & 0x80000000)	/* packet owner check */
+			break;
 
-         tp->rx_avail_cnt--;
-	 //tp->interval_rx_cnt++;
+		tp->rx_avail_cnt--;
+		//tp->interval_rx_cnt++;
 
-	 dma_unmap_single(&dev->dev, le32_to_cpu(rx->rdes2),
+		dma_unmap_single(&dev->dev, le32_to_cpu(rx->rdes2),
 			 RX_BUF_SIZE, DMA_FROM_DEVICE);
 
-         if((rdes0 & 0x300) != 0x300) {
-		/* A packet without First/Last flag */
-		/* reuse this SKB */
-		printk("Reuse SK buffer, rdes0:%x\n", rdes0);
-		dmfe_reuse_skb(dev, rx->skb);
-	 }
-         else
-         {
-               /* A packet with First/Last flag */
-		rxlen = ( (rdes0 >> 16) & 0x3fff) - 4;
+		if((rdes0 & 0x300) != 0x300) {
+			/* A packet without First/Last flag */
+			/* reuse this SKB */
+			printk("Reuse SK buffer, rdes0:%x\n", rdes0);
+			dmfe_reuse_skb(dev, rx->skb);
+		} else {
+			/* A packet with First/Last flag */
+			rxlen = ( (rdes0 >> 16) & 0x3fff) - 4;
 
-               /* error summary bit check */
-		if (rdes0 & 0x8000) {
-			/* This is a error packet */
-			dev->stats.rx_errors++;
-			if (rdes0 & 1)
-				dev->stats.rx_fifo_errors++;
-			if (rdes0 & 2)
-				dev->stats.rx_crc_errors++;
-			if (rdes0 & 0x80)
-				dev->stats.rx_length_errors++;
-		}
-
-                    if(!(rdes0 & 0x8000) || ((tp->cr6_data & CR6_PM) && (rxlen>6)) ) {
-                       skb = rx->skb;
-
-                       /* Received Packet CRC check need or not */
-			if ( (tp->dm910x_chk_mode & 1) && (cal_CRC(skb->data, rxlen, 1) !=(*(u32 *) (skb->data+rxlen) ))) { /* FIXME (?) */
-                            //if (cal_CRC(skb->data, rxlen, 1) !=(*(u32 *) (skb->data+rxlen))) {
-				/* Found a error received packet */
-				dmfe_reuse_skb(dev, rx->skb);
-				tp->dm910x_chk_mode = 3;
-                                    printk("found a error packet!\n");
+			/* error summary bit check */
+			if (rdes0 & 0x8000) {
+				/* This is a error packet */
+				dev->stats.rx_errors++;
+				if (rdes0 & 1)
+					dev->stats.rx_fifo_errors++;
+				if (rdes0 & 2)
+					dev->stats.rx_crc_errors++;
+				if (rdes0 & 0x80)
+					dev->stats.rx_length_errors++;
 			}
-                            else
-                            {
-                                  /* Good packet, send to upper layer */
-			      /* Shorst packet used new SKB */
-			      if ((rxlen < RX_BUF_SIZE) && ((newskb = netdev_alloc_skb(dev, rxlen + 2))	!= NULL)) {
-				    skb = newskb;
-				    /* size less than COPY_SIZE, allocate a rxlen SKB */
-				    skb_reserve(skb, 2); /* 16byte align */
-				    skb_copy_from_linear_data(rx->skb, skb_put(skb, rxlen), rxlen);
-				    dmfe_reuse_skb(dev, rx->skb);
-				} else
-					skb_put(skb, rxlen);
 
-                                  skb->protocol = eth_type_trans(skb, dev);
-			      netif_rx(skb);
-			      dev->stats.rx_packets++;
-			      dev->stats.rx_bytes += rxlen;
-                            }
-                    } else {
-                            /* Reuse SKB buffer when the packet is error */
-			printk("Reuse SK buffer, rdes0:%x\n",rdes0);
-			dmfe_reuse_skb(dev,rx->skb);
-                    }
-         }
-         rx = rx->next_desc;
-    }
-    tp->mac_cur_rx = rx;
+			if(!(rdes0 & 0x8000) || ((tp->cr6_data & CR6_PM) && (rxlen>6)) ) {
+				skb = rx->skb;
+
+				/* Received Packet CRC check need or not */
+				if ( (tp->dm910x_chk_mode & 1) && (cal_CRC(skb->data, rxlen, 1) !=(*(u32 *) (skb->data+rxlen) ))) { /* FIXME (?) */
+					//if (cal_CRC(skb->data, rxlen, 1) !=(*(u32 *) (skb->data+rxlen))) {
+					/* Found a error received packet */
+					dmfe_reuse_skb(dev, rx->skb);
+					tp->dm910x_chk_mode = 3;
+					printk("found a error packet!\n");
+				} else {
+					/* Good packet, send to upper layer */
+					/* Shorst packet used new SKB */
+					if ((rxlen < RX_BUF_SIZE) && ((newskb = netdev_alloc_skb(dev, rxlen + 2))	!= NULL)) {
+						skb = newskb;
+						/* size less than COPY_SIZE, allocate a rxlen SKB */
+						skb_reserve(skb, 2); /* 16byte align */
+						skb_copy_from_linear_data(rx->skb, skb_put(skb, rxlen), rxlen);
+						dmfe_reuse_skb(dev, rx->skb);
+					} else
+						skb_put(skb, rxlen);
+
+					skb->protocol = eth_type_trans(skb, dev);
+					netif_rx(skb);
+					dev->stats.rx_packets++;
+					dev->stats.rx_bytes += rxlen;
+				}
+			} else {
+				/* Reuse SKB buffer when the packet is error */
+				printk("Reuse SK buffer, rdes0:%x\n",rdes0);
+				dmfe_reuse_skb(dev,rx->skb);
+			}
+		}
+		rx = rx->next_desc;
+	}
+	tp->mac_cur_rx = rx;
 
 #ifdef DBG_FLAG
-printk("dmfe_rx_clean===================================>end\n");
+	printk("dmfe_rx_clean===================================>end\n");
 #endif
 }
 
@@ -914,23 +934,23 @@ static void dmfe_rx_clean(struct net_device *dev)
 	struct sk_buff *skb;
 	u32	rdes0;
 	u32	rxlen;
-        static   u32  ncount = 0;
+	static   u32  ncount = 0;
 
 #ifdef DBG_FLAG
 printk("dmfe_rx_clean===================================>start\n");
 #endif
 	//rx = tp->cpu_cur_rx;
-        rx = tp->mac_cur_rx;
+	rx = tp->mac_cur_rx;
 	rdes0 = le32_to_cpu(rx->rdes0);
 #ifdef DBG_FLAG2
-        printk("dmfe_rx_clean===================================>rdes0:%x\n",rdes0);
+	printk("dmfe_rx_clean===================================>rdes0:%x\n",rdes0);
 #endif
 	while (!(rdes0 & 0x80000000)) {
 		dma_unmap_single(&dev->dev, le32_to_cpu(rx->rdes2), RX_BUF_SIZE, DMA_FROM_DEVICE);
 		rxlen = ((rdes0 >> 16) & 0x3FFF) - 4;
-                ncount++;
+		ncount++;
 #ifdef DBG_FLAG2
-                printk("dmfe_rx_clean===================================>rxlen:%d,ncount:%d,rdes2:%x,rdes3:%x\n",rxlen,ncount,le32_to_cpu(rx->rdes2),le32_to_cpu(rx->rdes3));
+		printk("dmfe_rx_clean===================================>rxlen:%d,ncount:%d,rdes2:%x,rdes3:%x\n",rxlen,ncount,le32_to_cpu(rx->rdes2),le32_to_cpu(rx->rdes3));
 
 #endif
 		if ((rdes0 & 0x300) != 0x300) {
@@ -964,7 +984,7 @@ printk("dmfe_rx_clean===================================>start\n");
 				tp->stats.rx_packets++;
 				tp->stats.rx_bytes += rxlen;
 #ifdef DBG_FLAG2
-                                printk("dmfe_rx_clean-------------------------------------skb->len:%d,skb->data_len:%d\n",skb->len,skb->data_len);
+				printk("dmfe_rx_clean-------------------------------------skb->len:%d,skb->data_len:%d\n",skb->len,skb->data_len);
 #endif
 
 				rx->skb = dev_alloc_skb(RX_BUF_SIZE);
@@ -978,18 +998,18 @@ printk("dmfe_rx_clean===================================>start\n");
 			#endif
 			}
 		}
-                wmb();
+		wmb();
 		rx->rdes0 = cpu_to_le32(0x80000000);
 
-        //dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
+	//dma_cache_wback((unsigned long)rx, sizeof(struct rx_desc));
 
-        rx = rx->next_desc;
+	rx = rx->next_desc;
 		rdes0 = le32_to_cpu(rx->rdes0);
 	}
 	//tp->cpu_cur_rx = rx;
-        tp->mac_cur_rx = rx;
+	tp->mac_cur_rx = rx;
 #ifdef DBG_FLAG
-printk("dmfe_rx_clean===================================>end\n");
+	printk("dmfe_rx_clean===================================>end\n");
 #endif
 }
 
@@ -1049,7 +1069,7 @@ static void dmfe_tx_clean(struct net_device *dev)
 	}
 	tp->mac_cur_tx = tx;
 	writel(0x01, tp->ioaddr+CSR1);
-    //udelay(1000);
+	//udelay(1000);
 	netif_trans_update(dev);
 
 }
@@ -1060,26 +1080,26 @@ static irqreturn_t dmfe_interrupt (int irq, void *dev_instance)
 	struct dmfe_private 	*tp = netdev_priv(dev);
 	unsigned long 	flags;
 	int handle = IRQ_NONE;
-        u32 cr0_val;
+	u32 cr0_val;
 
 	spin_lock_irqsave(&tp->lock, flags);
 
 	tp->cr5_data =  dr32(CSR5); //readl(tp->ioaddr+CSR5);
 	dw32(CSR5, tp->cr5_data);   //writel(tp->cr5_data, tp->ioaddr+CSR5);
-        cr0_val = dr32(CSR0);
+	cr0_val = dr32(CSR0);
 
 	if (! (tp->cr5_data & 0xC1)) {
 		//spin_unlock_irqrestore(&tp->lock, flags);
-                //return IRQ_HANDLED;
+		//return IRQ_HANDLED;
 	}
 
-        //writel(0, ioaddr + CSR7);
-        //dw32(CSR7, 0);
-        iowrite32(0,tp->ioaddr + CSR7);
-        if (tp->cr5_data & 0x2000) {
-           printk("dmfe_interrupt--->System bus error happen.cr5 = %d\n",tp->cr5_data);
+	//writel(0, ioaddr + CSR7);
+	//dw32(CSR7, 0);
+	iowrite32(0,tp->ioaddr + CSR7);
+	if (tp->cr5_data & 0x2000) {
+		printk("dmfe_interrupt--->System bus error happen.cr5 = %d\n",tp->cr5_data);
 		spin_unlock_irqrestore(&tp->lock, flags);
-                return IRQ_HANDLED;
+		return IRQ_HANDLED;
 	}
 
 	if (tp->cr5_data & 0x40) {
@@ -1090,12 +1110,12 @@ static irqreturn_t dmfe_interrupt (int irq, void *dev_instance)
 		dmfe_tx_clean(dev);
 	}
 
-        /* reallocate rx descriptor buffer */
+	/* reallocate rx descriptor buffer */
 	if (tp->rx_avail_cnt<RX_DESC_CNT)
 		allocate_rx_buffer(dev);
 
 
-        /* Mode Check */
+	/* Mode Check */
 	if (tp->dm910x_chk_mode & 0x2) {
 		tp->dm910x_chk_mode = 0x4;
 		tp->cr6_data |= 0x100;
@@ -1103,12 +1123,12 @@ static irqreturn_t dmfe_interrupt (int irq, void *dev_instance)
 	}
 
 	handle = IRQ_HANDLED;
-        //writel(tp->cr7_data, ioaddr + CSR7);
-        //dw32(CSR7, tp->cr7_data);
-        iowrite32(tp->cr7_data,tp->ioaddr + CSR7);
+	//writel(tp->cr7_data, ioaddr + CSR7);
+	//dw32(CSR7, tp->cr7_data);
+	iowrite32(tp->cr7_data,tp->ioaddr + CSR7);
 
 #ifdef DBG_FLAG
-    printk("dmfe_interrupt===================================>end\n");
+	printk("dmfe_interrupt===================================>end\n");
 #endif
 	spin_unlock_irqrestore(&tp->lock, flags);
 
@@ -1135,7 +1155,7 @@ static void send_filter_frame(struct net_device *dev,int mc_cnt)
 	tx = tp->cpu_cur_tx;
 	suptr = (u32 *) tx->tx_buf_ptr;
 
-        for (i = 0; i < 6; i++)
+	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = hwaddr[i];
 
 	/* Node address */
@@ -1167,17 +1187,17 @@ static void send_filter_frame(struct net_device *dev,int mc_cnt)
 	tp->cpu_cur_tx = tx->next_desc;
 	tx->tdes1 = cpu_to_le32(0x890000c0);
 
-    /* Resource Empty */
-    tp->tx_packets++;
-    tx->tdes0 = cpu_to_le32(0x80000000);
+	/* Resource Empty */
+	tp->tx_packets++;
+	tx->tdes0 = cpu_to_le32(0x80000000);
 
-    //dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
+	//dma_cache_wback((unsigned long)tx, sizeof(struct tx_desc));
 
-    update_csr6(tp->cr6_data | 0x2000, tp->ioaddr + CSR6);
-    dw32(CSR1, 0x1);	/* Issue Tx polling */
-    update_csr6(tp->cr6_data, tp->ioaddr + CSR6);
-    netif_trans_update(dev);
-    while (tx->tdes0 & cpu_to_le32(0x80000000));
+	update_csr6(tp->cr6_data | 0x2000, tp->ioaddr + CSR6);
+	dw32(CSR1, 0x1);	/* Issue Tx polling */
+	update_csr6(tp->cr6_data, tp->ioaddr + CSR6);
+	netif_trans_update(dev);
+	while (tx->tdes0 & cpu_to_le32(0x80000000));
 }
 
 static void send_filter_frame2(struct net_device *dev, int mc_cnt)
@@ -1185,13 +1205,13 @@ static void send_filter_frame2(struct net_device *dev, int mc_cnt)
 	struct dmfe_private *tp = netdev_priv(dev);
 	struct sk_buff *skb;
 	//struct dev_mc_list *mc;
-        struct netdev_hw_addr *ha;
-    struct tx_desc	*tx;
+	struct netdev_hw_addr *ha;
+	struct tx_desc	*tx;
 	u8 *ptr;
 	int i;
 
 #ifdef DBG_FLAG
-        printk("send_filter_frame=================================>,tp addr:%x\n",tp);
+	printk("send_filter_frame=================================>,tp addr:%x\n",tp);
 #endif
 	skb = dev_alloc_skb(MAX_PACKET_SIZE);
 	if (skb == NULL) {
@@ -1204,7 +1224,7 @@ static void send_filter_frame2(struct net_device *dev, int mc_cnt)
 	memset(ptr, 0xFF, ETH_ALEN);
 	ptr += ETH_ALEN;
 
-        netdev_for_each_mc_addr(ha, dev){
+	netdev_for_each_mc_addr(ha, dev){
 		memcpy(ptr, ha->addr, ETH_ALEN);
 		ptr += ETH_ALEN;
 	}
@@ -1224,79 +1244,78 @@ static void send_filter_frame2(struct net_device *dev, int mc_cnt)
 	dw32(CSR1, 0x1);	/* Issue Tx polling */
 	update_csr6(tp->cr6_data, tp->ioaddr);
 	netif_trans_update(dev);
-        udelay(1000);
+	udelay(1000);
 
 	/* wait for sending */
-    /*
-    i = 0;
-    while ((tx->tdes0 & 0x80000000) && (i<TOUT_LOOP)) {
+	/*
+	i = 0;
+	while ((tx->tdes0 & 0x80000000) && (i<TOUT_LOOP)) {
 		udelay(1000);
-                i++;
-        printk("tx->tdes0 value is %x", tx->tdes0);
+		i++;
+	printk("tx->tdes0 value is %x", tx->tdes0);
 	}
-    */
+	*/
 	dev_kfree_skb(skb);
-
 }
 
 
 static void dmfe_timer(struct timer_list *t)
 {
-    struct dmfe_private *tp = from_timer(tp, t, timer);
+	struct dmfe_private *tp = from_timer(tp, t, timer);
 	struct net_device *dev = (struct net_device*)data1;
 	unsigned char 		tmp_cr12;
 	unsigned long 		flags;
 	int			link_status;
-        u32            csr0_val,csr8_val,csr7_val,csr5_val;
-        u32            csr6_val,csr3_val,csr4_val;
-        u32            csr9_val,csr10_val,csr11_val;
+	u32            csr0_val,csr8_val,csr7_val,csr5_val;
+	u32            csr6_val,csr3_val,csr4_val;
+	u32            csr9_val,csr10_val,csr11_val;
 
-        csr0_val = dr32(CSR0);
-        csr3_val = dr32(CSR3);
-        csr4_val = dr32(CSR4);
+	csr0_val = dr32(CSR0);
+	csr3_val = dr32(CSR3);
+	csr4_val = dr32(CSR4);
 	spin_lock_irqsave(&tp->lock, flags);
-        phy_read(tp->ioaddr, tp->phy_addr, 0x01, tp->chip_id);
+	phy_read(tp->ioaddr, tp->phy_addr, 0x01, tp->chip_id);
 	link_status = phy_read(tp->ioaddr, tp->phy_addr, 0x01, tp->chip_id) & 0x4;
 	tmp_cr12 = link_status ? 0x3 : 0;
-        csr5_val = dr32(CSR5);
-        csr6_val = dr32(CSR6);
-        csr7_val = dr32(CSR7);
-        csr8_val = dr32(CSR8);
+	csr5_val = dr32(CSR5);
+	csr6_val = dr32(CSR6);
+	csr7_val = dr32(CSR7);
+	csr8_val = dr32(CSR8);
 #ifdef DBG_FLAG
-    printk("dmfe_timer===>start,CRS5:%x,CRS6:%x,CRS7:%x,CRS8:%x,tp->rx_avail_cnt:%d\n",csr5_val,csr6_val,csr7_val,csr8_val,tp->rx_avail_cnt);
-    printk("dmfe_timer===>start,link_status:%x,tmp_cr12:%x,tp->phy_addr:%x,tp->link_failed:%d\n",link_status,tmp_cr12,tp->phy_addr,tp->link_failed);
+	printk("dmfe_timer===>start,CRS5:%x,CRS6:%x,CRS7:%x,CRS8:%x,tp->rx_avail_cnt:%d\n",csr5_val,csr6_val,csr7_val,csr8_val,tp->rx_avail_cnt);
+	printk("dmfe_timer===>start,link_status:%x,tmp_cr12:%x,tp->phy_addr:%x,tp->link_failed:%d\n",link_status,tmp_cr12,tp->phy_addr,tp->link_failed);
 #endif
 
-        /* Operating Mode Check */
+	/* Operating Mode Check */
 	if ( (tp->dm910x_chk_mode & 0x1) && (dev->stats.rx_packets > MAX_CHECK_PACKET) )
 		tp->dm910x_chk_mode = 0x4;
 
-        if ( (!(tmp_cr12 & 0x3)) && (!tp->link_failed) ) {
-                /* Link Failed */
-                printk("dev %x:Link Failed %x\n", tp->phy_addr, link_status);
-                tp->link_failed = 1;
+	if ( (!(tmp_cr12 & 0x3)) && (!tp->link_failed) ) {
+		/* Link Failed */
+		printk("dev %x:Link Failed %x\n", tp->phy_addr, link_status);
+		tp->link_failed = 1;
 
-                /* For Force 10/100M Half/Full mode: Enable Auto-Nego mode */
-                /* AUTO or force 1M Homerun/Longrun don't need */
-                if ( !(tp->media_mode & 0x38) )
-                        phy_write(tp->ioaddr, tp->phy_addr, 0, 0x1000, tp->chip_id);
+		/* For Force 10/100M Half/Full mode: Enable Auto-Nego mode */
+		/* AUTO or force 1M Homerun/Longrun don't need */
+		if ( !(tp->media_mode & 0x38) )
+			phy_write(tp->ioaddr, tp->phy_addr, 0, 0x1000, tp->chip_id);
 
-                /* AUTO mode */
-                if (tp->media_mode & DMFE_AUTO) {
-                        /* 10/100M link failed */
-                        tp->cr6_data&=~0x00000200;      /* bit9=0, HD mode */
-                        update_csr6(tp->cr6_data, tp->ioaddr);
-                }
-        } else if ((tmp_cr12 & 0x3) && tp->link_failed) {
-                printk("dev %x:Link OK %x", tp->phy_addr,link_status);
-                tp->link_failed = 0;
+		/* AUTO mode */
+		if (tp->media_mode & DMFE_AUTO) {
+			/* 10/100M link failed */
+			tp->cr6_data&=~0x00000200;      /* bit9=0, HD mode */
+			update_csr6(tp->cr6_data, tp->ioaddr);
+		}
+	} else if ((tmp_cr12 & 0x3) && tp->link_failed) {
+		printk("dev %x:Link OK %x", tp->phy_addr,link_status);
+		tp->link_failed = 0;
 
-                /* Auto Sense Speed */
-                if ((tp->media_mode & DMFE_AUTO) && dmfe_sense_speed(dev) )
-                        tp->link_failed = 1;
-                dmfe_process_mode(dev);
-                SHOW_MEDIA_TYPE(tp->op_mode);
-        }
+		/* Auto Sense Speed */
+		if ((tp->media_mode & DMFE_AUTO) && dmfe_sense_speed(dev) )
+			tp->link_failed = 1;
+		dmfe_process_mode(dev);
+		SHOW_MEDIA_TYPE(tp->op_mode);
+	}
 
 	spin_unlock_irqrestore(&tp->lock, flags);
 	tp->timer.expires = DMFE_TIMER_WUT + HZ * 2; //jiffies + TIMEOUT;
@@ -1322,30 +1341,38 @@ static void update_csr6(u32 val, void *ioaddr)
 
 static u8 dmfe_sense_speed(struct net_device *dev)
 {
-	struct dmfe_private 	*tp = netdev_priv(dev);
-        u8 ErrFlag = 0;
-        u16 phy_mode0,phy_mode1,phy_mode25;
+	struct dmfe_private *tp = netdev_priv(dev);
+	u8 ErrFlag = 0;
+	u16 phy_mode0,phy_mode1,phy_mode25;
 
-    phy_mode0 = phy_read(tp->ioaddr, tp->phy_addr, 0, tp->chip_id);
-    phy_mode1 = phy_read(tp->ioaddr, tp->phy_addr, 1, tp->chip_id);
-    phy_mode25 = phy_read(tp->ioaddr, tp->phy_addr, 25, tp->chip_id);
+	phy_mode0 = phy_read(tp->ioaddr, tp->phy_addr, 0, tp->chip_id);
+	phy_mode1 = phy_read(tp->ioaddr, tp->phy_addr, 1, tp->chip_id);
+	phy_mode25 = phy_read(tp->ioaddr, tp->phy_addr, 25, tp->chip_id);
 
-
-        if ( (phy_mode0 & 0x1000)&& (phy_mode1&0x0020)) {
-                switch ((phy_mode25&3)|(phy_mode0&0x100)) {
-                case 0x002: tp->op_mode = DMFE_10MHF; break;
-                case 0x102: tp->op_mode = DMFE_10MFD; break;
-                case 0x001: tp->op_mode = DMFE_100MHF; break;
-                case 0x101: tp->op_mode = DMFE_100MFD; break;
-                default: tp->op_mode = DMFE_100MHF;
-                        ErrFlag = 1;
-                        break;
-                }
-        } else {
-                tp->op_mode = DMFE_100MHF;
-                ErrFlag = 1;
-        }
-        return ErrFlag;
+	if ( (phy_mode0 & 0x1000)&& (phy_mode1&0x0020)) {
+		switch ((phy_mode25&3)|(phy_mode0&0x100)) {
+		case 0x002:
+			tp->op_mode = DMFE_10MHF;
+			break;
+		case 0x102:
+			tp->op_mode = DMFE_10MFD;
+			break;
+		case 0x001:
+			tp->op_mode = DMFE_100MHF;
+			break;
+		case 0x101:
+			tp->op_mode = DMFE_100MFD;
+			break;
+		default:
+			tp->op_mode = DMFE_100MHF;
+			ErrFlag = 1;
+			break;
+		}
+	} else {
+		tp->op_mode = DMFE_100MHF;
+		ErrFlag = 1;
+	}
+	return ErrFlag;
 }
 /*
  *  Set 10/100 phyxcer capability
@@ -1564,7 +1591,6 @@ static u16 phy_read_1bit(void *ioaddr)
 
 static void dmfe_remove_one(struct net_device 	*dev)
 {
-
 	unregister_netdev(dev);
 	free_netdev(dev);
 }
@@ -1594,7 +1620,7 @@ static int dmfe_pltfr_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto out_release_region;
 	}
-    irq = platform_get_irq(pdev, 0);
+	irq = platform_get_irq(pdev, 0);
 
 	ret = -ENOMEM;
 	ndev = dmfe_init_one(&(pdev->dev), addr, irq);
@@ -1621,26 +1647,24 @@ static int dmfe_pltfr_remove(struct platform_device *pdev)
 	return 0;
 }
 
-    #ifdef CONFIG_OF
-   static const struct of_device_id ls_dmfe_dt_match[] = {
-            { .compatible = "dmfe",  },
-                 {},
-
-   };
-    MODULE_DEVICE_TABLE(of, ls_dmfe_dt_match);
-   #endif
+#ifdef CONFIG_OF
+static const struct of_device_id ls_dmfe_dt_match[] = {
+	{ .compatible = "dmfe", },
+	{},
+};
+MODULE_DEVICE_TABLE(of, ls_dmfe_dt_match);
+#endif
 
 static struct platform_driver dmfe_driver = {
 	.probe = dmfe_pltfr_probe,
 	.remove = dmfe_pltfr_remove,
 	.driver = {
-		   .name = "dmfe",
-		   .owner = THIS_MODULE,
+		.name = "dmfe",
+		.owner = THIS_MODULE,
 #ifdef CONFIG_OF
-    .of_match_table = of_match_ptr(ls_dmfe_dt_match),
+		.of_match_table = of_match_ptr(ls_dmfe_dt_match),
 #endif
-    },
-
+	},
 };
 
 static int __init dmfe_init_module(void)

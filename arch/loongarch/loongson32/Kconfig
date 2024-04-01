@@ -55,6 +55,19 @@ config MACH_LOONGSON_32
 
 endchoice
 
+choice
+	prompt "SOC selection"
+
+config BX_SOC
+	bool
+	prompt "BaiXin SOC"
+
+config LS_SOC
+	bool
+	prompt "Loongson SOC"
+
+endchoice
+
 config LOONGSON_UART_BASE
 	bool
 	default y

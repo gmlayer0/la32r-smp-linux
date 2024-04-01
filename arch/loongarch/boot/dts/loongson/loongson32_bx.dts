@@ -16,22 +16,10 @@
 		bootargs = "earlycon";
 	};
 
-	extioiic: interrupt-controller@0x1fe11600 {
-		compatible = "loongson,extioi-interrupt-controller";
-		interrupt-controller;
-		#interrupt-cells = <1>;
-		interrupt-parent = <&cpuic>;
-		interrupts = <3>;
-		interrupt-names = "cascade";
-		vec_count=<128>;
-		misc_func=<0x100>;
-		eio_en_off=<27>;
-	};
-
 	memory {
 		name = "memory";
 		device_type = "memory";
-		reg = <0x00000000  0x08000000>;
+		reg = <0x200000 0xee00000>;
 	};
 
 	cpuic: interrupt-controller {
@@ -48,24 +36,55 @@
 
 		cpu_uart0: serial@0x1fe001e0 {
 			compatible = "ns16550a";
-			reg = <0x1fe001e0  0x10>;
+			reg = <0x1fe40000  0x10>;
 			clock-frequency = <33000000>;
 			interrupt-parent = <&cpuic>;
-			interrupts = <2>;
+			interrupts = <13>;
 			no-loopback-test;
 		};
 
 		gmac0: dmfe@0x1ff00000 {
 			compatible = "dmfe";
-			reg = <0x1ff00000 0x10000>;
+			reg = <0x1fe10000 0x10000>;
 			interrupt-parent = <&cpuic>;
-			interrupts = <3>;
+			interrupts = <48>;
 			interrupt-names = "macirq";
-			mac-address = [ 64 48 48 48 48 60 ];/* [>mac 64:48:48:48:48:60 <]*/
-			phy-mode = "rgmii";
 			bus_id = <0x0>;
 			phy_addr = <0xffffffff>;
 			dma-mask = <0xffffffff 0xffffffff>;
+		};
+
+		generic_conf0: generic_conf@1fd00100 {
+			compatible = "syscon";
+			reg = <0x1fd00100 0x0004>;
+		};
+
+		dma1: dma@0x1fd01160 {
+			compatible = "loongson,loongson2-apbdma";
+			reg = <0x1fd01160 0x8>;
+			loongson,apbdma-conf = <&generic_conf0 0x0 0x0>;
+			#dma-cells = <0>;
+			dma-channels = <1>;
+			interrupt-parent = <&cpuic>;
+			interrupts = <27>;			/* todo */
+		};
+
+		sdio@0x1fe0c000 {
+			#address-cells = <1>;
+
+			compatible = "loongson,ls2k_sdio";
+			reg = <0x1fe6c000 0x1000>;
+			interrupt-parent = <&cpuic>;
+			interrupts = <44>;
+			interrupt-names = "bx_mci_irq";
+
+			dmas = <&dma1>;
+			dma-names = "sdio_rw";
+			dma-mask = <0xffffffff 0xffffffff>;
+			clock-frequency = <33000000>;
+			bus-width = <1>;
+			cd-debounce-delay-ms = <0>;
+			non-removable;
 		};
 #if 0
 		ahci@0x1fe30000 {
@@ -74,15 +93,15 @@
 			interrupt-parent = <&cpuic>;
 			interrupts = <4>;
 			dma-mask = <0x0 0xffffffff>;
-	    	};
+		};
 
 		nand@0x1fe78000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
 			compatible = "ls1a-nand";
-			reg = <0x1fe78000 0x4000
-			 0x1fd01160 0x0>;
-			interrupt-parent = <&cpuic>;
+			reg = <0x00000000 0x4000
+			 0x00000000 0x0>;
+	 		interrupt-parent = <&cpuic>;
 			interrupts = <4>;
 			interrupt-names = "nand_irq";
 

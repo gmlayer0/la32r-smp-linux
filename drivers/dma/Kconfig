@@ -141,6 +141,12 @@ config DMA_JZ4780
 	  If you have a board based on such a SoC and wish to use DMA for
 	  devices which can use the DMA controller, say Y or M here.
 
+config LS_APBDMAC
+	tristate "loongson DMA Engine"
+	select DMA_ENGINE
+	help
+	  Enable support for loongson DMA controller.
+
 config DMA_SA11X0
 	tristate "SA-11x0 DMA support"
 	depends on ARCH_SA1100 || COMPILE_TEST

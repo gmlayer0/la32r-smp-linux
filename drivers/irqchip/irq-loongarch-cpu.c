@@ -62,15 +62,11 @@ static const struct irq_domain_ops loongarch_cpu_intc_irq_domain_ops = {
 
 int __init loongarch_cpu_irq_init(struct device_node *of_node, struct device_node *parent)
 {
-	unsigned int size = EXCCODE_INT_NUM;
 	/* Mask interrupts. */
 	clear_csr_ecfg(ECFG0_IM);
 	clear_csr_estat(ESTATF_IP);
 
-#ifdef CONFIG_BX_SOC
-	size += 64;
-#endif
-	irq_domain = irq_domain_add_simple(of_node, size,
+	irq_domain = irq_domain_add_simple(of_node, EXCCODE_INT_NUM,
 		     LOONGSON_CPU_IRQ_BASE, &loongarch_cpu_intc_irq_domain_ops, NULL);
 
 	if (!irq_domain)

@@ -538,15 +538,6 @@ config IRQ_LOONGARCH_CPU
 	  irq chip hierarchy on LoongArch platforms please read the document
 	  Documentation/loongarch/irq-chip-model.rst.
 
-config LOONGSON_BXIC
-	bool "Loongson BaiXin SOC Interrupt Controller"
-	depends on BX_SOC
-	default y
-	select IRQ_DOMAIN
-	select GENERIC_IRQ_CHIP
-	help
-	  support for the Loongson BaiXin SOC Interrupt Controller.
-
 config LOONGSON_LIOINTC
 	bool "Loongson Local I/O Interrupt Controller"
 	depends on MACH_LOONGSON64

@@ -51,7 +51,7 @@
 			reg = <0x1fe001e0  0x10>;
 			clock-frequency = <33000000>;
 			interrupt-parent = <&cpuic>;
-			interrupts = <2>;
+			interrupts = <3>;
 			no-loopback-test;
 		};
 
@@ -59,7 +59,7 @@
 			compatible = "dmfe";
 			reg = <0x1ff00000 0x10000>;
 			interrupt-parent = <&cpuic>;
-			interrupts = <3>;
+			interrupts = <2>;
 			interrupt-names = "macirq";
 			mac-address = [ 64 48 48 48 48 60 ];/* [>mac 64:48:48:48:48:60 <]*/
 			phy-mode = "rgmii";

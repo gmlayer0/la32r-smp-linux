@@ -34,20 +34,38 @@
 		#size-cells = <1>;
 		ranges = <0x10000000 0x10000000 0x10000000>;
 
-		cpu_uart0: serial@0x1fe001e0 {
+		ls1xic0: ls1xic@0x1fd01040 {
+			compatible = "loongson,ls1x-intc";
+			reg = <0x1fd01040 0x18>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupt-parent = <&cpuic>;
+			interrupts = <2>;
+		};
+
+		ls1xic1: ls1xic@0x1fd01058 {
+			compatible = "loongson,ls1x-intc";
+			reg = <0x1fd01058 0x18>;
+			interrupt-controller;
+			#interrupt-cells = <1>;
+			interrupt-parent = <&cpuic>;
+			interrupts = <3>;
+		};
+
+		cpu_uart0: serial@0x1fe40000 {
 			compatible = "ns16550a";
 			reg = <0x1fe40000  0x10>;
 			clock-frequency = <33000000>;
-			interrupt-parent = <&cpuic>;
-			interrupts = <13>;
+			interrupt-parent = <&ls1xic0>;
+			interrupts = <0>;
 			no-loopback-test;
 		};
 
 		gmac0: dmfe@0x1ff00000 {
 			compatible = "dmfe";
 			reg = <0x1fe10000 0x10000>;
-			interrupt-parent = <&cpuic>;
-			interrupts = <48>;
+			interrupt-parent = <&ls1xic1>;
+			interrupts = <3>;
 			interrupt-names = "macirq";
 			bus_id = <0x0>;
 			phy_addr = <0xffffffff>;
@@ -65,8 +83,8 @@
 			loongson,apbdma-conf = <&generic_conf0 0x0 0x0>;
 			#dma-cells = <0>;
 			dma-channels = <1>;
-			interrupt-parent = <&cpuic>;
-			interrupts = <27>;			/* todo */
+			interrupt-parent = <&ls1xic0>;
+			interrupts = <13>;			/* todo */
 		};
 
 		sdio@0x1fe0c000 {
@@ -74,8 +92,8 @@
 
 			compatible = "loongson,ls2k_sdio";
 			reg = <0x1fe6c000 0x1000>;
-			interrupt-parent = <&cpuic>;
-			interrupts = <44>;
+			interrupt-parent = <&ls1xic0>;
+			interrupts = <31>;
 			interrupt-names = "bx_mci_irq";
 
 			dmas = <&dma1>;

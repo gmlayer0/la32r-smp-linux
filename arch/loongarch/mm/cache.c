@@ -24,28 +24,10 @@
 #include <asm/processor.h>
 #include <asm/setup.h>
 
-#ifdef BX_SOC
-void local_flush_cache_all(void)
-{  
-   u32 num, tmp = 0; 
-   for (num = 0; num < 256; num++) {
-       cache_op(9, tmp); 
-       cache_op(9, tmp + 0x1);
-
-       tmp = tmp >> 4;
-       tmp += 1; 
-       tmp = tmp << 4;
-   }
-}
-#endif
-
 /* Cache operations. */
 void local_flush_icache_range(unsigned long start, unsigned long end)
 {
 	asm volatile ("\tibar 0\n"::);
-#ifdef BX_SOC
-	local_flush_cache_all();
-#endif
 }
 
 void __update_cache(unsigned long address, pte_t pte)
@@ -141,7 +123,8 @@ static void probe_pcache(void)
                 else
                         c->icache.linesz = 0;
 	c->icache.sets = 64 << ((config >> 22) & 7);
-	c->icache.ways = 1 + ((config >> 16) & 7);
+	// c->icache.ways = 1 + ((config >> 16) & 7);
+	c->icache.ways = 4;
 	icache_size = c->icache.sets *
                                           c->icache.ways *
                                           c->icache.linesz;
@@ -159,7 +142,8 @@ static void probe_pcache(void)
         c->dcache.linesz = 0;
     }
 	c->dcache.sets = 64 << ((config >> 13) & 7);
-	c->dcache.ways = 1 + ((config >> 7) & 7);
+	// c->dcache.ways = 1 + ((config >> 7) & 7);
+	c->dcache.ways = 4;
 	dcache_size = c->dcache.sets *
                                           c->dcache.ways *
                                           c->dcache.linesz;

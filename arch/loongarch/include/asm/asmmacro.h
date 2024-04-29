@@ -139,126 +139,97 @@
 
 	.macro fpu_save_csr thread tmp
 	movfcsr2gr	\tmp, fcsr0
-	stptr.w	\tmp, \thread, THREAD_FCSR
+	st.w	\tmp, \thread, THREAD_FCSR
 	.endm
 
 	.macro fpu_restore_csr thread tmp
-	ldptr.w	\tmp, \thread, THREAD_FCSR
+	ld.w	\tmp, \thread, THREAD_FCSR
 	movgr2fcsr	fcsr0, \tmp
 	.endm
 
 	.macro fpu_save_cc thread tmp0 tmp1
 	movcf2gr	\tmp0, $fcc0
-	move	\tmp1, \tmp0
-	movcf2gr	\tmp0, $fcc1
-	bstrins.d	\tmp1, \tmp0, 15, 8
-	movcf2gr	\tmp0, $fcc2
-	bstrins.d	\tmp1, \tmp0, 23, 16
-	movcf2gr	\tmp0, $fcc3
-	bstrins.d	\tmp1, \tmp0, 31, 24
-	movcf2gr	\tmp0, $fcc4
-	bstrins.d	\tmp1, \tmp0, 39, 32
-	movcf2gr	\tmp0, $fcc5
-	bstrins.d	\tmp1, \tmp0, 47, 40
-	movcf2gr	\tmp0, $fcc6
-	bstrins.d	\tmp1, \tmp0, 55, 48
-	movcf2gr	\tmp0, $fcc7
-	bstrins.d	\tmp1, \tmp0, 63, 56
-	stptr.d		\tmp1, \thread, THREAD_FCC
+	move		\tmp1, \tmp0
+	st.w		\tmp1, \thread, THREAD_FCC
 	.endm
 
 	.macro fpu_restore_cc thread tmp0 tmp1
-	ldptr.d	\tmp0, \thread, THREAD_FCC
-	bstrpick.d	\tmp1, \tmp0, 7, 0
-	movgr2cf	$fcc0, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 15, 8
-	movgr2cf	$fcc1, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 23, 16
-	movgr2cf	$fcc2, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 31, 24
-	movgr2cf	$fcc3, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 39, 32
-	movgr2cf	$fcc4, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 47, 40
-	movgr2cf	$fcc5, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 55, 48
-	movgr2cf	$fcc6, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 63, 56
-	movgr2cf	$fcc7, \tmp1
+	ld.w	\tmp0, \thread, THREAD_FCC
+	movgr2cf	$fcc0, \tmp0
 	.endm
 
 	.macro	fpu_save_double thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADDU \tmp, \tmp, \thread
-	fst.d	$f0, \tmp, THREAD_FPR0  - THREAD_FPR0
-	fst.d	$f1, \tmp, THREAD_FPR1  - THREAD_FPR0
-	fst.d	$f2, \tmp, THREAD_FPR2  - THREAD_FPR0
-	fst.d	$f3, \tmp, THREAD_FPR3  - THREAD_FPR0
-	fst.d	$f4, \tmp, THREAD_FPR4  - THREAD_FPR0
-	fst.d	$f5, \tmp, THREAD_FPR5  - THREAD_FPR0
-	fst.d	$f6, \tmp, THREAD_FPR6  - THREAD_FPR0
-	fst.d	$f7, \tmp, THREAD_FPR7  - THREAD_FPR0
-	fst.d	$f8, \tmp, THREAD_FPR8  - THREAD_FPR0
-	fst.d	$f9, \tmp, THREAD_FPR9  - THREAD_FPR0
-	fst.d	$f10, \tmp, THREAD_FPR10 - THREAD_FPR0
-	fst.d	$f11, \tmp, THREAD_FPR11 - THREAD_FPR0
-	fst.d	$f12, \tmp, THREAD_FPR12 - THREAD_FPR0
-	fst.d	$f13, \tmp, THREAD_FPR13 - THREAD_FPR0
-	fst.d	$f14, \tmp, THREAD_FPR14 - THREAD_FPR0
-	fst.d	$f15, \tmp, THREAD_FPR15 - THREAD_FPR0
-	fst.d	$f16, \tmp, THREAD_FPR16 - THREAD_FPR0
-	fst.d	$f17, \tmp, THREAD_FPR17 - THREAD_FPR0
-	fst.d	$f18, \tmp, THREAD_FPR18 - THREAD_FPR0
-	fst.d	$f19, \tmp, THREAD_FPR19 - THREAD_FPR0
-	fst.d	$f20, \tmp, THREAD_FPR20 - THREAD_FPR0
-	fst.d	$f21, \tmp, THREAD_FPR21 - THREAD_FPR0
-	fst.d	$f22, \tmp, THREAD_FPR22 - THREAD_FPR0
-	fst.d	$f23, \tmp, THREAD_FPR23 - THREAD_FPR0
-	fst.d	$f24, \tmp, THREAD_FPR24 - THREAD_FPR0
-	fst.d	$f25, \tmp, THREAD_FPR25 - THREAD_FPR0
-	fst.d	$f26, \tmp, THREAD_FPR26 - THREAD_FPR0
-	fst.d	$f27, \tmp, THREAD_FPR27 - THREAD_FPR0
-	fst.d	$f28, \tmp, THREAD_FPR28 - THREAD_FPR0
-	fst.d	$f29, \tmp, THREAD_FPR29 - THREAD_FPR0
-	fst.d	$f30, \tmp, THREAD_FPR30 - THREAD_FPR0
-	fst.d	$f31, \tmp, THREAD_FPR31 - THREAD_FPR0
+	fst.s	$f0, \tmp, THREAD_FPR0  - THREAD_FPR0
+	fst.s	$f1, \tmp, THREAD_FPR1  - THREAD_FPR0
+	fst.s	$f2, \tmp, THREAD_FPR2  - THREAD_FPR0
+	fst.s	$f3, \tmp, THREAD_FPR3  - THREAD_FPR0
+	fst.s	$f4, \tmp, THREAD_FPR4  - THREAD_FPR0
+	fst.s	$f5, \tmp, THREAD_FPR5  - THREAD_FPR0
+	fst.s	$f6, \tmp, THREAD_FPR6  - THREAD_FPR0
+	fst.s	$f7, \tmp, THREAD_FPR7  - THREAD_FPR0
+	fst.s	$f8, \tmp, THREAD_FPR8  - THREAD_FPR0
+	fst.s	$f9, \tmp, THREAD_FPR9  - THREAD_FPR0
+	fst.s	$f10, \tmp, THREAD_FPR10 - THREAD_FPR0
+	fst.s	$f11, \tmp, THREAD_FPR11 - THREAD_FPR0
+	fst.s	$f12, \tmp, THREAD_FPR12 - THREAD_FPR0
+	fst.s	$f13, \tmp, THREAD_FPR13 - THREAD_FPR0
+	fst.s	$f14, \tmp, THREAD_FPR14 - THREAD_FPR0
+	fst.s	$f15, \tmp, THREAD_FPR15 - THREAD_FPR0
+	fst.s	$f16, \tmp, THREAD_FPR16 - THREAD_FPR0
+	fst.s	$f17, \tmp, THREAD_FPR17 - THREAD_FPR0
+	fst.s	$f18, \tmp, THREAD_FPR18 - THREAD_FPR0
+	fst.s	$f19, \tmp, THREAD_FPR19 - THREAD_FPR0
+	fst.s	$f20, \tmp, THREAD_FPR20 - THREAD_FPR0
+	fst.s	$f21, \tmp, THREAD_FPR21 - THREAD_FPR0
+	fst.s	$f22, \tmp, THREAD_FPR22 - THREAD_FPR0
+	fst.s	$f23, \tmp, THREAD_FPR23 - THREAD_FPR0
+	fst.s	$f24, \tmp, THREAD_FPR24 - THREAD_FPR0
+	fst.s	$f25, \tmp, THREAD_FPR25 - THREAD_FPR0
+	fst.s	$f26, \tmp, THREAD_FPR26 - THREAD_FPR0
+	fst.s	$f27, \tmp, THREAD_FPR27 - THREAD_FPR0
+	fst.s	$f28, \tmp, THREAD_FPR28 - THREAD_FPR0
+	fst.s	$f29, \tmp, THREAD_FPR29 - THREAD_FPR0
+	fst.s	$f30, \tmp, THREAD_FPR30 - THREAD_FPR0
+	fst.s	$f31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
 
 	.macro	fpu_restore_double thread tmp
 	li.w	\tmp, THREAD_FPR0
 	PTR_ADDU \tmp, \tmp, \thread
-	fld.d	$f0, \tmp, THREAD_FPR0  - THREAD_FPR0
-	fld.d	$f1, \tmp, THREAD_FPR1  - THREAD_FPR0
-	fld.d	$f2, \tmp, THREAD_FPR2  - THREAD_FPR0
-	fld.d	$f3, \tmp, THREAD_FPR3  - THREAD_FPR0
-	fld.d	$f4, \tmp, THREAD_FPR4  - THREAD_FPR0
-	fld.d	$f5, \tmp, THREAD_FPR5  - THREAD_FPR0
-	fld.d	$f6, \tmp, THREAD_FPR6  - THREAD_FPR0
-	fld.d	$f7, \tmp, THREAD_FPR7  - THREAD_FPR0
-	fld.d	$f8, \tmp, THREAD_FPR8  - THREAD_FPR0
-	fld.d	$f9, \tmp, THREAD_FPR9  - THREAD_FPR0
-	fld.d	$f10, \tmp, THREAD_FPR10 - THREAD_FPR0
-	fld.d	$f11, \tmp, THREAD_FPR11 - THREAD_FPR0
-	fld.d	$f12, \tmp, THREAD_FPR12 - THREAD_FPR0
-	fld.d	$f13, \tmp, THREAD_FPR13 - THREAD_FPR0
-	fld.d	$f14, \tmp, THREAD_FPR14 - THREAD_FPR0
-	fld.d	$f15, \tmp, THREAD_FPR15 - THREAD_FPR0
-	fld.d	$f16, \tmp, THREAD_FPR16 - THREAD_FPR0
-	fld.d	$f17, \tmp, THREAD_FPR17 - THREAD_FPR0
-	fld.d	$f18, \tmp, THREAD_FPR18 - THREAD_FPR0
-	fld.d	$f19, \tmp, THREAD_FPR19 - THREAD_FPR0
-	fld.d	$f20, \tmp, THREAD_FPR20 - THREAD_FPR0
-	fld.d	$f21, \tmp, THREAD_FPR21 - THREAD_FPR0
-	fld.d	$f22, \tmp, THREAD_FPR22 - THREAD_FPR0
-	fld.d	$f23, \tmp, THREAD_FPR23 - THREAD_FPR0
-	fld.d	$f24, \tmp, THREAD_FPR24 - THREAD_FPR0
-	fld.d	$f25, \tmp, THREAD_FPR25 - THREAD_FPR0
-	fld.d	$f26, \tmp, THREAD_FPR26 - THREAD_FPR0
-	fld.d	$f27, \tmp, THREAD_FPR27 - THREAD_FPR0
-	fld.d	$f28, \tmp, THREAD_FPR28 - THREAD_FPR0
-	fld.d	$f29, \tmp, THREAD_FPR29 - THREAD_FPR0
-	fld.d	$f30, \tmp, THREAD_FPR30 - THREAD_FPR0
-	fld.d	$f31, \tmp, THREAD_FPR31 - THREAD_FPR0
+	fld.s	$f0, \tmp, THREAD_FPR0  - THREAD_FPR0
+	fld.s	$f1, \tmp, THREAD_FPR1  - THREAD_FPR0
+	fld.s	$f2, \tmp, THREAD_FPR2  - THREAD_FPR0
+	fld.s	$f3, \tmp, THREAD_FPR3  - THREAD_FPR0
+	fld.s	$f4, \tmp, THREAD_FPR4  - THREAD_FPR0
+	fld.s	$f5, \tmp, THREAD_FPR5  - THREAD_FPR0
+	fld.s	$f6, \tmp, THREAD_FPR6  - THREAD_FPR0
+	fld.s	$f7, \tmp, THREAD_FPR7  - THREAD_FPR0
+	fld.s	$f8, \tmp, THREAD_FPR8  - THREAD_FPR0
+	fld.s	$f9, \tmp, THREAD_FPR9  - THREAD_FPR0
+	fld.s	$f10, \tmp, THREAD_FPR10 - THREAD_FPR0
+	fld.s	$f11, \tmp, THREAD_FPR11 - THREAD_FPR0
+	fld.s	$f12, \tmp, THREAD_FPR12 - THREAD_FPR0
+	fld.s	$f13, \tmp, THREAD_FPR13 - THREAD_FPR0
+	fld.s	$f14, \tmp, THREAD_FPR14 - THREAD_FPR0
+	fld.s	$f15, \tmp, THREAD_FPR15 - THREAD_FPR0
+	fld.s	$f16, \tmp, THREAD_FPR16 - THREAD_FPR0
+	fld.s	$f17, \tmp, THREAD_FPR17 - THREAD_FPR0
+	fld.s	$f18, \tmp, THREAD_FPR18 - THREAD_FPR0
+	fld.s	$f19, \tmp, THREAD_FPR19 - THREAD_FPR0
+	fld.s	$f20, \tmp, THREAD_FPR20 - THREAD_FPR0
+	fld.s	$f21, \tmp, THREAD_FPR21 - THREAD_FPR0
+	fld.s	$f22, \tmp, THREAD_FPR22 - THREAD_FPR0
+	fld.s	$f23, \tmp, THREAD_FPR23 - THREAD_FPR0
+	fld.s	$f24, \tmp, THREAD_FPR24 - THREAD_FPR0
+	fld.s	$f25, \tmp, THREAD_FPR25 - THREAD_FPR0
+	fld.s	$f26, \tmp, THREAD_FPR26 - THREAD_FPR0
+	fld.s	$f27, \tmp, THREAD_FPR27 - THREAD_FPR0
+	fld.s	$f28, \tmp, THREAD_FPR28 - THREAD_FPR0
+	fld.s	$f29, \tmp, THREAD_FPR29 - THREAD_FPR0
+	fld.s	$f30, \tmp, THREAD_FPR30 - THREAD_FPR0
+	fld.s	$f31, \tmp, THREAD_FPR31 - THREAD_FPR0
 	.endm
 .macro move dst src
 #ifdef CONFIG_64BIT

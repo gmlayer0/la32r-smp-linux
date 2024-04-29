@@ -24,6 +24,29 @@ SYM_CODE_START(kernel_entry)    		# kernel entry point
 	la.abs		t0, 0f
 	jirl		zero, t0, 0
 0:
+	// if not core 0, stall here and wait for IPI Interruptions.
+	csrrd   t2, LOONGARCH_CSR_CPUID
+	beq     t2, zero, 2f
+	/* Config direct window and set PG */
+	PTR_LI		t0, 0xa0000011
+	csrwr		t0, LOONGARCH_CSR_DMWIN0
+	PTR_LI		t0, 0x80000001
+	csrwr		t0, LOONGARCH_CSR_DMWIN1
+	/* Enable PG */
+	li.w		t0, 0xb0		# PLV=0, IE=0, PG=1
+	csrwr		t0, LOONGARCH_CSR_CRMD
+	// Enable IPI interrupts
+	li.w	t0, 0x00001000
+	csrwr   t0, LOONGARCH_CSR_ECFG
+	li.w	t0, 0x4
+	li.w	t1, 0x4
+	csrxchg   t0, t1, LOONGARCH_CSR_CRMD
+1:
+	idle 0
+	b    1b
+
+2:
+
 #ifdef CONFIG_USE_OF
 
 	li.w		t1, -2

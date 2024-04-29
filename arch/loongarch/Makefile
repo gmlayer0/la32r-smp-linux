@@ -36,7 +36,7 @@ ifdef CONFIG_32BIT
 ld-emul                 = $(32bit-emul)
 vmlinux-32              = vmlinux.32
 
-cflags-y                += -mabi=ilp32s
+cflags-y                += -mabi=ilp32f
 endif
 
 
@@ -54,7 +54,7 @@ all-y			:= vmlinux
 # the current pointer optimization.
 #
 cflags-y			+= -G 0 -pipe
-cflags-y			+= -msoft-float
+# cflags-y			+= -msoft-float
 LDFLAGS_vmlinux			+= -G 0 -static -n -nostdlib
 KBUILD_AFLAGS_KERNEL		+= -Wa,-mla-global-with-pcrel
 KBUILD_CFLAGS_KERNEL		+= -Wa,-mla-global-with-pcrel

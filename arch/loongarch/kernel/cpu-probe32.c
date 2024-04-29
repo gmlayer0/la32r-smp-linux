@@ -107,7 +107,9 @@ static char cpu_full_name[MAX_NAME_LEN] = "        -        ";
 static inline void cpu_probe_loongson(struct cpuinfo_loongarch *c, unsigned int cpu)
 {
 	c->options = LOONGARCH_CPU_CPUCFG | LOONGARCH_CPU_CSR |
-		     LOONGARCH_CPU_TLB | LOONGARCH_CPU_VINT | LOONGARCH_CPU_WATCH;
+		     LOONGARCH_CPU_TLB | LOONGARCH_CPU_VINT | LOONGARCH_CPU_WATCH |
+			 LOONGARCH_CPU_FPU;
+	c->fpu_vers = 0;
 
 	decode_configs(c);
 	elf_hwcap |= HWCAP_LOONGARCH_CRC32;

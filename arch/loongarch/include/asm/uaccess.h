@@ -272,8 +272,8 @@ do {									\
 	"3:							\n"	\
 	"	.section	.fixup,\"ax\"			\n"	\
 	"4:	li.w	%0, %4					\n"	\
-	"	slli.d	%1, $r0, 0				\n"	\
-	"	slli.d	%D1, $r0, 0				\n"	\
+	"	slli.w	%1, $r0, 0				\n"	\
+	"	slli.w	%D1, $r0, 0				\n"	\
 	"	b	3b					\n"	\
 	"	.previous					\n"	\
 	"	.section	__ex_table,\"a\"		\n"	\

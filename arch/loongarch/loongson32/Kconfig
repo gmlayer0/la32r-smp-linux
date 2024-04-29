@@ -58,6 +58,10 @@ endchoice
 choice
 	prompt "SOC selection"
 
+config WIRED_SOC
+	bool
+	prompt "Wired SOC"
+
 config BX_SOC
 	bool
 	prompt "BaiXin SOC"

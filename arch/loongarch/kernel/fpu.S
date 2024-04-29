@@ -18,7 +18,7 @@
 #undef v0
 #undef v1
 
-#define FPU_SREG_WIDTH	32
+#define FPU_SREG_WIDTH 32
 #define SC_FPR0  0
 #define SC_FPR1  (SC_FPR0  + FPU_SREG_WIDTH)
 #define SC_FPR2  (SC_FPR1  + FPU_SREG_WIDTH)
@@ -63,113 +63,113 @@
 	.endm
 
 	.macro sc_save_fp base
-	EX	fst.d $f0,  \base, SC_FPR0
-	EX	fst.d $f1,  \base, SC_FPR1
-	EX	fst.d $f2,  \base, SC_FPR2
-	EX	fst.d $f3,  \base, SC_FPR3
-	EX	fst.d $f4,  \base, SC_FPR4
-	EX	fst.d $f5,  \base, SC_FPR5
-	EX	fst.d $f6,  \base, SC_FPR6
-	EX	fst.d $f7,  \base, SC_FPR7
-	EX	fst.d $f8,  \base, SC_FPR8
-	EX	fst.d $f9,  \base, SC_FPR9
-	EX	fst.d $f10, \base, SC_FPR10
-	EX	fst.d $f11, \base, SC_FPR11
-	EX	fst.d $f12, \base, SC_FPR12
-	EX	fst.d $f13, \base, SC_FPR13
-	EX	fst.d $f14, \base, SC_FPR14
-	EX	fst.d $f15, \base, SC_FPR15
-	EX	fst.d $f16, \base, SC_FPR16
-	EX	fst.d $f17, \base, SC_FPR17
-	EX	fst.d $f18, \base, SC_FPR18
-	EX	fst.d $f19, \base, SC_FPR19
-	EX	fst.d $f20, \base, SC_FPR20
-	EX	fst.d $f21, \base, SC_FPR21
-	EX	fst.d $f22, \base, SC_FPR22
-	EX	fst.d $f23, \base, SC_FPR23
-	EX	fst.d $f24, \base, SC_FPR24
-	EX	fst.d $f25, \base, SC_FPR25
-	EX	fst.d $f26, \base, SC_FPR26
-	EX	fst.d $f27, \base, SC_FPR27
-	EX	fst.d $f28, \base, SC_FPR28
-	EX	fst.d $f29, \base, SC_FPR29
-	EX	fst.d $f30, \base, SC_FPR30
-	EX	fst.d $f31, \base, SC_FPR31
+	EX	fst.s $f0,  \base, SC_FPR0
+	EX	fst.s $f1,  \base, SC_FPR1
+	EX	fst.s $f2,  \base, SC_FPR2
+	EX	fst.s $f3,  \base, SC_FPR3
+	EX	fst.s $f4,  \base, SC_FPR4
+	EX	fst.s $f5,  \base, SC_FPR5
+	EX	fst.s $f6,  \base, SC_FPR6
+	EX	fst.s $f7,  \base, SC_FPR7
+	EX	fst.s $f8,  \base, SC_FPR8
+	EX	fst.s $f9,  \base, SC_FPR9
+	EX	fst.s $f10, \base, SC_FPR10
+	EX	fst.s $f11, \base, SC_FPR11
+	EX	fst.s $f12, \base, SC_FPR12
+	EX	fst.s $f13, \base, SC_FPR13
+	EX	fst.s $f14, \base, SC_FPR14
+	EX	fst.s $f15, \base, SC_FPR15
+	EX	fst.s $f16, \base, SC_FPR16
+	EX	fst.s $f17, \base, SC_FPR17
+	EX	fst.s $f18, \base, SC_FPR18
+	EX	fst.s $f19, \base, SC_FPR19
+	EX	fst.s $f20, \base, SC_FPR20
+	EX	fst.s $f21, \base, SC_FPR21
+	EX	fst.s $f22, \base, SC_FPR22
+	EX	fst.s $f23, \base, SC_FPR23
+	EX	fst.s $f24, \base, SC_FPR24
+	EX	fst.s $f25, \base, SC_FPR25
+	EX	fst.s $f26, \base, SC_FPR26
+	EX	fst.s $f27, \base, SC_FPR27
+	EX	fst.s $f28, \base, SC_FPR28
+	EX	fst.s $f29, \base, SC_FPR29
+	EX	fst.s $f30, \base, SC_FPR30
+	EX	fst.s $f31, \base, SC_FPR31
 	.endm
 
 	.macro sc_restore_fp base
-	EX	fld.d $f0,  \base, SC_FPR0
-	EX	fld.d $f1,  \base, SC_FPR1
-	EX	fld.d $f2,  \base, SC_FPR2
-	EX	fld.d $f3,  \base, SC_FPR3
-	EX	fld.d $f4,  \base, SC_FPR4
-	EX	fld.d $f5,  \base, SC_FPR5
-	EX	fld.d $f6,  \base, SC_FPR6
-	EX	fld.d $f7,  \base, SC_FPR7
-	EX	fld.d $f8,  \base, SC_FPR8
-	EX	fld.d $f9,  \base, SC_FPR9
-	EX	fld.d $f10, \base, SC_FPR10
-	EX	fld.d $f11, \base, SC_FPR11
-	EX	fld.d $f12, \base, SC_FPR12
-	EX	fld.d $f13, \base, SC_FPR13
-	EX	fld.d $f14, \base, SC_FPR14
-	EX	fld.d $f15, \base, SC_FPR15
-	EX	fld.d $f16, \base, SC_FPR16
-	EX	fld.d $f17, \base, SC_FPR17
-	EX	fld.d $f18, \base, SC_FPR18
-	EX	fld.d $f19, \base, SC_FPR19
-	EX	fld.d $f20, \base, SC_FPR20
-	EX	fld.d $f21, \base, SC_FPR21
-	EX	fld.d $f22, \base, SC_FPR22
-	EX	fld.d $f23, \base, SC_FPR23
-	EX	fld.d $f24, \base, SC_FPR24
-	EX	fld.d $f25, \base, SC_FPR25
-	EX	fld.d $f26, \base, SC_FPR26
-	EX	fld.d $f27, \base, SC_FPR27
-	EX	fld.d $f28, \base, SC_FPR28
-	EX	fld.d $f29, \base, SC_FPR29
-	EX	fld.d $f30, \base, SC_FPR30
-	EX	fld.d $f31, \base, SC_FPR31
+	EX	fld.s $f0,  \base, SC_FPR0
+	EX	fld.s $f1,  \base, SC_FPR1
+	EX	fld.s $f2,  \base, SC_FPR2
+	EX	fld.s $f3,  \base, SC_FPR3
+	EX	fld.s $f4,  \base, SC_FPR4
+	EX	fld.s $f5,  \base, SC_FPR5
+	EX	fld.s $f6,  \base, SC_FPR6
+	EX	fld.s $f7,  \base, SC_FPR7
+	EX	fld.s $f8,  \base, SC_FPR8
+	EX	fld.s $f9,  \base, SC_FPR9
+	EX	fld.s $f10, \base, SC_FPR10
+	EX	fld.s $f11, \base, SC_FPR11
+	EX	fld.s $f12, \base, SC_FPR12
+	EX	fld.s $f13, \base, SC_FPR13
+	EX	fld.s $f14, \base, SC_FPR14
+	EX	fld.s $f15, \base, SC_FPR15
+	EX	fld.s $f16, \base, SC_FPR16
+	EX	fld.s $f17, \base, SC_FPR17
+	EX	fld.s $f18, \base, SC_FPR18
+	EX	fld.s $f19, \base, SC_FPR19
+	EX	fld.s $f20, \base, SC_FPR20
+	EX	fld.s $f21, \base, SC_FPR21
+	EX	fld.s $f22, \base, SC_FPR22
+	EX	fld.s $f23, \base, SC_FPR23
+	EX	fld.s $f24, \base, SC_FPR24
+	EX	fld.s $f25, \base, SC_FPR25
+	EX	fld.s $f26, \base, SC_FPR26
+	EX	fld.s $f27, \base, SC_FPR27
+	EX	fld.s $f28, \base, SC_FPR28
+	EX	fld.s $f29, \base, SC_FPR29
+	EX	fld.s $f30, \base, SC_FPR30
+	EX	fld.s $f31, \base, SC_FPR31
 	.endm
 
 	.macro sc_save_fcc base, tmp0, tmp1
 	movcf2gr	\tmp0, $fcc0
-	move	\tmp1, \tmp0
-	movcf2gr	\tmp0, $fcc1
-	bstrins.d	\tmp1, \tmp0, 15, 8
-	movcf2gr	\tmp0, $fcc2
-	bstrins.d	\tmp1, \tmp0, 23, 16
-	movcf2gr	\tmp0, $fcc3
-	bstrins.d	\tmp1, \tmp0, 31, 24
-	movcf2gr	\tmp0, $fcc4
-	bstrins.d	\tmp1, \tmp0, 39, 32
-	movcf2gr	\tmp0, $fcc5
-	bstrins.d	\tmp1, \tmp0, 47, 40
-	movcf2gr	\tmp0, $fcc6
-	bstrins.d	\tmp1, \tmp0, 55, 48
-	movcf2gr	\tmp0, $fcc7
-	bstrins.d	\tmp1, \tmp0, 63, 56
-	EX	st.d \tmp1, \base, 0
+	move	    \tmp1, \tmp0
+	// movcf2gr	\tmp0, $fcc1
+	// bstrins.d	\tmp1, \tmp0, 15, 8
+	// movcf2gr	\tmp0, $fcc2
+	// bstrins.d	\tmp1, \tmp0, 23, 16
+	// movcf2gr	\tmp0, $fcc3
+	// bstrins.d	\tmp1, \tmp0, 31, 24
+	// movcf2gr	\tmp0, $fcc4
+	// bstrins.d	\tmp1, \tmp0, 39, 32
+	// movcf2gr	\tmp0, $fcc5
+	// bstrins.d	\tmp1, \tmp0, 47, 40
+	// movcf2gr	\tmp0, $fcc6
+	// bstrins.d	\tmp1, \tmp0, 55, 48
+	// movcf2gr	\tmp0, $fcc7
+	// bstrins.d	\tmp1, \tmp0, 63, 56
+	EX	st.w	\tmp1, \base, 0
 	.endm
 
 	.macro sc_restore_fcc base, tmp0, tmp1
-	EX	ld.d \tmp0, \base, 0
-	bstrpick.d	\tmp1, \tmp0, 7, 0
-	movgr2cf	$fcc0, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 15, 8
-	movgr2cf	$fcc1, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 23, 16
-	movgr2cf	$fcc2, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 31, 24
-	movgr2cf	$fcc3, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 39, 32
-	movgr2cf	$fcc4, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 47, 40
-	movgr2cf	$fcc5, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 55, 48
-	movgr2cf	$fcc6, \tmp1
-	bstrpick.d	\tmp1, \tmp0, 63, 56
-	movgr2cf	$fcc7, \tmp1
+	EX	ld.w	\tmp0, \base, 0
+	// bstrpick.d	\tmp1, \tmp0, 7, 0
+	movgr2cf	$fcc0, \tmp0
+	// bstrpick.d	\tmp1, \tmp0, 15, 8
+	// movgr2cf	$fcc1, \tmp1
+	// bstrpick.d	\tmp1, \tmp0, 23, 16
+	// movgr2cf	$fcc2, \tmp1
+	// bstrpick.d	\tmp1, \tmp0, 31, 24
+	// movgr2cf	$fcc3, \tmp1
+	// bstrpick.d	\tmp1, \tmp0, 39, 32
+	// movgr2cf	$fcc4, \tmp1
+	// bstrpick.d	\tmp1, \tmp0, 47, 40
+	// movgr2cf	$fcc5, \tmp1
+	// bstrpick.d	\tmp1, \tmp0, 55, 48
+	// movgr2cf	$fcc6, \tmp1
+	// bstrpick.d	\tmp1, \tmp0, 63, 56
+	// movgr2cf	$fcc7, \tmp1
 	.endm
 
 	.macro sc_save_fcsr base, tmp0
@@ -231,38 +231,38 @@ SYM_FUNC_START(_init_fpu)
 
 	li.w	t1, -1				# SNaN
 
-	movgr2fr.d	$f0, t1
-	movgr2fr.d	$f1, t1
-	movgr2fr.d	$f2, t1
-	movgr2fr.d	$f3, t1
-	movgr2fr.d	$f4, t1
-	movgr2fr.d	$f5, t1
-	movgr2fr.d	$f6, t1
-	movgr2fr.d	$f7, t1
-	movgr2fr.d	$f8, t1
-	movgr2fr.d	$f9, t1
-	movgr2fr.d	$f10, t1
-	movgr2fr.d	$f11, t1
-	movgr2fr.d	$f12, t1
-	movgr2fr.d	$f13, t1
-	movgr2fr.d	$f14, t1
-	movgr2fr.d	$f15, t1
-	movgr2fr.d	$f16, t1
-	movgr2fr.d	$f17, t1
-	movgr2fr.d	$f18, t1
-	movgr2fr.d	$f19, t1
-	movgr2fr.d	$f20, t1
-	movgr2fr.d	$f21, t1
-	movgr2fr.d	$f22, t1
-	movgr2fr.d	$f23, t1
-	movgr2fr.d	$f24, t1
-	movgr2fr.d	$f25, t1
-	movgr2fr.d	$f26, t1
-	movgr2fr.d	$f27, t1
-	movgr2fr.d	$f28, t1
-	movgr2fr.d	$f29, t1
-	movgr2fr.d	$f30, t1
-	movgr2fr.d	$f31, t1
+	movgr2fr.w	$f0, t1
+	movgr2fr.w	$f1, t1
+	movgr2fr.w	$f2, t1
+	movgr2fr.w	$f3, t1
+	movgr2fr.w	$f4, t1
+	movgr2fr.w	$f5, t1
+	movgr2fr.w	$f6, t1
+	movgr2fr.w	$f7, t1
+	movgr2fr.w	$f8, t1
+	movgr2fr.w	$f9, t1
+	movgr2fr.w	$f10, t1
+	movgr2fr.w	$f11, t1
+	movgr2fr.w	$f12, t1
+	movgr2fr.w	$f13, t1
+	movgr2fr.w	$f14, t1
+	movgr2fr.w	$f15, t1
+	movgr2fr.w	$f16, t1
+	movgr2fr.w	$f17, t1
+	movgr2fr.w	$f18, t1
+	movgr2fr.w	$f19, t1
+	movgr2fr.w	$f20, t1
+	movgr2fr.w	$f21, t1
+	movgr2fr.w	$f22, t1
+	movgr2fr.w	$f23, t1
+	movgr2fr.w	$f24, t1
+	movgr2fr.w	$f25, t1
+	movgr2fr.w	$f26, t1
+	movgr2fr.w	$f27, t1
+	movgr2fr.w	$f28, t1
+	movgr2fr.w	$f29, t1
+	movgr2fr.w	$f30, t1
+	movgr2fr.w	$f31, t1
 
 	jirl zero, ra, 0
 SYM_FUNC_END(_init_fpu)

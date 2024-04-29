@@ -1,0 +1,62 @@
+// SPDX-License-Identifier: GPL-2.0
+/dts-v1/;
+
+/ {
+	model = "loongson,generic";
+	compatible = "loongson,loongson3";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	aliases {
+		serial0 = &zynq_uart0;
+        mmc0 = &mmc0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+		bootargs = "earlycon";
+	};
+
+	memory {
+		name = "memory";
+		device_type = "memory";
+		reg = <0x00000000  0x1c000000>; // 448M
+	};
+
+	socclk: socclk {
+		compatible = "fixed-clock";
+		clock-frequency = <100000000>;
+		#clock-cells = <0>;
+	};
+
+	cpuic: interrupt-controller {
+		compatible = "loongson,cpu-interrupt-controller";
+		interrupt-controller;
+		#interrupt-cells = <1>;
+	};
+
+	soc {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <0x10000000 0x10000000 0x10000000>;
+
+		zynq_uart0: serial@0x1fe001e0 {
+			u-boot,dm-pre-reloc;
+			compatible = "xlnx,zynqmp-uart", "cdns,uart-r1p12";
+			interrupt-parent = <&imux>;
+			interrupts = <0 21 4>;
+			reg = <0x0 0xff000000 0x0 0x1000>;
+			clock-names = "uart_clk", "pclk";
+			power-domains = <&zynqmp_firmware PD_UART_0>;
+
+			compatible = "ns16550a";
+			reg = <0x1fe001e0  0x10>;
+			clock-frequency = <33000000>;
+			interrupt-parent = <&cpuic>;
+			interrupts = <3>;
+			no-loopback-test;
+		};
+	};
+};
+

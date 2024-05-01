@@ -4269,7 +4269,8 @@ int sdhci_setup_host(struct sdhci_host *host)
 		host->max_clk = FIELD_GET(SDHCI_CLOCK_V3_BASE_MASK, host->caps);
 	else
 		host->max_clk = FIELD_GET(SDHCI_CLOCK_BASE_MASK, host->caps);
-
+	printk("Old max clk is %d", host->max_clk);
+	host->max_clk = 50; // slow down to 50Mhz
 	host->max_clk *= 1000000;
 	if (host->max_clk == 0 || host->quirks &
 			SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN) {
@@ -4317,6 +4318,8 @@ int sdhci_setup_host(struct sdhci_host *host)
 
 	if (!mmc->f_max || mmc->f_max > max_clk)
 		mmc->f_max = max_clk;
+	mmc->f_min = 50000000;
+	mmc->f_max = 50000000;
 
 	if (!(host->quirks & SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK)) {
 		host->timeout_clk = FIELD_GET(SDHCI_TIMEOUT_CLK_MASK, host->caps);

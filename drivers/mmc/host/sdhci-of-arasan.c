@@ -632,9 +632,9 @@ static int sdhci_zynqmp_sdcardclk_set_phase(struct clk_hw *hw, int degrees)
 	tap_delay = (degrees * tap_max) / 360;
 
 	/* Set the Clock Phase */
-	ret = zynqmp_pm_set_sd_tapdelay(node_id, PM_TAPDELAY_OUTPUT, tap_delay);
-	if (ret)
-		pr_err("Error setting Output Tap Delay\n");
+	// ret = zynqmp_pm_set_sd_tapdelay(node_id, PM_TAPDELAY_OUTPUT, tap_delay);
+	// if (ret)
+	// 	pr_err("Error setting Output Tap Delay\n");
 
 	/* Release DLL Reset */
 	zynqmp_pm_sd_dll_reset(node_id, PM_DLL_RESET_RELEASE);
@@ -701,9 +701,9 @@ static int sdhci_zynqmp_sampleclk_set_phase(struct clk_hw *hw, int degrees)
 	tap_delay = (degrees * tap_max) / 360;
 
 	/* Set the Clock Phase */
-	ret = zynqmp_pm_set_sd_tapdelay(node_id, PM_TAPDELAY_INPUT, tap_delay);
-	if (ret)
-		pr_err("Error setting Input Tap Delay\n");
+	// ret = zynqmp_pm_set_sd_tapdelay(node_id, PM_TAPDELAY_INPUT, tap_delay);
+	// if (ret)
+	// 	pr_err("Error setting Input Tap Delay\n");
 
 	return ret;
 }

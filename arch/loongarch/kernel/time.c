@@ -211,10 +211,12 @@ int __init constant_clocksource_init(void)
 
 void __init time_init(void)
 {
-	if (!cpu_has_cpucfg)
-		const_clock_freq = cpu_clock_freq;
-	else
+	// if (!cpu_has_cpucfg)
+	// 	const_clock_freq = cpu_clock_freq;
+	// else
 		const_clock_freq = calc_const_freq();
+	
+	printk("CPU Clock is %lld", const_clock_freq);
 
 	constant_clockevent_init();
 	constant_clocksource_init();

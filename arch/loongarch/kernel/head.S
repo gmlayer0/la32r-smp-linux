@@ -46,7 +46,6 @@ SYM_CODE_START(kernel_entry)    		# kernel entry point
 	b    1b
 
 2:
-
 #ifdef CONFIG_USE_OF
 
 	li.w		t1, -2
@@ -57,7 +56,6 @@ SYM_CODE_START(kernel_entry)    		# kernel entry point
 dtb_found:
 #endif
 
-#if 1
 	la		t0, __bss_start		# clear .bss
 	PTR_S		zero, t0, 0
 	la		t1, __bss_stop - LONGSIZE
@@ -65,7 +63,6 @@ dtb_found:
 	PTR_ADDIU	t0, t0, LONGSIZE
 	PTR_S		zero, t0, 0
 	bne		t0, t1, 1b
-#endif
 
 	la		t0, fw_arg0
 	PTR_S		a0, t0, 0		# firmware arguments

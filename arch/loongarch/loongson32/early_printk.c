@@ -33,8 +33,12 @@ void prom_putchar(char c)
 
 #ifdef CONFIG_LS_SOC
 	uart_base = (unsigned char *)0x9fe001e0;
-#elif CONFIG_BX_SOC
+#endif
+#ifdef CONFIG_BX_SOC
 	uart_base = (unsigned char *)0x9fe40000;
+#endif
+#ifdef CONFIG_WIRED_SOC
+	uart_base = (unsigned char *)0x9d010000;
 #endif
 	timeout = 1024;
 

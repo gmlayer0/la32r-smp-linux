@@ -46,9 +46,14 @@ extern char __dtb_start[];
 #ifdef CONFIG_LS_SOC
 extern u32 __dtb_loongson32_ls_begin[];
 static u32 *__dtb_begin = __dtb_loongson32_ls_begin;
-#elif CONFIG_BX_SOC
+#endif
+#ifdef CONFIG_BX_SOC
 extern u32 __dtb_loongson32_bx_begin[];
 static u32 *__dtb_begin = __dtb_loongson32_bx_begin;
+#endif
+#ifdef CONFIG_WIRED_SOC
+extern u32 __dtb_loongson32_wired_begin[];
+static u32 *__dtb_begin = __dtb_loongson32_wired_begin;
 #endif
 extern void __init __dt_setup_arch(void *bph);
 extern bool __init early_init_dt_verify(void *params);

@@ -103,18 +103,21 @@ static int (*do_fw_call)(u64, u64, u64, u32 *ret_payload) = do_fw_call_fail;
 static noinline int do_fw_call_smc(u64 arg0, u64 arg1, u64 arg2,
 				   u32 *ret_payload)
 {
-	struct arm_smccc_res res;
 
-	arm_smccc_smc(arg0, arg1, arg2, 0, 0, 0, 0, 0, &res);
+	printk("Not support!\n");
 
-	if (ret_payload) {
-		ret_payload[0] = lower_32_bits(res.a0);
-		ret_payload[1] = upper_32_bits(res.a0);
-		ret_payload[2] = lower_32_bits(res.a1);
-		ret_payload[3] = upper_32_bits(res.a1);
-	}
+	return 0;
+	// struct arm_smccc_res res;
+	// arm_smccc_smc(arg0, arg1, arg2, 0, 0, 0, 0, 0, &res);
 
-	return zynqmp_pm_ret_code((enum pm_ret_status)res.a0);
+	// if (ret_payload) {
+	// 	ret_payload[0] = lower_32_bits(res.a0);
+	// 	ret_payload[1] = upper_32_bits(res.a0);
+	// 	ret_payload[2] = lower_32_bits(res.a1);
+	// 	ret_payload[3] = upper_32_bits(res.a1);
+	// }
+
+	// return zynqmp_pm_ret_code((enum pm_ret_status)res.a0);
 }
 
 /**
@@ -133,18 +136,21 @@ static noinline int do_fw_call_smc(u64 arg0, u64 arg1, u64 arg2,
 static noinline int do_fw_call_hvc(u64 arg0, u64 arg1, u64 arg2,
 				   u32 *ret_payload)
 {
-	struct arm_smccc_res res;
+	
+	printk("Not support!\n");
+	return 0;
+	// struct arm_smccc_res res;
 
-	arm_smccc_hvc(arg0, arg1, arg2, 0, 0, 0, 0, 0, &res);
+	// arm_smccc_hvc(arg0, arg1, arg2, 0, 0, 0, 0, 0, &res);
 
-	if (ret_payload) {
-		ret_payload[0] = lower_32_bits(res.a0);
-		ret_payload[1] = upper_32_bits(res.a0);
-		ret_payload[2] = lower_32_bits(res.a1);
-		ret_payload[3] = upper_32_bits(res.a1);
-	}
+	// if (ret_payload) {
+	// 	ret_payload[0] = lower_32_bits(res.a0);
+	// 	ret_payload[1] = upper_32_bits(res.a0);
+	// 	ret_payload[2] = lower_32_bits(res.a1);
+	// 	ret_payload[3] = upper_32_bits(res.a1);
+	// }
 
-	return zynqmp_pm_ret_code((enum pm_ret_status)res.a0);
+	// return zynqmp_pm_ret_code((enum pm_ret_status)res.a0);
 }
 
 /**

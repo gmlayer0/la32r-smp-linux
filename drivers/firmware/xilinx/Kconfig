@@ -2,12 +2,9 @@
 # Kconfig for Xilinx firmwares
 
 menu "Zynq MPSoC Firmware Drivers"
-	depends on ARCH_ZYNQMP
 
 config ZYNQMP_FIRMWARE
 	bool "Enable Xilinx Zynq MPSoC firmware interface"
-	depends on ARCH_ZYNQMP
-	default y if ARCH_ZYNQMP
 	select MFD_CORE
 	help
 	  Firmware interface driver is used by different

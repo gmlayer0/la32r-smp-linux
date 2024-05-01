@@ -9,7 +9,7 @@
 
 	aliases {
 		serial0 = &zynq_uart0;
-        mmc0 = &mmc0;
+        mmc0 = &zynq_mmc1;
 	};
 
 	chosen {
@@ -20,7 +20,7 @@
 	memory {
 		name = "memory";
 		device_type = "memory";
-		reg = <0x00000000  0x1c000000>; // 448M
+		reg = <0x00000000  0x10000000>; // 256M
 	};
 
 	socclk: socclk {
@@ -35,28 +35,70 @@
 		#interrupt-cells = <1>;
 	};
 
+	clk100: clk100 {
+		compatible = "fixed-clock";
+        #clock-cells = <0>;
+		clock-frequency = <100000000>;
+	};
+	clk_xin: clk_xin {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <200000000>;
+	};
+
 	soc {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0x10000000 0x10000000 0x10000000>;
 
-		zynq_uart0: serial@0x1fe001e0 {
-			u-boot,dm-pre-reloc;
-			compatible = "xlnx,zynqmp-uart", "cdns,uart-r1p12";
-			interrupt-parent = <&imux>;
-			interrupts = <0 21 4>;
-			reg = <0x0 0xff000000 0x0 0x1000>;
-			clock-names = "uart_clk", "pclk";
-			power-domains = <&zynqmp_firmware PD_UART_0>;
+		axi_intc_ps: interrupt-controller@1d800000 {
+                #interrupt-cells = <1>;
+                compatible = "xlnx,xps-intc-1.00.a";
+                interrupt-controller;
+                interrupt-parent = <&cpuic>;
+                interrupts = <8>;
+                reg = <0x1d800000 0x1000>;
+                xlnx,kind-of-intr = <0x1>;
+                xlnx,num-intr-inputs = <0x6>;
+        };
 
-			compatible = "ns16550a";
-			reg = <0x1fe001e0  0x10>;
-			clock-frequency = <33000000>;
-			interrupt-parent = <&cpuic>;
-			interrupts = <3>;
-			no-loopback-test;
+		cpu_uart0: serial@0x1d010000 {
+		    device_type = "serial";
+		    compatible = "ns16550a";
+		    reg = <0x1d010000 0x1000>;
+            clock-frequency = <100000000>;
+		    reg-offset = <0x0000>;
+		    reg-io-width = <1>;
+		    reg-shift = <0>;
+		    current-speed = <115200>;
+            interrupt-parent = <&cpuic>;
+		    interrupts = <6>;
+        };
+
+		zynq_uart0: serial@0x1f000000 {
+			compatible = "cdns,uart-r1p12";
+			status = "okay";
+    		reg = <0x1f000000 0x1000>;
+			interrupt-parent = <&axi_intc_ps>;
+			interrupts = <2>;
+    		clock-names = "uart_clk", "pclk";
+        	current-speed = <115200>;
+			clocks = <&clk100 &clk100>;
 		};
+	
+		zynq_mmc1: mmc@1f170000 {
+			compatible = "arasan,sdhci-8.9a";
+			interrupt-parent = <&axi_intc_ps>;
+			interrupts = <3>;
+			reg = <0x1f170000 0x1000>;
+			clocks = <&clk_xin &clk_xin>;
+			clock-names = "clk_xin", "clk_ahb";
+			clock-output-names = "clk_out_sd1", "clk_in_sd1";
+			#clock-cells = <1>;
+          	clk-phase-sd-hs = <63>, <72>;
+		};
+
 	};
 };
 

@@ -42,8 +42,12 @@ static inline unsigned int calc_const_freq(void)
 {
 #ifdef CONFIG_LS_SOC
 	return 200000000;
-#elif CONFIG_BX_SOC
+#endif 
+#ifdef CONFIG_BX_SOC
 	return 33000000;
+#endif
+#ifdef CONFIG_WIRED_SOC
+	return 150000000;
 #endif
 }
 #endif

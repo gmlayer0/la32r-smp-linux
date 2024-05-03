@@ -64,7 +64,7 @@ static inline void xconf_writel(u32 val, volatile void __iomem *addr)
 {
 	asm volatile (
 	"	st.w	%[v], %[hw], 0	\n"
-	"	ld.b	$r0, %[hw], 0	\n"
+	"	dbar    0	\n"
 	:
 	: [hw] "r" (addr), [v] "r" (val)
 	);

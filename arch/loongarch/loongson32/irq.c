@@ -63,6 +63,9 @@ void __init arch_init_irq(void)
 	clear_csr_estat(ESTATF_IP);
 
 	setup_IRQ();
+#ifdef CONFIG_SMP
+	set_vi_handler(EXCCODE_IPI, loongson3_ipi_interrupt);
+#endif
 
 	set_csr_ecfg(ECFGF_IP0 | ECFGF_IP1 | ECFGF_IP2 | ECFGF_IP3 | ECFGF_IP4 |
 	             ECFGF_IP5 | ECFGF_IP6 | ECFGF_IP7 | ECFGF_PC  | ECFGF_TIMER |

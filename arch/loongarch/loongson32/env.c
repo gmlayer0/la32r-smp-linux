@@ -21,7 +21,7 @@ EXPORT_SYMBOL(loongson_sysconf);
 u32 loongson_chipcfg[MAX_PACKAGES] = {0xbfc00180};
 u32 loongson_chiptemp[MAX_PACKAGES];
 u32 loongson_freqctrl[MAX_PACKAGES];
-unsigned long long smp_group[MAX_PACKAGES];
+u32 smp_group[MAX_PACKAGES];
 
 static void __init register_addrs_set(u32 *registers, const u32 addr, int num)
 {
@@ -128,11 +128,11 @@ void __init fw_init_environ(void)
 	loongson_sysconf.bpi_ver = get_bpi_version(&efi_bp->signature);
 
 #ifdef CONFIG_SMP
-	register_addrs_set(smp_group, TO_UNCAC(0x1fe01000), 16);
+	register_addrs_set(smp_group, TO_UNCAC(0x1d200000), 4); // 每个 NODE 有自己的 smp ipi mailbox 开始节点，在这里进行配置。
 #endif
-	register_addrs_set(loongson_chipcfg, TO_UNCAC(0x1fe00180), 4);
-	register_addrs_set(loongson_chiptemp, TO_UNCAC(0x1fe0019c), 4);
-	register_addrs_set(loongson_freqctrl, TO_UNCAC(0x1fe001d0), 4);
+	register_addrs_set(loongson_chipcfg, TO_UNCAC(0x1d040180), 4);
+	register_addrs_set(loongson_chiptemp, TO_UNCAC(0x1d04019c), 4);
+	register_addrs_set(loongson_freqctrl, TO_UNCAC(0x1d0401d0), 4);
 
 	if (list_find(efi_bp->extlist))
 		pr_warn("Scan bootparam failed\n");

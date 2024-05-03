@@ -35,7 +35,10 @@ SYM_CODE_START(kernel_entry)    		# kernel entry point
 	/* Enable PG */
 	li.w		t0, 0xb0		# PLV=0, IE=0, PG=1
 	csrwr		t0, LOONGARCH_CSR_CRMD
-	// Enable IPI interrupts
+	/* Set temporary IPI Handler */
+	la      t0, _tmp_ipi_handler
+	csrwr   t0, LOONGARCH_CSR_EENTRY
+	/* Enable IPI interrupts */
 	li.w	t0, 0x00001000
 	csrwr   t0, LOONGARCH_CSR_ECFG
 	li.w	t0, 0x4
@@ -103,7 +106,23 @@ dtb_found:
 SYM_CODE_END(kernel_entry)
 
 #ifdef CONFIG_SMP
-
+/*
+ * IPI interrupt temporary handler.
+ */
+.align 6
+SYM_CODE_START(_tmp_ipi_handler)
+	// Read the mail box to fetch PC, sp, tp, and jump to PC.
+	li.w      t0, 0x9d200000
+	csrrd     t3, LOONGARCH_CSR_CPUID
+	slli.w    t2, t3, 12
+	or        t1, t0, t2   // Base address of this core's mailbox
+	ld.w      ra, t1, 0x20 // PC is the first parameter
+	ld.w      sp, t1, 0x28 // SP is the second parameter
+	ld.w      tp, t1, 0x30 // TP is the third parameter
+	ld.w      a1, t1, 0x38 // a0 is the fourth parameter
+	addi.w    a0, t3, 0
+	jirl      zero, ra, 0  // jump to pc
+SYM_CODE_END(_tmp_ipi_handler)
 /*
  * SMP slave cpus entry point.	Board specific code for bootstrap calls this
  * function after setting up the stack and tp registers.

@@ -128,9 +128,10 @@ config MACH_LOONGSON64
 config MACH_LOONGSON32
 	bool "Loongson 32-bit family of machines"
 	select IRQ_LOONGARCH_CPU
-	select NR_CPUS_DEFAULT_1
+	select NR_CPUS_DEFAULT_2
 #	select SYS_SUPPORTS_HIGHMEM
 	select SYS_HAS_CPU_LOONGSON32
+	select SYS_SUPPORTS_SMP
 	select SYS_SUPPORTS_32BIT_KERNEL
 	select ZONE_DMA32
 #	select PCI
@@ -428,6 +429,9 @@ config HOTPLUG_CPU
 config SYS_SUPPORTS_SMP
 	bool
 
+config NR_CPUS_DEFAULT_2
+	bool
+
 config NR_CPUS_DEFAULT_4
 	bool
 
@@ -447,6 +451,7 @@ config NR_CPUS
 	int "Maximum number of CPUs (2-256)"
 	range 2 256
 	depends on SMP
+	default "2" if NR_CPUS_DEFAULT_2
 	default "4" if NR_CPUS_DEFAULT_4
 	default "8" if NR_CPUS_DEFAULT_8
 	default "16" if NR_CPUS_DEFAULT_16

@@ -648,6 +648,7 @@ asmlinkage void do_notify_resume(struct pt_regs *regs, void *unused,
 	user_enter();
 }
 
+#if 0
 #ifdef CONFIG_SMP
 static int smp_save_fp_context(void __user *sc)
 {
@@ -661,8 +662,6 @@ static int smp_restore_fp_context(void __user *sc)
 	       : copy_fp_from_sigcontext(sc);
 }
 #endif
-
-#if 0
 static int signal_setup(void)
 {
 	/*

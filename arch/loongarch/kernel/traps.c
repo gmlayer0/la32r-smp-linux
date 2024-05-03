@@ -494,8 +494,7 @@ asmlinkage void do_fpu(struct pt_regs *regs)
 
 	prev_state = exception_enter();
 
-	printk("do_fpu!\n");
-	// die_if_kernel("do_fpu invoked from kernel context!", regs);
+	die_if_kernel("do_fpu invoked from kernel context!", regs);
 
 	preempt_disable();
 	init_restore_fp();

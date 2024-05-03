@@ -192,7 +192,9 @@ do {									\
 #define this_cpu_xchg_4(pcp, val) _percpu_xchg(pcp, val)
 #define this_cpu_xchg_8(pcp, val) _percpu_xchg(pcp, val)
 
-#else // 32BITS
+#endif
+
+#ifdef CONFIG_32BIT // 32BITS
 #include <asm/cmpxchg.h>
 /* Use r21 for fast access */
 register unsigned long __my_cpu_offset __asm__("$r21");
@@ -204,37 +206,65 @@ static inline void set_my_cpu_offset(unsigned long off)
 }
 #define __my_cpu_offset __my_cpu_offset
 
-// #define PERCPU_OP(op, asm_op, c_op)					\
-// static inline unsigned long __percpu_##op(void *ptr,			\
-// 			unsigned long val, int size)			\
-// {									\
-// 	unsigned long ret;						\
-// 									\
-// 	switch (size) {							\
-// 	case 4:								\
-// 		__asm__ __volatile__(					\
-// 		"am"#asm_op".w"	" %[ret], %[val], %[ptr]	\n"		\
-// 		: [ret] "=&r" (ret), [ptr] "+ZB"(*(u32 *)ptr)		\
-// 		: [val] "r" (val));					\
-// 		break;							\
-// 	case 8:								\
-// 		__asm__ __volatile__(					\
-// 		"am"#asm_op".d" " %[ret], %[val], %[ptr]	\n"		\
-// 		: [ret] "=&r" (ret), [ptr] "+ZB"(*(u64 *)ptr)		\
-// 		: [val] "r" (val));					\
-// 		break;							\
-// 	default:							\
-// 		ret = 0;						\
-// 		BUILD_BUG();						\
-// 	}								\
-// 									\
-// 	return ret c_op val;						\
-// }
+static inline unsigned long __percpu_add(void *ptr, unsigned long val, int size) {
+	u32 tmp, ret;
+	switch (size) {
+	case 4:
+		__asm__ __volatile__(
+			"1:     ll.w  %[ret], %[ptr]\n"
+			"       add.w %[tmp], %[ret], %[val]\n"
+			"       add.w %[ret], %[tmp], $r0\n"
+			"       sc.w  %[tmp], %[ptr]\n"
+			"       beq   %[tmp], $r0, 1b\n"
+			: [tmp] "=&r" (tmp), [ret] "=&r" (ret), [ptr] "+ZB"(*(u32 *)ptr)
+			: [val] "r" (val));
+		break;
+	default:
+		ret = 0;
+		BUILD_BUG();
+	}
+	return ret;
+}
 
-// PERCPU_OP(add, add, +)
-// PERCPU_OP(and, and, &)
-// PERCPU_OP(or, or, |)
-// #undef PERCPU_OP
+static inline unsigned long __percpu_and(void *ptr, unsigned long val, int size) {
+	u32 tmp, ret;
+	switch (size) {
+	case 4:
+		__asm__ __volatile__(
+			"1:     ll.w  %[ret], %[ptr]\n"
+			"       and   %[tmp], %[ret], %[val]\n"
+			"       add.w %[ret], %[tmp], $r0\n"
+			"       sc.w  %[tmp], %[ptr]\n"
+			"       beq   %[tmp], $r0, 1b\n"
+			: [tmp] "=&r" (tmp), [ret] "=&r" (ret), [ptr] "+ZB"(*(u32 *)ptr)
+			: [val] "r" (val));
+		break;
+	default:
+		ret = 0;
+		BUILD_BUG();
+	}
+	return ret;
+}
+
+static inline unsigned long __percpu_or(void *ptr, unsigned long val, int size) {
+	u32 tmp, ret;
+	switch (size) {
+	case 4:
+		__asm__ __volatile__(
+			"1:     ll.w  %[ret], %[ptr]\n"
+			"       or    %[tmp], %[ret], %[val]\n"
+			"       add.w %[ret], %[tmp], $r0\n"
+			"       sc.w  %[tmp], %[ptr]\n"
+			"       beq   %[tmp], $r0, 1b\n"
+			: [tmp] "=&r" (tmp), [ret] "=&r" (ret), [ptr] "+ZB"(*(u32 *)ptr)
+			: [val] "r" (val));
+		break;
+	default:
+		ret = 0;
+		BUILD_BUG();
+	}
+	return ret;
+}
 
 static inline unsigned long __percpu_read(void *ptr, int size)
 {
@@ -302,6 +332,7 @@ static inline unsigned long __percpu_xchg(void *ptr, unsigned long val,
 #define this_cpu_cmpxchg_1(ptr, o, n) _protect_cmpxchg_local(ptr, o, n)
 #define this_cpu_cmpxchg_2(ptr, o, n) _protect_cmpxchg_local(ptr, o, n)
 #define this_cpu_cmpxchg_4(ptr, o, n) _protect_cmpxchg_local(ptr, o, n)
+#define this_cpu_cmpxchg_8(ptr, o, n) _protect_cmpxchg_local(ptr, o, n)
 
 #define _percpu_read(pcp)						\
 ({									\

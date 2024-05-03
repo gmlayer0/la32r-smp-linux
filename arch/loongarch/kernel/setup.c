@@ -372,6 +372,10 @@ static void __init resource_init(void)
 }
 
 #ifdef CONFIG_SMP
+#ifdef CONFIG_32BIT
+int num_processors = 2;
+int disabled_cpus = 0;
+#endif
 static void __init prefill_possible_map(void)
 {
 	int i, possible;

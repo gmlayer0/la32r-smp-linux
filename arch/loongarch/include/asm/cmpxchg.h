@@ -170,10 +170,27 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 #endif
 
 #ifdef CONFIG_32BIT
-#include <asm-generic/cmpxchg-local.h>
+// #include <asm-generic/cmpxchg-local.h>
 #define arch_cmpxchg64_local(ptr, o, n) __generic_cmpxchg64_local((ptr), (o), (n))
 #ifndef CONFIG_SMP
 #define arch_cmpxchg64(ptr, o, n) arch_cmpxchg64_local((ptr), (o), (n))
+#else
+#define arch_cmpxchg64(ptr, o, n) ({					\
+	unsigned long long __old = (__typeof__(*(ptr)))(o);		\
+	unsigned long long __new = (__typeof__(*(ptr)))(n);		\
+	__typeof__(*(ptr)) __res;					\
+									\
+	/*								\
+	 * We can only use cmpxchg64 if we know that the CPU supports	\
+	 * 64-bits, ie. lld & scd. Our call to __cmpxchg64_unsupported	\
+	 * will cause a build error unless cpu_has_64bits is a		\
+	 * compile-time constant 1.					\
+	 */									\
+	__res = __cmpxchg64_unsupported();	\
+									\
+	__res;								\
+})
+
 #endif
 #endif
 #endif /* __ASM_CMPXCHG_H */

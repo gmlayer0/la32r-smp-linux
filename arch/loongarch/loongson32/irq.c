@@ -39,7 +39,7 @@ void mach_irq_dispatch(unsigned int pending)
 	if (pending & 0x800)
 		do_IRQ(LOONGSON_CPU_IRQ_BASE + 11);
 	if (pending & 0x1000)
-		do_IRQ(LOONGSON_CPU_IRQ_BASE + 12); // IPI
+		loongson3_ipi_interrupt(LOONGSON_CPU_IRQ_BASE + 12); // IPI
 	// if (pending & 0x4)
 	// 	do_IRQ(LOONGSON_GMAC_IRQ) ; //in fact , it's for ethernet
 }

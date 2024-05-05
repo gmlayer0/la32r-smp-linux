@@ -652,7 +652,7 @@ void nonboot_cpu_trap_init(void)
 /* Install CPU exception handler */
 void set_handler(unsigned long offset, void *addr, unsigned long size)
 {
-	printk("Set handler @%lx to %lx", (long unsigned int)addr, eentry + offset);
+	// printk("Set handler @%lx to %lx", (long unsigned int)addr, eentry + offset);
 	memcpy((void *)(eentry + offset), addr, size);
 	local_flush_icache_range(eentry + offset, eentry + offset + size);
 }

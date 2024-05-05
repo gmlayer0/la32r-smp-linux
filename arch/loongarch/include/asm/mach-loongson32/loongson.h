@@ -74,7 +74,7 @@ static inline void xconf_writeq(u64 val64, volatile void __iomem *addr)
 {
 	asm volatile (
 	"	st.d	%[v], %[hw], 0	\n"
-	"	ld.b	$r0, %[hw], 0	\n"
+	"	dbar    0	\n"
 	:
 	: [hw] "r" (addr),  [v] "r" (val64)
 	);

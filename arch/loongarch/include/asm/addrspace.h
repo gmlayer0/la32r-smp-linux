@@ -31,7 +31,7 @@ extern unsigned long vm_map_base;
 #endif
 
 #ifdef CONFIG_32BIT
-#define DMW_PABITS	28
+#define DMW_PABITS	29
 #define TO_PHYS_MASK	((1UL << DMW_PABITS) - 1)
 #endif
 

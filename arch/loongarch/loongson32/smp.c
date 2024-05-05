@@ -26,7 +26,7 @@ EXPORT_PER_CPU_SYMBOL(irq_stat);
 #define MBUF    0x20
 
 extern u32 smp_group[MAX_PACKAGES];
-static u32 core_offsets[8] = {0x000, 0x100, 0x200, 0x300, 0x400, 0x500, 0x600, 0x700};
+static u32 core_offsets[8] = {0x0000, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000};
 
 static volatile void *ipi_set_regs[MAX_CPUS];
 static volatile void *ipi_clear_regs[MAX_CPUS];
@@ -200,12 +200,13 @@ static int loongson3_boot_secondary(int cpu, struct task_struct *idle)
 	startargs[2] = (unsigned long)task_thread_info(idle);
 	startargs[3] = 0;
 
-	pr_debug("CPU#%d, func_pc=%lx, sp=%lx, tp=%lx\n",
+	pr_info("CPU#%d, func_pc=%lx, sp=%lx, tp=%lx\n",
 			cpu, startargs[0], startargs[1], startargs[2]);
 	xconf_writel(startargs[3], ipi_mailbox_buf[cpu_logical_map(cpu)]+0x18);
 	xconf_writel(startargs[2], ipi_mailbox_buf[cpu_logical_map(cpu)]+0x10);
 	xconf_writel(startargs[1], ipi_mailbox_buf[cpu_logical_map(cpu)]+0x8);
 	xconf_writel(startargs[0], ipi_mailbox_buf[cpu_logical_map(cpu)]+0x0);
+	xconf_writel(0xffffffff, ipi_en_regs[cpu_logical_map(cpu)]);
     xconf_writel(4, ipi_set_regs[cpu_logical_map(cpu)]);
 
 	return 0;

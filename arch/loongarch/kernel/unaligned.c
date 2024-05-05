@@ -31,7 +31,7 @@ static inline void write_fpr(unsigned int fd, unsigned long value)
 #define WRITE_FPR(fd, value)		\
 {					\
 	__asm__ __volatile__(		\
-	"movgr2fr.d $f%1, %0\n\t"	\
+	"movgr2fr.w $f%1, %0\n\t"	\
 	:: "r"(value), "i"(fd));	\
 }
 
@@ -143,7 +143,7 @@ static inline unsigned long read_fpr(unsigned int fd)
 #define READ_FPR(fd, __value)		\
 {					\
 	__asm__ __volatile__(		\
-	"movfr2gr.d\t%0, $f%1\n\t"	\
+	"movfr2gr.s\t%0, $f%1\n\t"	\
 	: "=r"(__value) : "i"(fd));	\
 }
 

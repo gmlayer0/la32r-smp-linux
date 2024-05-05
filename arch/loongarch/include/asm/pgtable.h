@@ -73,10 +73,10 @@ static inline void set_pte(pte_t *ptep, pte_t pteval)
 
 		__asm__ __volatile__ (
 		"1:"	__LL	"%[tmp], %[buddy]		\n"
-		"	bnez	%[tmp], 2f			\n"
+		"	bne 	%[tmp], $r0, 2f			\n"
 		"	 or	%[tmp], %[tmp], %[global]	\n"
 			__SC	"%[tmp], %[buddy]		\n"
-		"	beqz	%[tmp], 1b			\n"
+		"	beq		%[tmp], $r0, 1b			\n"
 		"	nop					\n"
 		"2:						\n"
 		__WEAK_LLSC_MB

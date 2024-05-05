@@ -15,7 +15,7 @@
  * a2: n
  */
 SYM_FUNC_START(memcpy)
-	beqz	a2, 4f     // 直接返回
+	beq		a2, zero, 4f     // 直接返回
 	move	a3, a0     // 保存返回值
 
 	or      t0, a0, a1 // 检查对齐
@@ -26,7 +26,7 @@ SYM_FUNC_START(memcpy)
 
 	or      t0, t0, t1   // 不对齐或者 n < 8
 
-	bnez    t0, 2f       // 不符合检查条件，进慢循环
+	bne		t0, zero, 2f       // 不符合检查条件，进慢循环
 // 8Bytes align, Fast copy
 1:	ld.w	t0, a1, 0
 	ld.w	t1, a1, 4    // 加载 8 Bytes

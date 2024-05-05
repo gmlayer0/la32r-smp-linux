@@ -64,7 +64,6 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
 #define __smp_load_acquire(p)							\
 ({										\
 	union { typeof(*p) __val; char __c[1]; } __u;				\
-	unsigned long __tmp = 0;							\
 	compiletime_assert_atomic_type(*p);					\
 	switch (sizeof(*p)) {							\
 	case 1:									\
@@ -76,18 +75,12 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
 		__smp_mb();							\
 		break;								\
 	case 4:									\
-		__asm__ __volatile__(						\
-		"amor.w %[val], %[tmp], %[mem]	\n"				\
-		: [val] "=&r" (*(__u32 *)__u.__c)				\
-		: [mem] "ZB" (*(u32 *) p), [tmp] "r" (__tmp)			\
-		: "memory");							\
+		*(__u32 *)__u.__c = *(volatile __u32 *)p;			\
+		__smp_mb();							\
 		break;								\
 	case 8:									\
-		__asm__ __volatile__(						\
-		"amor.d %[val], %[tmp], %[mem]	\n"				\
-		: [val] "=&r" (*(__u64 *)__u.__c)				\
-		: [mem] "ZB" (*(u64 *) p), [tmp] "r" (__tmp)			\
-		: "memory");							\
+		*(__u64 *)__u.__c = *(volatile __u64 *)p;			\
+		__smp_mb();							\
 		break;								\
 	}									\
 	(typeof(*p))__u.__val;								\
@@ -97,7 +90,6 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
 do {										\
 	union { typeof(*p) __val; char __c[1]; } __u =				\
 		{ .__val = (__force typeof(*p)) (v) };				\
-	unsigned long __tmp;							\
 	compiletime_assert_atomic_type(*p);					\
 	switch (sizeof(*p)) {							\
 	case 1:									\
@@ -109,18 +101,12 @@ do {										\
 		*(volatile __u16 *)p = *(__u16 *)__u.__c;			\
 		break;								\
 	case 4:									\
-		__asm__ __volatile__(						\
-		"amswap.w %[tmp], %[val], %[mem]	\n"			\
-		: [mem] "+ZB" (*(u32 *)p), [tmp] "=&r" (__tmp)			\
-		: [val] "r" (*(__u32 *)__u.__c)					\
-		: );								\
+		__smp_mb();							\
+		*(volatile __u32 *)p = *(__u32 *)__u.__c;			\
 		break;								\
 	case 8:									\
-		__asm__ __volatile__(						\
-		"amswap.d %[tmp], %[val], %[mem]	\n"			\
-		: [mem] "+ZB" (*(u64 *)p), [tmp] "=&r" (__tmp)			\
-		: [val] "r" (*(__u64 *)__u.__c)					\
-		: );								\
+		__smp_mb();							\
+		*(volatile __u64 *)p = *(__u64 *)__u.__c;			\
 		break;								\
 	}									\
 } while (0)
@@ -129,7 +115,6 @@ do {										\
 do {										\
 	union { typeof(p) __val; char __c[1]; } __u =				\
 		{ .__val = (__force typeof(p)) (v) };				\
-	unsigned long __tmp;							\
 	switch (sizeof(p)) {							\
 	case 1:									\
 		*(volatile __u8 *)&p = *(__u8 *)__u.__c;			\
@@ -140,18 +125,12 @@ do {										\
 		__smp_mb();							\
 		break;								\
 	case 4:									\
-		__asm__ __volatile__(						\
-		"amswap.w %[tmp], %[val], %[mem]	\n"			\
-		: [mem] "+ZB" (*(u32 *)&p), [tmp] "=&r" (__tmp)			\
-		: [val] "r" (*(__u32 *)__u.__c)					\
-		: );								\
+		*(volatile __u32 *)&p = *(__u32 *)__u.__c;			\
+		__smp_mb();							\
 		break;								\
 	case 8:									\
-		__asm__ __volatile__(						\
-		"amswap.d %[tmp], %[val], %[mem]	\n"			\
-		: [mem] "+ZB" (*(u64 *)&p), [tmp] "=&r" (__tmp)			\
-		: [val] "r" (*(__u64 *)__u.__c)					\
-		: );								\
+		*(volatile __u64 *)&p = *(__u64 *)__u.__c;			\
+		__smp_mb();							\
 		break;								\
 	}									\
 } while (0)

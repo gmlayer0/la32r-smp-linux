@@ -1075,13 +1075,13 @@ static inline void iocsr_writeq(u64 val, u32 reg)
 
 #else
 #define CSR_DMW0_PLV0		_ULCAST_(1 << 0)
-#define CSR_DMW0_VSEG		_ULCAST_(0x8)
+#define CSR_DMW0_VSEG		_ULCAST_(0x4)
 #define CSR_DMW0_BASE		(CSR_DMW0_VSEG << DMW_PABITS)
 #define CSR_DMW0_INIT		(CSR_DMW0_BASE | CSR_DMW0_PLV0)
 
 #define CSR_DMW1_PLV0		_ULCAST_(1 << 0)
 #define CSR_DMW1_MAT		_ULCAST_(1 << 4)
-#define CSR_DMW1_VSEG		_ULCAST_(0xa)
+#define CSR_DMW1_VSEG		_ULCAST_(0x5)
 #define CSR_DMW1_BASE		(CSR_DMW1_VSEG << DMW_PABITS)
 #define CSR_DMW1_INIT		(CSR_DMW1_BASE | CSR_DMW1_MAT | CSR_DMW1_PLV0)
 #endif

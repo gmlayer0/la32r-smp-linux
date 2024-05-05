@@ -33,7 +33,7 @@ SYM_CODE_START(kernel_entry)    		# kernel entry point
 	PTR_LI		t0, 0x80000001
 	csrwr		t0, LOONGARCH_CSR_DMWIN1
 	/* Enable PG */
-	li.w		t0, 0xb0		# PLV=0, IE=0, PG=1
+	li.w		t0, 0xb4		# PLV=0, IE=1, PG=1
 	csrwr		t0, LOONGARCH_CSR_CRMD
 	/* Set temporary IPI Handler */
 #ifdef CONFIG_SMP
@@ -43,9 +43,6 @@ SYM_CODE_START(kernel_entry)    		# kernel entry point
 	/* Enable IPI interrupts */
 	li.w	t0, 0x00001000
 	csrwr   t0, LOONGARCH_CSR_ECFG
-	li.w	t0, 0x4
-	li.w	t1, 0x4
-	csrxchg   t0, t1, LOONGARCH_CSR_CRMD
 1:
 	idle 0
 	b    1b
@@ -118,6 +115,8 @@ SYM_CODE_START(_tmp_ipi_handler)
 	csrrd     t3, LOONGARCH_CSR_CPUID
 	slli.w    t2, t3, 12
 	or        t1, t0, t2   // Base address of this core's mailbox
+	ld.w      t0, t1, 0x0  // get status
+	st.w      t0, t1, 0xc  // clr interrupt
 	ld.w      ra, t1, 0x20 // PC is the first parameter
 	ld.w      sp, t1, 0x28 // SP is the second parameter
 	ld.w      tp, t1, 0x30 // TP is the third parameter

@@ -28,10 +28,10 @@
 #include <asm/time.h>
 #include <asm/setup.h>
 
-int __cpu_number_map[NR_CPUS];   /* Map physical to logical */
+int __cpu_number_map[NR_CPUS] = {0, 1/*, 2, 3, 4, 5, 6, 7*/};       /* Map physical to logical */
 EXPORT_SYMBOL(__cpu_number_map);
 
-int __cpu_logical_map[NR_CPUS];		/* Map logical to physical */
+int __cpu_logical_map[NR_CPUS] = {0, 1/*, 2, 3, 4, 5, 6, 7*/};		/* Map logical to physical */
 EXPORT_SYMBOL(__cpu_logical_map);
 
 /* Number of threads (siblings) per CPU core */

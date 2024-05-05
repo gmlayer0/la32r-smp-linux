@@ -182,7 +182,7 @@ SYM_FUNC_END(except_vec_vi_handler)
 SYM_FUNC_START(handle_vi_\num)
 	BACKUP_T0T1
 	SAVE_SOME
-	addi.d	v0, zero, \num
+	addi.w	v0, zero, \num
 	la.abs	v1, except_vec_vi_handler
 	jirl	zero, v1, 0
 SYM_FUNC_END(handle_vi_\num)

@@ -163,7 +163,7 @@ int constant_clockevent_init(void)
 	if (request_irq(irq, constant_timer_interrupt, IRQF_PERCPU | IRQF_TIMER, "timer", NULL))
 		pr_err("Failed to request irq %d (timer)\n", irq);
 
-	set_csr_ecfg(0x800);
+	// set_csr_ecfg(0x800); 早打开了
 	lpj_fine = get_loops_per_jiffy();
 	pr_info("Constant clock event device register\n");
 

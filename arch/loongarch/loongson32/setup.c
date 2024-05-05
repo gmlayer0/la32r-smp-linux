@@ -355,7 +355,9 @@ void __init platform_init(void)
 	pr_info("The BIOS Version: %s\n", b_info.bios_version);
 
 	efi_runtime_init();
-
+#ifdef CONFIG_SMP
+	register_smp_ops(&loongson3_smp_ops);
+#endif
 }
 
 static int __init register_gop_device(void)

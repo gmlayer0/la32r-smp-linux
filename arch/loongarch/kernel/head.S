@@ -36,8 +36,10 @@ SYM_CODE_START(kernel_entry)    		# kernel entry point
 	li.w		t0, 0xb0		# PLV=0, IE=0, PG=1
 	csrwr		t0, LOONGARCH_CSR_CRMD
 	/* Set temporary IPI Handler */
+#ifdef CONFIG_SMP
 	la      t0, _tmp_ipi_handler
 	csrwr   t0, LOONGARCH_CSR_EENTRY
+#endif
 	/* Enable IPI interrupts */
 	li.w	t0, 0x00001000
 	csrwr   t0, LOONGARCH_CSR_ECFG

@@ -51,7 +51,7 @@
    - Tasklets: serialized wrt itself.
  */
 
-#ifndef __ARCH_IRQ_STAT
+#ifndef CONFIG_SMP
 DEFINE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);
 EXPORT_PER_CPU_SYMBOL(irq_stat);
 #endif

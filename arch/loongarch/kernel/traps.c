@@ -599,7 +599,7 @@ extern void cache_error_setup(void);
 static void configure_exception_vector(void)
 {
 	csr_writel(eentry + 0x4000, LOONGARCH_CSR_EENTRY);
-	csr_writel( (tlbrentry & 0x0fffffff), LOONGARCH_CSR_TLBRENTRY);
+	csr_writel( (tlbrentry & 0x1fffffff), LOONGARCH_CSR_TLBRENTRY);
 }
 
 void __init boot_cpu_trap_init(void)
@@ -652,6 +652,7 @@ void nonboot_cpu_trap_init(void)
 /* Install CPU exception handler */
 void set_handler(unsigned long offset, void *addr, unsigned long size)
 {
+	printk("Set handler @%lx to %lx", (long unsigned int)addr, eentry + offset);
 	memcpy((void *)(eentry + offset), addr, size);
 	local_flush_icache_range(eentry + offset, eentry + offset + size);
 }

@@ -148,9 +148,14 @@ SYM_FUNC_START(except_vec_vi_handler)
 	st.w	sp, tp, TI_REGS
 	move	s1, sp
 
-	csrrd	t0, LOONGARCH_CSR_TMID
+	// csrrd	t0, LOONGARCH_CSR_TMID
+	// slli.w	t0, t0, LONGLOG
+	// la.abs  t1, __per_cpu_offset
+	// add.w   t0, t0, t1
+	// ld.w    t0, t0, 0 // 加载 percpu 的 offset
+	// 其实 offset 就在 x0 里面
 	la.abs	t1, irq_stack
-	slli.w	t0, t0, LONGLOG
+	add.w   t1, t1, x0
 	ld.w	t0, t1, 0
 
 	li.w	t1, ~(_THREAD_SIZE-1)

@@ -30,7 +30,7 @@
 #define __WEAK_LLSC_MB		"		\n"
 #endif
 
-#define __smp_mb__before_atomic()	barrier()
+#define __smp_mb__before_atomic()	__smp_mb()
 #define __smp_mb__after_atomic()	__smp_mb()
 
 /**
@@ -60,80 +60,6 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
 
 	return mask;
 }
-
-#define __smp_load_acquire(p)							\
-({										\
-	union { typeof(*p) __val; char __c[1]; } __u;				\
-	compiletime_assert_atomic_type(*p);					\
-	switch (sizeof(*p)) {							\
-	case 1:									\
-		*(__u8 *)__u.__c = *(volatile __u8 *)p;				\
-		__smp_mb();							\
-		break;								\
-	case 2:									\
-		*(__u16 *)__u.__c = *(volatile __u16 *)p;			\
-		__smp_mb();							\
-		break;								\
-	case 4:									\
-		*(__u32 *)__u.__c = *(volatile __u32 *)p;			\
-		__smp_mb();							\
-		break;								\
-	case 8:									\
-		*(__u64 *)__u.__c = *(volatile __u64 *)p;			\
-		__smp_mb();							\
-		break;								\
-	}									\
-	(typeof(*p))__u.__val;								\
-})
-
-#define __smp_store_release(p, v)						\
-do {										\
-	union { typeof(*p) __val; char __c[1]; } __u =				\
-		{ .__val = (__force typeof(*p)) (v) };				\
-	compiletime_assert_atomic_type(*p);					\
-	switch (sizeof(*p)) {							\
-	case 1:									\
-		__smp_mb();							\
-		*(volatile __u8 *)p = *(__u8 *)__u.__c;				\
-		break;								\
-	case 2:									\
-		__smp_mb();							\
-		*(volatile __u16 *)p = *(__u16 *)__u.__c;			\
-		break;								\
-	case 4:									\
-		__smp_mb();							\
-		*(volatile __u32 *)p = *(__u32 *)__u.__c;			\
-		break;								\
-	case 8:									\
-		__smp_mb();							\
-		*(volatile __u64 *)p = *(__u64 *)__u.__c;			\
-		break;								\
-	}									\
-} while (0)
-
-#define __smp_store_mb(p, v)							\
-do {										\
-	union { typeof(p) __val; char __c[1]; } __u =				\
-		{ .__val = (__force typeof(p)) (v) };				\
-	switch (sizeof(p)) {							\
-	case 1:									\
-		*(volatile __u8 *)&p = *(__u8 *)__u.__c;			\
-		__smp_mb();							\
-		break;								\
-	case 2:									\
-		*(volatile __u16 *)&p = *(__u16 *)__u.__c;			\
-		__smp_mb();							\
-		break;								\
-	case 4:									\
-		*(volatile __u32 *)&p = *(__u32 *)__u.__c;			\
-		__smp_mb();							\
-		break;								\
-	case 8:									\
-		*(volatile __u64 *)&p = *(__u64 *)__u.__c;			\
-		__smp_mb();							\
-		break;								\
-	}									\
-} while (0)
 
 #include <asm-generic/barrier.h>
 

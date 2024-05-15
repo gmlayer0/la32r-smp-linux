@@ -19,6 +19,8 @@
 
 static void loongson_restart(void)
 {
+	int (* p)(int);
+	p = (int (*)()) 0x8c000000;
 #ifdef CONFIG_EFI
 	if (efi_capsule_pending(NULL))
 		efi_reboot(REBOOT_WARM, NULL);
@@ -29,6 +31,7 @@ static void loongson_restart(void)
 		acpi_reboot();
 
 	while (1) {
+		p(0);
 		__arch_cpu_idle();
 	}
 }

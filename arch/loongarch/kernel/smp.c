@@ -28,10 +28,10 @@
 #include <asm/time.h>
 #include <asm/setup.h>
 
-int __cpu_number_map[NR_CPUS] = {0, 1/*, 2, 3, 4, 5, 6, 7*/};       /* Map physical to logical */
+int __cpu_number_map[NR_CPUS];       /* Map physical to logical */
 EXPORT_SYMBOL(__cpu_number_map);
 
-int __cpu_logical_map[NR_CPUS] = {0, 1/*, 2, 3, 4, 5, 6, 7*/};		/* Map logical to physical */
+int __cpu_logical_map[NR_CPUS];		/* Map logical to physical */
 EXPORT_SYMBOL(__cpu_logical_map);
 
 /* Number of threads (siblings) per CPU core */
@@ -204,6 +204,11 @@ void __init smp_cpus_done(unsigned int max_cpus)
 /* called from main before smp_init() */
 void __init smp_prepare_cpus(unsigned int max_cpus)
 {
+	int i;
+	for(i = 0 ; i < max_cpus ; i += 1) {
+		__cpu_number_map[i] = i;
+		__cpu_logical_map[i] = i;
+	}
 	init_new_context(current, &init_mm);
 	current_thread_info()->cpu = 0;
 	mp_ops->prepare_cpus(max_cpus);

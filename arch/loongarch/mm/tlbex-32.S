@@ -60,7 +60,11 @@ vmalloc_done_load:
 	add.w	t0, t0, t1
 
 label_smp_pgtable_load:
+#ifdef CONFIG_SMP
+	ll.w	t1, t0, 0
+#else
 	ld.w	t1, t0, 0
+#endif
 	tlbsrch
 
 	srli.w  ra, t1, _PAGE_PRESENT_SHIFT
@@ -69,8 +73,12 @@ label_smp_pgtable_load:
 
 
 	ori	t1, t1, _PAGE_VALID
+#ifdef CONFIG_SMP
+	sc.w	t1, t0, 0
+	beq     t1, $r0, label_smp_pgtable_load
+#else
 	st.w	t1, t0, 0
-
+#endif
 	ori	t0, t0, 0x4
 	xori	t0, t0, 0x4
 
@@ -139,7 +147,11 @@ vmalloc_done_store:
 	add.w	t1, t1, t0
 
 label_smp_pgtable_store:
+#ifdef CONFIG_SMP
+	ll.w	t0, t1, 0
+#else
 	ld.w	t0, t1, 0
+#endif
 	tlbsrch
 
 	srli.w  ra, t0, _PAGE_PRESENT_SHIFT
@@ -148,7 +160,12 @@ label_smp_pgtable_store:
 	bne	ra, $r0, nopage_tlb_store
 
 	ori	t0, t0, (_PAGE_VALID | _PAGE_DIRTY)
+#ifdef CONFIG_SMP
+	sc.w	t0, t1, 0
+	beq     t0, $r0, label_smp_pgtable_store
+#else
 	st.w	t0, t1, 0
+#endif
 
 	ori	t1, t1, 4
 	xori	t1, t1, 4
@@ -218,7 +235,11 @@ vmalloc_done_modify:
 	add.w	t1, t1, t0
 
 label_smp_pgtable_modify:
+#ifdef CONFIG_SMP
+	ll.w	t0, t1, 0
+#else
 	ld.w	t0, t1, 0
+#endif
 	tlbsrch
 
 	srli.w  ra, t0, _PAGE_WRITE_SHIFT
@@ -226,7 +247,12 @@ label_smp_pgtable_modify:
 	beq	ra, $r0, nopage_tlb_modify
 
 	ori	t0, t0, (_PAGE_VALID | _PAGE_DIRTY)
+#ifdef CONFIG_SMP
+	sc.w	t0, t1, 0
+	beq     t0, $r0, label_smp_pgtable_modify
+#else
 	st.w	t0, t1, 0
+#endif
 
 	ori	t1, t1, 4
 	xori	t1, t1, 4

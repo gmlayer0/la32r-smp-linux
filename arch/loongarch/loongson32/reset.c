@@ -20,7 +20,7 @@
 static void loongson_restart(void)
 {
 	int (* p)(int);
-	p = (int (*)()) 0x8c000000;
+	p = (int (*)()) 0x9c000000;
 #ifdef CONFIG_EFI
 	if (efi_capsule_pending(NULL))
 		efi_reboot(REBOOT_WARM, NULL);

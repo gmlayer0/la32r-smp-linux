@@ -26,6 +26,7 @@ CONFIG_SYSFS_DEPRECATED=y
 CONFIG_RELAY=y
 CONFIG_BLK_DEV_INITRD=y
 CONFIG_INITRAMFS_SOURCE="/home/dofingert/os/la32r-buidroot/back.cpio"
+# CONFIG_INITRAMFS_SOURCE="/home/dofingert/os/busyroot/rootfs.cpio"
 # CONFIG_RD_LZMA is not set
 # CONFIG_RD_XZ is not set
 # CONFIG_RD_LZO is not set

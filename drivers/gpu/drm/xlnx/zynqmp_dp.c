@@ -359,21 +359,22 @@ static void zynqmp_dp_set(struct zynqmp_dp *dp, int offset, u32 set)
 static int zynqmp_dp_reset(struct zynqmp_dp *dp, bool assert)
 {
 	unsigned long timeout;
+	return 0;
 
-	if (assert)
-		reset_control_assert(dp->reset);
-	else
-		reset_control_deassert(dp->reset);
+	// if (assert)
+	// 	reset_control_assert(dp->reset);
+	// else
+	// 	reset_control_deassert(dp->reset);
 
 	/* Wait for the (de)assert to complete. */
 	timeout = jiffies + msecs_to_jiffies(RST_TIMEOUT_MS);
 	while (!time_after_eq(jiffies, timeout)) {
-		bool status = !!reset_control_status(dp->reset);
+		// bool status = !!reset_control_status(dp->reset);
 
-		if (assert == status)
-			return 0;
+		// if (assert == status)
+		// 	return 0;
 
-		cpu_relax();
+		// cpu_relax();
 	}
 
 	dev_err(dp->dev, "reset %s timeout\n", assert ? "assert" : "deassert");
@@ -1675,13 +1676,13 @@ int zynqmp_dp_probe(struct zynqmp_dpsub *dpsub, struct drm_device *drm)
 	if (dp->irq < 0)
 		return dp->irq;
 
-	dp->reset = devm_reset_control_get(dp->dev, NULL);
-	if (IS_ERR(dp->reset)) {
-		if (PTR_ERR(dp->reset) != -EPROBE_DEFER)
-			dev_err(dp->dev, "failed to get reset: %ld\n",
-				PTR_ERR(dp->reset));
-		return PTR_ERR(dp->reset);
-	}
+	// dp->reset = devm_reset_control_get(dp->dev, NULL);
+	// if (IS_ERR(dp->reset)) {
+	// 	if (PTR_ERR(dp->reset) != -EPROBE_DEFER)
+	// 		dev_err(dp->dev, "failed to get reset: %ld\n",
+	// 			PTR_ERR(dp->reset));
+	// 	return PTR_ERR(dp->reset);
+	// }
 
 	ret = zynqmp_dp_phy_probe(dp);
 	if (ret)

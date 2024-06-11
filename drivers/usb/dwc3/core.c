@@ -266,6 +266,17 @@ static int dwc3_core_soft_reset(struct dwc3 *dwc)
 	int		retries = 1000;
 	int		ret;
 
+	// assert reset;
+	volatile int* rst_addr = (volatile int *)(0x9F5E023C);
+
+	printk("rst_value: %x", *rst_addr);
+	int rst_value = *rst_addr;
+	rst_value |= 0x540;
+	*rst_addr = rst_value;
+	msleep(50);
+	printk("rst_value: %x", *rst_addr);
+	*rst_addr = rst_value ^ 0x540;
+
 	usb_phy_init(dwc->usb2_phy);
 	usb_phy_init(dwc->usb3_phy);
 	ret = phy_init(dwc->usb2_generic_phy);
@@ -277,6 +288,8 @@ static int dwc3_core_soft_reset(struct dwc3 *dwc)
 		phy_exit(dwc->usb2_generic_phy);
 		return ret;
 	}
+
+	// deassert reset;
 
 	/*
 	 * We're resetting only the device side because, if we're in host mode,

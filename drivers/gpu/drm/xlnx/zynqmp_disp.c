@@ -9,6 +9,8 @@
  * - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
  */
 
+#define DEBUG
+
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_atomic_uapi.h>
@@ -1109,6 +1111,7 @@ static int zynqmp_disp_layer_update(struct zynqmp_disp_layer *layer,
 		dma_addr_t paddr;
 
 		paddr = drm_fb_cma_get_gem_addr(state->fb, state, i);
+		printk("zynqmp_disp_layer_update paddr:%x\n", paddr);
 
 		dma->xt.numf = height;
 		dma->sgl.size = width * info->cpp[i];

@@ -57,6 +57,31 @@
         #clock-cells = <0>;
 		clock-frequency = <250000000>;
 	};
+	aud_clk: aud_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <25000000>;
+	};
+	video_clk: video_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <300000000>;
+	};
+	clk_gtr_sata: clk_gtr_sata {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <125000000>;
+	};
+	clk_gtr_usb: clk_gtr_usb {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <26000000>;
+	};
+	clk_gtr_dp: clk_gtr_dp {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <27000000>;
+	};
 
 	soc {
 		compatible = "simple-bus";
@@ -72,7 +97,7 @@
                 interrupts = <8>;
                 reg = <0x1d800000 0x1000>;
                 xlnx,kind-of-intr = <0x1>;
-                xlnx,num-intr-inputs = <0x6>;
+                xlnx,num-intr-inputs = <0xe>;
         };
 
 		cpu_uart0: serial@0x1d010000 {
@@ -123,6 +148,84 @@
 			#size-cells = <0>;
 		};
 
+		zynq_usb0: usb0@1f9d0000 {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			status = "okay";
+			compatible = "xlnx,zynqmp-dwc3";
+			reg = <0x1f9d0000 0x100>;
+			clock-names = "bus_clk", "ref_clk";
+			clocks = <&clk_xin &clk_gtr_usb>;
+			dwc3@1e200000 {
+				compatible = "snps,dwc3";
+				reg = <0x1e200000 0x40000>;
+				interrupt-parent = <&axi_intc_ps>;
+				interrupt-names = "dwc_usb3";
+				interrupts = <9>;
+				phys = <&psgtr 1 4 0 1>;
+				phy-names = "usb3-phy";
+				dr_mode = "host";
+			};
+		}
+
+		psgtr: phy@1e400000 {
+			compatible = "xlnx,zynqmp-psgtr-v1.1";
+			reg = <0x1e400000 0x40000>,
+			      <0x1e3d0000 0x1000>;
+			status = "okay";
+			reg-names = "serdes", "siou";
+			clocks = <&clk_gtr_sata>, <&clk_gtr_usb>, <&clk_gtr_dp>;
+			clock-names = "ref1", "ref2", "ref3";
+			#phy-cells = <4>;
+		};
+
+		zynqmp_dpdma: dma-controller@1e4c0000 {
+			compatible = "xlnx,zynqmp-dpdma";
+			reg = <0x1e4c0000 0x1000>;
+			interrupt-parent = <&axi_intc_ps>;
+			interrupts = <13>;
+			clock-names = "axi_clk";
+			clocks = <&clk_xin>;
+			// power-domains = <&zynqmp_firmware PD_DP>;
+			#dma-cells = <1>;
+		};
+
+		zynqmp_dpsub: display@1e4a0000 {
+			compatible = "xlnx,zynqmp-dpsub-1.7";
+			reg = <0x1e4a0000 0x1000>,
+			      <0x1e4aa000 0x1000>,
+			      <0x1e4ab000 0x1000>,
+			      <0x1e4ac000 0x1000>;
+			status = "disable";
+			reg-names = "dp", "blend", "av_buf", "aud";
+			interrupt-parent = <&axi_intc_ps>;
+			interrupts = <8>;
+			clock-names = "dp_apb_clk", "dp_aud_clk",
+				      "dp_vtc_pixel_clk_in";
+			clocks = <&clk100>, <&aud_clk>, <&video_clk>;
+			// power-domains = <&zynqmp_firmware PD_DP>;
+			// resets = <&zynqmp_reset ZYNQMP_RESET_DP>;
+			phys =  <&psgtr 3 6 0 2>,
+	                <&psgtr 2 6 1 2>;
+			phy-names = "dp-phy0", "dp-phy1";
+
+        	dma-names = "vid0", "vid1", "vid2", "gfx0";
+        	dmas = <&zynqmp_dpdma 0>,
+                   <&zynqmp_dpdma 1>,
+                   <&zynqmp_dpdma 2>,
+                   <&zynqmp_dpdma 3>;
+
+			// vid-layer {
+			// 	dma-names = "vid0", "vid1", "vid2";
+			// 	dmas = <&zynqmp_dpdma 0>,
+			// 		<&zynqmp_dpdma 1>,
+			// 		<&zynqmp_dpdma 2>;
+			// };
+			// gfx-layer {
+			// 	dma-names = "gfx0";
+			// 	dmas = <&zynqmp_dpdma 3>;
+			// };
+		};
 	};
 };
 

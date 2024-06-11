@@ -47,7 +47,7 @@ static inline unsigned int calc_const_freq(void)
 	return 33000000;
 #endif
 #ifdef CONFIG_WIRED_SOC
-	return 166666666;
+	return 180000000;
 #endif
 }
 #endif

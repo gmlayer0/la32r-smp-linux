@@ -6,6 +6,7 @@
  *
  * Author: Hyun Woo Kwon <hyun.kwon@xilinx.com>
  */
+#define DEBUG
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -587,6 +588,7 @@ static void
 xilinx_dpdma_chan_free_sw_desc(struct xilinx_dpdma_chan *chan,
 			       struct xilinx_dpdma_sw_desc *sw_desc)
 {
+	printk("freeing %x...\n", sw_desc);
 	dma_pool_free(chan->desc_pool, sw_desc, sw_desc->dma_addr);
 }
 
@@ -607,8 +609,12 @@ static void xilinx_dpdma_chan_dump_tx_desc(struct xilinx_dpdma_chan *chan,
 	dev_dbg(dev, "------- TX descriptor dump start -------\n");
 	dev_dbg(dev, "------- channel ID = %d -------\n", chan->id);
 
-	list_for_each_entry(sw_desc, &tx_desc->descriptors, node) {
+	dev_dbg(dev, "tx_desc == %x\n",tx_desc);
+
+	list_for_each_entry(sw_desc, &tx_desc->descriptors, node) { // problem here.
 		struct xilinx_dpdma_hw_desc *hw_desc = &sw_desc->hw;
+
+		dev_dbg(dev, "sw_desc == %x, hw_desc == %x\n", sw_desc, hw_desc);
 
 		dev_dbg(dev, "------- HW descriptor %d -------\n", i++);
 		dev_dbg(dev, "descriptor DMA addr: %pad\n", &sw_desc->dma_addr);
@@ -735,7 +741,7 @@ xilinx_dpdma_chan_prep_interleaved_dma(struct xilinx_dpdma_chan *chan,
 	hw_desc->control |= XILINX_DPDMA_DESC_CONTROL_LAST_OF_FRAME;
 
 	list_add_tail(&sw_desc->node, &tx_desc->descriptors);
-
+	xilinx_dpdma_chan_dump_tx_desc(chan, tx_desc); // checkpoints
 	return tx_desc;
 }
 
@@ -867,9 +873,52 @@ static void xilinx_dpdma_chan_queue_transfer(struct xilinx_dpdma_chan *chan)
 	 * Assign the cookie to descriptors in this transaction. Only 16 bit
 	 * will be used, but it should be enough.
 	 */
-	list_for_each_entry(sw_desc, &desc->descriptors, node)
+	list_for_each_entry(sw_desc, &desc->descriptors, node) { // problem here.
+		struct xilinx_dpdma_hw_desc *hw_desc = &sw_desc->hw;
+
+		printk("sw_desc == %x, hw_desc == %x\n", sw_desc, hw_desc);
+		printk("------- HW descriptor0 %d -------\n", 0);
+		printk("descriptor DMA addr: %pad\n", &sw_desc->dma_addr);
+		printk("control: 0x%08x\n", hw_desc->control);
+		printk("desc_id: 0x%08x\n", hw_desc->desc_id);
+		printk("xfer_size: 0x%08x\n", hw_desc->xfer_size);
+		printk("hsize_stride: 0x%08x\n", hw_desc->hsize_stride);
+		printk("timestamp_lsb: 0x%08x\n", hw_desc->timestamp_lsb);
+		printk("timestamp_msb: 0x%08x\n", hw_desc->timestamp_msb);
+		printk("addr_ext: 0x%08x\n", hw_desc->addr_ext);
+		printk("next_desc: 0x%08x\n", hw_desc->next_desc);
+		printk("src_addr: 0x%08x\n", hw_desc->src_addr);
+		printk("addr_ext_23: 0x%08x\n", hw_desc->addr_ext_23);
+		printk("addr_ext_45: 0x%08x\n", hw_desc->addr_ext_45);
+		printk("src_addr2: 0x%08x\n", hw_desc->src_addr2);
+		printk("src_addr3: 0x%08x\n", hw_desc->src_addr3);
+		printk("src_addr4: 0x%08x\n", hw_desc->src_addr4);
+		printk("src_addr5: 0x%08x\n", hw_desc->src_addr5);
+		printk("crc: 0x%08x\n", hw_desc->crc);
+
 		sw_desc->hw.desc_id = desc->vdesc.tx.cookie
 				    & XILINX_DPDMA_CH_DESC_ID_MASK;
+
+		printk("sw_desc == %x, hw_desc == %x\n", sw_desc, hw_desc);
+		printk("------- HW descriptor1 %d -------\n", 0);
+		printk("descriptor DMA addr: %pad\n", &sw_desc->dma_addr);
+		printk("control: 0x%08x\n", hw_desc->control);
+		printk("desc_id: 0x%08x\n", hw_desc->desc_id);
+		printk("xfer_size: 0x%08x\n", hw_desc->xfer_size);
+		printk("hsize_stride: 0x%08x\n", hw_desc->hsize_stride);
+		printk("timestamp_lsb: 0x%08x\n", hw_desc->timestamp_lsb);
+		printk("timestamp_msb: 0x%08x\n", hw_desc->timestamp_msb);
+		printk("addr_ext: 0x%08x\n", hw_desc->addr_ext);
+		printk("next_desc: 0x%08x\n", hw_desc->next_desc);
+		printk("src_addr: 0x%08x\n", hw_desc->src_addr);
+		printk("addr_ext_23: 0x%08x\n", hw_desc->addr_ext_23);
+		printk("addr_ext_45: 0x%08x\n", hw_desc->addr_ext_45);
+		printk("src_addr2: 0x%08x\n", hw_desc->src_addr2);
+		printk("src_addr3: 0x%08x\n", hw_desc->src_addr3);
+		printk("src_addr4: 0x%08x\n", hw_desc->src_addr4);
+		printk("src_addr5: 0x%08x\n", hw_desc->src_addr5);
+		printk("crc: 0x%08x\n", hw_desc->crc);
+	}
 
 	sw_desc = list_first_entry(&desc->descriptors,
 				   struct xilinx_dpdma_sw_desc, node);
@@ -1159,16 +1208,16 @@ static void xilinx_dpdma_chan_handle_err(struct xilinx_dpdma_chan *chan)
 
 	spin_lock_irqsave(&chan->lock, flags);
 
-	dev_dbg(xdev->dev, "chan%u: cur desc addr = 0x%04x%08x\n",
+	dev_info(xdev->dev, "chan%u: cur desc addr = 0x%04x%08x\n", // problem Source
 		chan->id,
 		dpdma_read(chan->reg, XILINX_DPDMA_CH_DESC_START_ADDRE),
 		dpdma_read(chan->reg, XILINX_DPDMA_CH_DESC_START_ADDR));
-	dev_dbg(xdev->dev, "chan%u: cur payload addr = 0x%04x%08x\n",
+	dev_info(xdev->dev, "chan%u: cur payload addr = 0x%04x%08x\n",  // problem Dest
 		chan->id,
 		dpdma_read(chan->reg, XILINX_DPDMA_CH_PYLD_CUR_ADDRE),
 		dpdma_read(chan->reg, XILINX_DPDMA_CH_PYLD_CUR_ADDR));
 
-	xilinx_dpdma_chan_disable(chan);
+	xilinx_dpdma_chan_disable(chan); // still working here
 	chan->running = false;
 
 	if (!chan->desc.active)
@@ -1176,6 +1225,7 @@ static void xilinx_dpdma_chan_handle_err(struct xilinx_dpdma_chan *chan)
 
 	active = chan->desc.active;
 	chan->desc.active = NULL;
+	printk("active is %x\n", active);
 
 	xilinx_dpdma_chan_dump_tx_desc(chan, active);
 
@@ -1493,9 +1543,9 @@ static void xilinx_dpdma_chan_err_task(struct tasklet_struct *t)
 	unsigned long flags;
 
 	/* Proceed error handling even when polling fails. */
-	xilinx_dpdma_chan_poll_no_ostand(chan);
+	xilinx_dpdma_chan_poll_no_ostand(chan); // may 1
 
-	xilinx_dpdma_chan_handle_err(chan);
+	xilinx_dpdma_chan_handle_err(chan); // may 2 - targeting
 
 	dpdma_write(xdev->reg, XILINX_DPDMA_IEN,
 		    XILINX_DPDMA_INTR_CHAN_ERR_MASK << chan->id);
@@ -1522,6 +1572,7 @@ static irqreturn_t xilinx_dpdma_irq_handler(int irq, void *data)
 
 	dpdma_write(xdev->reg, XILINX_DPDMA_ISR, status);
 	dpdma_write(xdev->reg, XILINX_DPDMA_EISR, error);
+	printk("%x %x\n", status, error);
 
 	if (status & XILINX_DPDMA_INTR_VSYNC) {
 		/*

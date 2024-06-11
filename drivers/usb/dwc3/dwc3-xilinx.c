@@ -75,19 +75,19 @@ static int dwc3_xlnx_init_versal(struct dwc3_xlnx *priv_data)
 	dwc3_xlnx_mask_phy_rst(priv_data, false);
 
 	/* Assert and De-assert reset */
-	ret = zynqmp_pm_reset_assert(VERSAL_USB_RESET_ID,
-				     PM_RESET_ACTION_ASSERT);
-	if (ret < 0) {
-		dev_err_probe(dev, ret, "failed to assert Reset\n");
-		return ret;
-	}
+	// ret = zynqmp_pm_reset_assert(VERSAL_USB_RESET_ID,
+	// 			     PM_RESET_ACTION_ASSERT);
+	// if (ret < 0) {
+	// 	dev_err_probe(dev, ret, "failed to assert Reset\n");
+	// 	return ret;
+	// }
 
-	ret = zynqmp_pm_reset_assert(VERSAL_USB_RESET_ID,
-				     PM_RESET_ACTION_RELEASE);
-	if (ret < 0) {
-		dev_err_probe(dev, ret, "failed to De-assert Reset\n");
-		return ret;
-	}
+	// ret = zynqmp_pm_reset_assert(VERSAL_USB_RESET_ID,
+	// 			     PM_RESET_ACTION_RELEASE);
+	// if (ret < 0) {
+	// 	dev_err_probe(dev, ret, "failed to De-assert Reset\n");
+	// 	return ret;
+	// }
 
 	dwc3_xlnx_mask_phy_rst(priv_data, true);
 
@@ -97,7 +97,7 @@ static int dwc3_xlnx_init_versal(struct dwc3_xlnx *priv_data)
 static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 {
 	struct device		*dev = priv_data->dev;
-	struct reset_control	*crst, *hibrst, *apbrst;
+	// struct reset_control	*crst, *hibrst, *apbrst;
 	struct phy		*usb3_phy;
 	int			ret;
 	u32			reg;
@@ -110,47 +110,47 @@ static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 		usb3_phy = NULL;
 	}
 
-	crst = devm_reset_control_get_exclusive(dev, "usb_crst");
-	if (IS_ERR(crst)) {
-		ret = PTR_ERR(crst);
-		dev_err_probe(dev, ret,
-			      "failed to get core reset signal\n");
-		goto err;
-	}
+	// crst = devm_reset_control_get_exclusive(dev, "usb_crst");
+	// if (IS_ERR(crst)) {
+	// 	ret = PTR_ERR(crst);
+	// 	dev_err_probe(dev, ret,
+	// 		      "failed to get core reset signal\n");
+	// 	goto err;
+	// }
 
-	hibrst = devm_reset_control_get_exclusive(dev, "usb_hibrst");
-	if (IS_ERR(hibrst)) {
-		ret = PTR_ERR(hibrst);
-		dev_err_probe(dev, ret,
-			      "failed to get hibernation reset signal\n");
-		goto err;
-	}
+	// hibrst = devm_reset_control_get_exclusive(dev, "usb_hibrst");
+	// if (IS_ERR(hibrst)) {
+	// 	ret = PTR_ERR(hibrst);
+	// 	dev_err_probe(dev, ret,
+	// 		      "failed to get hibernation reset signal\n");
+	// 	goto err;
+	// }
 
-	apbrst = devm_reset_control_get_exclusive(dev, "usb_apbrst");
-	if (IS_ERR(apbrst)) {
-		ret = PTR_ERR(apbrst);
-		dev_err_probe(dev, ret,
-			      "failed to get APB reset signal\n");
-		goto err;
-	}
+	// apbrst = devm_reset_control_get_exclusive(dev, "usb_apbrst");
+	// if (IS_ERR(apbrst)) {
+	// 	ret = PTR_ERR(apbrst);
+	// 	dev_err_probe(dev, ret,
+	// 		      "failed to get APB reset signal\n");
+	// 	goto err;
+	// }
 
-	ret = reset_control_assert(crst);
-	if (ret < 0) {
-		dev_err(dev, "Failed to assert core reset\n");
-		goto err;
-	}
+	// ret = reset_control_assert(crst);
+	// if (ret < 0) {
+	// 	dev_err(dev, "Failed to assert core reset\n");
+	// 	goto err;
+	// }
 
-	ret = reset_control_assert(hibrst);
-	if (ret < 0) {
-		dev_err(dev, "Failed to assert hibernation reset\n");
-		goto err;
-	}
+	// ret = reset_control_assert(hibrst);
+	// if (ret < 0) {
+	// 	dev_err(dev, "Failed to assert hibernation reset\n");
+	// 	goto err;
+	// }
 
-	ret = reset_control_assert(apbrst);
-	if (ret < 0) {
-		dev_err(dev, "Failed to assert APB reset\n");
-		goto err;
-	}
+	// ret = reset_control_assert(apbrst);
+	// if (ret < 0) {
+	// 	dev_err(dev, "Failed to assert APB reset\n");
+	// 	goto err;
+	// }
 
 	ret = phy_init(usb3_phy);
 	if (ret < 0) {
@@ -158,11 +158,11 @@ static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 		goto err;
 	}
 
-	ret = reset_control_deassert(apbrst);
-	if (ret < 0) {
-		dev_err(dev, "Failed to release APB reset\n");
-		goto err;
-	}
+	// ret = reset_control_deassert(apbrst);
+	// if (ret < 0) {
+	// 	dev_err(dev, "Failed to release APB reset\n");
+	// 	goto err;
+	// }
 
 	/* Set PIPE Power Present signal in FPD Power Present Register*/
 	writel(FPD_POWER_PRSNT_OPTION, priv_data->regs + XLNX_USB_FPD_POWER_PRSNT);
@@ -170,17 +170,17 @@ static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 	/* Set the PIPE Clock Select bit in FPD PIPE Clock register */
 	writel(PIPE_CLK_SELECT, priv_data->regs + XLNX_USB_FPD_PIPE_CLK);
 
-	ret = reset_control_deassert(crst);
-	if (ret < 0) {
-		dev_err(dev, "Failed to release core reset\n");
-		goto err;
-	}
+	// ret = reset_control_deassert(crst);
+	// if (ret < 0) {
+	// 	dev_err(dev, "Failed to release core reset\n");
+	// 	goto err;
+	// }
 
-	ret = reset_control_deassert(hibrst);
-	if (ret < 0) {
-		dev_err(dev, "Failed to release hibernation reset\n");
-		goto err;
-	}
+	// ret = reset_control_deassert(hibrst);
+	// if (ret < 0) {
+	// 	dev_err(dev, "Failed to release hibernation reset\n");
+	// 	goto err;
+	// }
 
 	ret = phy_power_on(usb3_phy);
 	if (ret < 0) {

@@ -437,7 +437,7 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
 	if (!cma || !cma->count || !cma->bitmap)
 		goto out;
 
-	pr_debug("%s(cma %p, count %lu, align %d)\n", __func__, (void *)cma,
+	pr_debug("%s(cma %x, count %lu, align %d)\n", __func__, (void *)cma,
 		 count, align);
 
 	if (!count)
@@ -510,7 +510,7 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
 		cma_debug_show_areas(cma);
 	}
 
-	pr_debug("%s(): returned %p\n", __func__, page);
+	pr_debug("%s(): returned %x\n", __func__, page);
 out:
 	if (page) {
 		count_vm_event(CMA_ALLOC_SUCCESS);

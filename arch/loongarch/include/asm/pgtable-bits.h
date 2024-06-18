@@ -116,7 +116,7 @@
 #define PAGE_KERNEL_SUC __pgprot(_PAGE_PRESENT | __READABLE | __WRITEABLE | \
 				 _PAGE_GLOBAL | _PAGE_KERN |  _CACHE_SUC)
 #define PAGE_KERNEL_WUC __pgprot(_PAGE_PRESENT | __READABLE | __WRITEABLE | \
-				 _PAGE_GLOBAL | _PAGE_KERN |  _CACHE_WUC)
+				 _PAGE_GLOBAL | _PAGE_KERN |  _CACHE_SUC)
 
 #define __P000 __pgprot(_CACHE_CC | _PAGE_PROTNONE | _PAGE_NO_EXEC | _PAGE_NO_READ)
 #define __P001 __pgprot(_CACHE_CC | _PAGE_USER | _PAGE_PRESENT | _PAGE_NO_EXEC)
@@ -161,7 +161,7 @@ static inline pgprot_t pgprot_writecombine(pgprot_t _prot)
 {
 	unsigned long prot = pgprot_val(_prot);
 
-	prot = (prot & ~_CACHE_MASK) | _CACHE_WUC;
+	prot = (prot & ~_CACHE_MASK) | _CACHE_SUC;
 
 	return __pgprot(prot);
 }
